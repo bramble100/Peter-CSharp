@@ -18,14 +18,29 @@ namespace DataVendor.Services
 
         internal void AddIsinsToEntities()
         {
+            Console.Write("Market data are loading ...");
             var entities = _marketDataCsvFileRepository.Load();
+            Console.Write($" {entities.Count} lines are loaded.\n");
+
+            Console.Write("ISINs are loading ...");
             var isins = _isinsCsvFileRepository.Load();
+            Console.Write($" {isins.Count} lines are loaded.\n");
 
+            Console.Write("ISINs are being added ...");
             AddIsinToEntities(entities, isins);
-            _marketDataCsvFileRepository.Save(entities);
+            Console.Write(" done.\n");
 
+            Console.Write("Market data are being saved ...");
+            _marketDataCsvFileRepository.Save(entities);
+            Console.Write(" done.\n");
+
+            Console.Write("Unused ISINs are being removed ...");
             RemoveIsinFromIsins(isins, entities);
+            Console.Write(" done.\n");
+
+            Console.Write("ISINs data are being saved ...");
             _isinsCsvFileRepository.Save(isins);
+            Console.Write(" done.\n");
         }
 
         private static void AddIsinToEntities(MarketDataEntities entities, Isins isins)
