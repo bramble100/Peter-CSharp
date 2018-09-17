@@ -16,6 +16,7 @@ namespace DataVendor
             {
                 new Controller().AddIsins();
             }
+            Console.WriteLine("Press any key to continue ...");
             Console.ReadKey();
         }
     }

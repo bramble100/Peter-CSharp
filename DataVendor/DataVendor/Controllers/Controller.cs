@@ -14,7 +14,7 @@ namespace DataVendor.Controllers
         internal void AddIsins()
         {
             var isinAdderService = new IsinAdderService();
-            isinAdderService.AddIsins();
+            isinAdderService.AddIsinsToEntities();
         }
     }
 }

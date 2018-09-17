@@ -16,11 +16,14 @@ namespace DataVendor.Services
             _isinsCsvFileRepository = new IsinsCsvFileRepository();
         }
 
-        internal void AddIsins()
+        internal void AddIsinsToEntities()
         {
             var entities = _marketDataCsvFileRepository.Load();
             var isins = _isinsCsvFileRepository.Load();
+
             AddIsinToEntities(entities, isins);
+            _marketDataCsvFileRepository.Save(entities);
+
             RemoveIsinFromIsins(isins, entities);
             _isinsCsvFileRepository.Save(isins);
         }

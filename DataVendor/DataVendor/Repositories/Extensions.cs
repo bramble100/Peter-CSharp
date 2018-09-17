@@ -43,6 +43,13 @@ namespace DataVendor.Repositories
                 entity.StockExchange);
         }
 
+        public static string FormatterForCSV(this KeyValuePair<string, string> kvp, string separator)
+        {
+            return string.Join(separator,
+                kvp.Key.WrapWithQuotes(),
+                kvp.Value);
+        }
+
         public static string WrapWithQuotes(this object obj) => $"\"{obj.ToString()}\"";
     }
 }
