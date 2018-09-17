@@ -4,17 +4,17 @@ namespace DataVendor.Controllers
 {
     public class Controller
     {
-        private readonly WebService _webService;
-
-        public Controller()
+        internal void WebToCsv()
         {
-            _webService = new WebService();
+            var webService = new WebService();
+            var latestData = webService.DownloadFromWeb();
+            webService.Update(latestData);
         }
 
-        public void WebToCsv()
+        internal void AddIsins()
         {
-            var latestData = _webService.DownloadFromWeb();
-            _webService.Update(latestData);
+            var isinAdderService = new IsinAdderService();
+            isinAdderService.AddIsinsToEntities();
         }
     }
 }

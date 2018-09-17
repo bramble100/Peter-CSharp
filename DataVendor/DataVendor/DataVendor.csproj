@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\Controller.cs" />
+    <Compile Include="Services\IsinAdderService.cs" />
     <Compile Include="Models\DataVendorBasicData.cs" />
     <Compile Include="Models\IMarketData.cs" />
     <Compile Include="Models\Isins.cs" />

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace DataVendor.Models
 {
-    public class Isins
+    public class Isins : IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
         /// Key: Company name; Value: ISIN
@@ -45,6 +46,18 @@ namespace DataVendor.Models
             {
                 Console.WriteLine(ex); ;
             }
+        }
+
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<string, string>>)_isins).GetEnumerator();
+        }
+
+        internal void Remove(KeyValuePair<string, string> dn) => _isins.Remove(dn.Key);
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<string, string>>)_isins).GetEnumerator();
         }
     }
 }

@@ -13,10 +13,7 @@ namespace DataVendor.Repositories
         protected const string _dateFormat = "yyyy-MM-dd-HH-mm";
         private const string separator = ",";
         private const string _fileNameExtension = "csv";
-        private string _workingDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            "StockExchange",
-            "RawDownload");
+        private string _workingDirectory;
 
         private readonly string[] header = {
             "Name",
@@ -33,6 +30,10 @@ namespace DataVendor.Repositories
         /// </summary>
         public MarketDataCsvFileRepository()
         {
+            _workingDirectory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "StockExchange",
+                "RawDownload");
         }
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace DataVendor.Repositories
                 Encoding.UTF8);
         }
 
-        private List<string> AddHeader() => new List<string> { String.Join(separator, header) };
+        private List<string> AddHeader() => new List<string> { string.Join(separator, header) };
 
         private static string FileNameCreator(DateTime dateTime) =>
             $"{dateTime.ToString(_dateFormat)}.{_fileNameExtension}";
