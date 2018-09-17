@@ -99,6 +99,7 @@ namespace DataVendor.Repositories
         {
             var entities = Load();
             entities.AddRange(latestData);
+            entities.Sort();
             Save(entities);
         }
 
