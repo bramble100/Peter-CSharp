@@ -14,8 +14,6 @@ namespace DataVendor.Repositories
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             "StockExchange");
 
-        private readonly Isins _isins = new Isins();
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -51,9 +49,11 @@ namespace DataVendor.Repositories
         /// Loads the CSV file and stores its content.
         /// </summary>
         /// <returns></returns>
-        internal void Load()
+        internal Isins Load()
         {
             var filePath = Path.Combine(_workingDirectory, "isins.csv");
+            var isins = new Isins();
+
             using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
             {
                 parser.SetDelimiters(separator);
@@ -62,9 +62,16 @@ namespace DataVendor.Repositories
 
                 while (!parser.EndOfData)
                 {
-                    _isins.Add(parser.ReadFields());
+                    isins.Add(parser.ReadFields());
                 }
             }
+
+            return isins;
+        }
+
+        internal void Save(Isins isins)
+        {
+            throw new NotImplementedException();
         }
 
         private static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
