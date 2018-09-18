@@ -1,6 +1,7 @@
 ﻿using DataVendor.Models;
 using DataVendor.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DataVendor.Services
@@ -35,8 +36,12 @@ namespace DataVendor.Services
             Console.Write(" done.\n");
 
             Console.Write("Unused ISINs are being removed ...");
-            RemoveIsinFromIsins(isins, entities);
-            Console.Write(" done.\n");
+            var count = RemoveIsinFromIsins(isins, entities);
+            Console.Write($" {count} ISIN(s) are removed.\n");
+
+            Console.Write("New names are being added ...");
+            count = AddNewNames(isins, entities);
+            Console.Write($" {count} name(s) are added.\n");
 
             Console.Write("ISINs data are being saved ...");
             _isinsCsvFileRepository.Save(isins);
@@ -51,7 +56,7 @@ namespace DataVendor.Services
                 .ForEach(e => e.Isin = isins[e.Name]);
         }
 
-        private void RemoveIsinFromIsins(Isins isins, MarketDataEntities entities)
+        private int RemoveIsinFromIsins(Isins isins, MarketDataEntities entities)
         {
             // TODO: refactor
 
@@ -60,11 +65,29 @@ namespace DataVendor.Services
                 .Distinct();
 
             var deadNames = isins
-                .Where(i => !namesInEntities.Contains(i.Key));
+                .Where(i => !namesInEntities.Contains(i.Key))
+                .ToList();
 
-            deadNames
-                .ToList()
+            deadNames                
                 .ForEach(dn=> isins.Remove(dn));
+
+            return deadNames.Count;
+        }
+
+        private int AddNewNames(Isins isins, MarketDataEntities entities)
+        {
+            var namesInEntities = entities
+                .Select(e => e.Name)
+                .Distinct();
+
+            var newNames = namesInEntities
+                .Where(e => !isins.ContainsKey(e))
+                .ToList();
+
+            newNames
+                .ForEach(n => isins.Add(new KeyValuePair<string, string>(n, string.Empty)));
+
+            return newNames.Count;
         }
     }
 }
