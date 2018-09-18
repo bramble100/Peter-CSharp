@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,9 @@ namespace DataVendor.Repositories
 {
     public class IsinsCsvFileRepository
     {
-        private const string _separator = ",";
-        private const string _fileName = "isins.csv";
-        private string _workingDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            "StockExchange");
+        private readonly string _separator;
+        private readonly string _fileName;
+        private string _workingDirectory;
 
         private readonly string[] header = {
             "Name",
@@ -26,6 +25,24 @@ namespace DataVendor.Repositories
         /// </summary>
         public IsinsCsvFileRepository()
         {
+            var reader = new AppSettingsReader();
+
+            _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
+            _fileName = reader.GetValue("IsinFileName", typeof(string)).ToString();
+
+            var baseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
+            var workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
+            
+            if (string.IsNullOrWhiteSpace(baseDirectory) || string.Equals(baseDirectory.ToLower(), "desktop"))
+            {
+                baseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            }
+            if (string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                workingDirectory = "StockExchange";
+            }
+
+            WorkingDirectory = Path.Combine(baseDirectory, workingDirectory);
         }
 
         /// <summary>
@@ -51,8 +68,6 @@ namespace DataVendor.Repositories
                 _workingDirectory = value;
             }
         }
-
-
 
         /// <summary>
         /// Loads the CSV file and stores its content.

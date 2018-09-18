@@ -1,5 +1,6 @@
 using DataVendor.Controllers;
 using System;
+using System.Configuration;
 using System.Linq;
 
 namespace DataVendor
@@ -8,11 +9,13 @@ namespace DataVendor
     {
         static void Main(string[] args)
         {
-            if (!args.Any() || string.Equals(args[0].ToLower(), "fetch"))
+            var reader = new AppSettingsReader();
+
+            if (!args.Any() || string.Equals(args[0].ToLower(), reader.GetValue("FetchNewMarketData", typeof(string))))
             {
                 new Controller().WebToCsv();
             }
-            else if(string.Equals(args[0].ToLower(), "addisins"))
+            else if(string.Equals(args[0].ToLower(), reader.GetValue("UpdateMarketDataWithISINs", typeof(string))))
             {
                 new Controller().AddIsins();
             }

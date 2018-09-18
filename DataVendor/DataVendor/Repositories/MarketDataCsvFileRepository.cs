@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,9 @@ namespace DataVendor.Repositories
 {
     public class MarketDataCsvFileRepository
     {
-        protected const string _dateFormat = "yyyy-MM-dd-HH-mm";
-        private const string separator = ",";
-        private const string _fileNameExtension = "csv";
+        private readonly string _dateFormat;
+        private readonly string _separator;
+        private readonly string _fileNameExtension;
         private string _workingDirectory;
 
         private readonly string[] header = {
@@ -30,10 +31,33 @@ namespace DataVendor.Repositories
         /// </summary>
         public MarketDataCsvFileRepository()
         {
-            _workingDirectory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                "StockExchange",
-                "RawDownload");
+            var reader = new AppSettingsReader();
+
+            _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
+            _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
+            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
+
+            var baseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
+            var workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
+            var rawDownloadsDirectory = reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString();
+
+            if (string.IsNullOrWhiteSpace(baseDirectory) || string.Equals(baseDirectory.ToLower(), "desktop"))
+            {
+                baseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            }
+            if (string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                rawDownloadsDirectory = "StockExchange";
+            }
+            if (string.IsNullOrWhiteSpace(rawDownloadsDirectory))
+            {
+                rawDownloadsDirectory = "RawDownload";
+            }
+
+            WorkingDirectory = Path.Combine(baseDirectory, workingDirectory, rawDownloadsDirectory);
+
+            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
+            _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
         /// <summary>
@@ -78,7 +102,7 @@ namespace DataVendor.Repositories
 
             using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
             {
-                parser.SetDelimiters(separator);
+                parser.SetDelimiters(_separator);
 
                 RemoveHeader(parser);
 
@@ -112,7 +136,7 @@ namespace DataVendor.Repositories
         {
             List<string> strings = AddHeader();
 
-            strings.AddRange(entities.Select(e => e.FormatterForCSV(separator)));
+            strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
 
             File.WriteAllLines(
                 Path.Combine(WorkingDirectory, FileNameCreator(entities.Max(e => e.DateTime))),
@@ -120,9 +144,9 @@ namespace DataVendor.Repositories
                 Encoding.UTF8);
         }
 
-        private List<string> AddHeader() => new List<string> { string.Join(separator, header) };
+        private List<string> AddHeader() => new List<string> { string.Join(_separator, header) };
 
-        private static string FileNameCreator(DateTime dateTime) =>
+        private string FileNameCreator(DateTime dateTime) =>
             $"{dateTime.ToString(_dateFormat)}.{_fileNameExtension}";
 
         protected string FileNameCreator(DateTime dateTime, string stockExchangeName, string fileNameExtension) =>
