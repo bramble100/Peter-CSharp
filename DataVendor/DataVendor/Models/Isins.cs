@@ -59,5 +59,12 @@ namespace DataVendor.Models
         {
             return ((IEnumerable<KeyValuePair<string, string>>)_isins).GetEnumerator();
         }
+
+        internal void Add(KeyValuePair<string, string> keyValuePair)
+        {
+            if (string.IsNullOrWhiteSpace(keyValuePair.Key)) return;
+
+            _isins.Add(keyValuePair.Key, keyValuePair.Value);
+        }
     }
 }
