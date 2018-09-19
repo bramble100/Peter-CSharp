@@ -14,12 +14,14 @@ namespace Peter.Models.Validators
             if(input.Count() != 2) return false;
             name = input[0];
             isin = input[1];
-            return string.IsNullOrWhiteSpace(name);
+            return !string.IsNullOrWhiteSpace(name);
         }
 
         internal static bool TryParse(KeyValuePair<string, string> keyValuePair, out string name, out string isin)
         {
-            throw new NotImplementedException();
+            name = keyValuePair.Key;
+            isin = keyValuePair.Value;
+            return !string.IsNullOrWhiteSpace(name);
         }
     }
 }
