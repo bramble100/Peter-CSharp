@@ -1,6 +1,7 @@
 ﻿using DataVendor.Models;
 using HtmlAgilityPack;
 using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace DataVendor.Services
 {
     internal static class HtmlProcessor
     {
-        internal static MarketDataEntities GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls)
+        internal static IMarketDataEntities GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls)
         {
             return new MarketDataEntities(
                 stockExchangesHtmls.SelectMany(keyValuePair =>
@@ -20,16 +21,16 @@ namespace DataVendor.Services
                     .GetMarketDataEntities(keyValuePair.Key)));
         }
 
-        internal static MarketDataEntities GetMarketDataEntities(
+        internal static IMarketDataEntities GetMarketDataEntities(
             this IEnumerable<HtmlNode> rows, 
             string stockExchangeName)
         {
-            var entities = new MarketDataEntities(rows.Select(row => GetMarketDataEntity(row, stockExchangeName)));
+            IMarketDataEntities entities = new MarketDataEntities(rows.Select(row => GetMarketDataEntity(row, stockExchangeName)));
             Console.WriteLine($"Number of records added from {stockExchangeName}: {entities.Count}");
             return entities;
         }
 
-        internal static MarketDataEntity GetMarketDataEntity(HtmlNode htmlTableRow, string stockExchange)
+        internal static IMarketDataEntity GetMarketDataEntity(HtmlNode htmlTableRow, string stockExchange)
         {
             return new MarketDataEntity
             {

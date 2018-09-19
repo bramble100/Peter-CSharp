@@ -7,7 +7,7 @@ namespace Peter.Models.Implementations
     /// <summary>
     /// Stores the data of an entity downloaded from the data vendor page.
     /// </summary>
-    public class MarketDataEntity : IMarketDataEntity, IComparable<MarketDataEntity>, IEquatable<MarketDataEntity>
+    public class MarketDataEntity : IMarketDataEntity
     {
         public decimal ClosingPrice { get; set; }
         public DateTime DateTime { get; set; }
@@ -23,7 +23,7 @@ namespace Peter.Models.Implementations
         /// </summary>
         public string StockExchange { get; set; }
 
-        public int CompareTo(MarketDataEntity other)
+        public int CompareTo(IMarketDataEntity other)
         {
             var result = Name.CompareTo(other.Name);
             return result != 0 ? result : DateTime.CompareTo(other.DateTime);
@@ -34,14 +34,14 @@ namespace Peter.Models.Implementations
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj) => Equals(obj as MarketDataEntity);
+        public override bool Equals(object obj) => Equals(obj as IMarketDataEntity);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public bool Equals(MarketDataEntity other)
+        public bool Equals(IMarketDataEntity other)
         {
             return other != null &&
                    ClosingPrice == other.ClosingPrice &&

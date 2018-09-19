@@ -1,4 +1,5 @@
 ﻿using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,16 +59,16 @@ namespace DataVendor.Models
             bool forceOverwrite = false,
             Func<string,string> minifyFunction = null)
         {
-            if (String.IsNullOrEmpty(nameof(stockExchangeName)))
+            if (string.IsNullOrEmpty(nameof(stockExchangeName)))
                 throw new ArgumentNullException(nameof(stockExchangeName));
-            if (String.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html))
                 throw new ArgumentNullException(nameof(html));
             if (!forceOverwrite && _htmls.ContainsKey(stockExchangeName))
                 throw new InvalidOperationException(
                     "The given stock exchange name already exists in collection (you might try force overwrite).");
 
             if (!_htmls.ContainsKey(stockExchangeName))
-                _htmls.Add(stockExchangeName, String.Empty);
+                _htmls.Add(stockExchangeName, string.Empty);
 
             if (minifyFunction != null)
                 html = minifyFunction(html);
@@ -80,8 +81,8 @@ namespace DataVendor.Models
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        internal IEnumerable<MarketDataEntity> SelectMany(
-            Func<KeyValuePair<string, string>, MarketDataEntities> function)
+        internal IEnumerable<IMarketDataEntity> SelectMany(
+            Func<KeyValuePair<string, string>, IMarketDataEntities> function)
         {
             return _htmls.SelectMany(keyValuePair => function(keyValuePair));
         }
@@ -89,8 +90,8 @@ namespace DataVendor.Models
         private void Add(KeyValuePair<string, string> kvp) => _htmls.Add(kvp.Key, kvp.Value);
 
         private static string MinifyLinq(string input) =>
-            new String(input
-                .Where(c => !Char.IsWhiteSpace(c) || Equals(c, ' '))
+            new string(input
+                .Where(c => !char.IsWhiteSpace(c) || Equals(c, ' '))
                 .ToArray());
 
         private static string MinifyRegex(string input)

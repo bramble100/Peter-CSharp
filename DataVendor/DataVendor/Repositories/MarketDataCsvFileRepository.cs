@@ -1,6 +1,7 @@
 ﻿using DataVendor.Models;
 using Microsoft.VisualBasic.FileIO;
 using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -90,11 +91,11 @@ namespace DataVendor.Repositories
         /// Loads one CSV file and returns its content.
         /// </summary>
         /// <returns></returns>
-        internal MarketDataEntities Load()
+        internal IMarketDataEntities Load()
         {
             var filePath = Directory.GetFiles(_workingDirectory).Max();
 
-            var entities = new MarketDataEntities();
+            IMarketDataEntities entities = new MarketDataEntities();
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -121,7 +122,7 @@ namespace DataVendor.Repositories
         /// Adds new market data to the existing data.
         /// </summary>
         /// <param name="latestData"></param>
-        public void Update(MarketDataEntities latestData)
+        public void Update(IMarketDataEntities latestData)
         {
             var entities = Load();
             entities.AddRange(latestData);
@@ -133,7 +134,7 @@ namespace DataVendor.Repositories
         /// Saves the entity collection into CSV file.
         /// </summary>
         /// <param name="entities"></param>
-        internal void Save(IEnumerable<MarketDataEntity> entities)
+        internal void Save(IEnumerable<IMarketDataEntity> entities)
         {
             List<string> strings = AddHeader();
 

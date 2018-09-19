@@ -1,5 +1,6 @@
 ﻿using DataVendor.Models;
 using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,7 +11,7 @@ namespace DataVendor.Repositories
     {
         private static readonly CultureInfo culture = new CultureInfo("en-US");
 
-        public static MarketDataEntity ParserFromCSV(this IEnumerable<string> strings)
+        public static IMarketDataEntity ParserFromCSV(this IEnumerable<string> strings)
         {
             var queue = new Queue<string>(strings);
 
@@ -32,7 +33,7 @@ namespace DataVendor.Repositories
         /// <param name="entity"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static string FormatterForCSV(this MarketDataEntity entity, string separator)
+        public static string FormatterForCSV(this IMarketDataEntity entity, string separator)
         {
             return string.Join(separator,
                 entity.Name.WrapWithQuotes(),

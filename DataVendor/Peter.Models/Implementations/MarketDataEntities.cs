@@ -1,16 +1,14 @@
-﻿using System;
+﻿using Peter.Models.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Peter.Models.Implementations
 {
-    /// <summary>
-    /// Collection of market data informations collected from the data vendor pages.
-    /// </summary>
-    public class MarketDataEntities : ICollection<MarketDataEntity>
+    public class MarketDataEntities : IMarketDataEntities
     {
-        private readonly List<MarketDataEntity> _entities = new List<MarketDataEntity>();
+        private readonly List<IMarketDataEntity> _entities = new List<IMarketDataEntity>();
 
         /// <summary>
         /// Constructor.
@@ -23,20 +21,13 @@ namespace Peter.Models.Implementations
         /// Constructor.
         /// </summary>
         /// <param name="entities"></param>
-        public MarketDataEntities(IEnumerable<MarketDataEntity> entities)
+        public MarketDataEntities(IEnumerable<IMarketDataEntity> entities)
         {
             _entities.AddRange(entities);
         }
 
-        /// <summary>
-        /// Performs the specified action on each element of the collection.
-        /// </summary>
-        /// <param name="action"></param>
-        public void ForEach(Action<MarketDataEntity> action) => _entities.ForEach(action);
+        public void ForEach(Action<IMarketDataEntity> action) => _entities.ForEach(action);
 
-        /// <summary>
-        /// Sorts the market data informations.
-        /// </summary>
         public void Sort() => _entities.Sort();
 
         /// <summary>
@@ -47,17 +38,17 @@ namespace Peter.Models.Implementations
         /// <summary>
         /// Gets a value indicating whether the ICollection is read-only.
         /// </summary>
-        public bool IsReadOnly => ((ICollection<MarketDataEntity>)_entities).IsReadOnly;
+        public bool IsReadOnly => ((ICollection<IMarketDataEntity>)_entities).IsReadOnly;
 
         /// <summary>
         /// Adds a market data information to the collection.
         /// </summary>
         /// <param name="entity"></param>
-        public void Add(MarketDataEntity entity)
+        public void Add(IMarketDataEntity entity)
         {
             var actualOnThatDay = _entities
                 .FirstOrDefault(e =>
-                    String.Equals(e.Name, entity.Name) 
+                    string.Equals(e.Name, entity.Name) 
                     && Equals(e.DateTime.Date, entity.DateTime.Date));
 
             var infoIsAddable = actualOnThatDay is null;
@@ -73,11 +64,7 @@ namespace Peter.Models.Implementations
             }
         }
 
-        /// <summary>
-        /// Adds the market data informations to the collection.
-        /// </summary>
-        /// <param name="entities"></param>
-        public void AddRange(IEnumerable<MarketDataEntity> entities)
+        public void AddRange(IEnumerable<IMarketDataEntity> entities)
         {
             entities.ToList().ForEach(Add);
             Console.WriteLine($"Number of market data records added: {entities.Count()}");
@@ -88,19 +75,19 @@ namespace Peter.Models.Implementations
         /// </summary>
         public void Clear() => _entities.Clear();
 
-        public bool Contains(MarketDataEntity item) => _entities.Contains(item);
+        public bool Contains(IMarketDataEntity item) => _entities.Contains(item);
 
-        public void CopyTo(MarketDataEntity[] array, int arrayIndex) => _entities.CopyTo(array, arrayIndex);
+        public void CopyTo(IMarketDataEntity[] array, int arrayIndex) => _entities.CopyTo(array, arrayIndex);
 
-        public IEnumerator<MarketDataEntity> GetEnumerator() => ((IEnumerable<MarketDataEntity>)_entities).GetEnumerator();
+        public IEnumerator<IMarketDataEntity> GetEnumerator() => ((IEnumerable<IMarketDataEntity>)_entities).GetEnumerator();
 
-        public bool Remove(MarketDataEntity item) => _entities.Remove(item);
+        public bool Remove(IMarketDataEntity item) => _entities.Remove(item);
 
         internal DateTime MaxDateTime()
         {
             throw new NotImplementedException();
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<MarketDataEntity>)_entities).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<IMarketDataEntity>)_entities).GetEnumerator();
     }
 }

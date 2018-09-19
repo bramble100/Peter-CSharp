@@ -1,6 +1,7 @@
 ﻿using DataVendor.Models;
 using DataVendor.Repositories;
 using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 
 namespace DataVendor.Services
 {
@@ -13,13 +14,13 @@ namespace DataVendor.Services
             _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
         }
 
-        internal MarketDataEntities DownloadFromWeb()
+        internal IMarketDataEntities DownloadFromWeb()
         {
             return HtmlDownloader
                 .DownloadAll()
                 .GetMarketDataEntities();
         }
 
-        internal void Update(MarketDataEntities latestData) => _marketDataCsvFileRepository.Update(latestData);
+        internal void Update(IMarketDataEntities latestData) => _marketDataCsvFileRepository.Update(latestData);
     }
 }
