@@ -86,10 +86,6 @@
     <Compile Include="Controllers\Controller.cs" />
     <Compile Include="Services\IsinAdderService.cs" />
     <Compile Include="Models\DataVendorBasicData.cs" />
-    <Compile Include="Models\IMarketData.cs" />
-    <Compile Include="Models\Isins.cs" />
-    <Compile Include="Models\MarketDataEntities.cs" />
-    <Compile Include="Models\MarketDataEntity.cs" />
     <Compile Include="Models\StockExchangesHtmls.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,6 +117,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
+      <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
+      <Name>Peter.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

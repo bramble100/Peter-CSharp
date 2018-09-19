@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace DataVendor.Models
+namespace Peter.Models.Implementations
 {
     public class Isins : IEnumerable<KeyValuePair<string, string>>
     {
@@ -53,14 +53,14 @@ namespace DataVendor.Models
             return ((IEnumerable<KeyValuePair<string, string>>)_isins).GetEnumerator();
         }
 
-        internal void Remove(KeyValuePair<string, string> dn) => _isins.Remove(dn.Key);
+        public void Remove(KeyValuePair<string, string> dn) => _isins.Remove(dn.Key);
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable<KeyValuePair<string, string>>)_isins).GetEnumerator();
         }
 
-        internal void Add(KeyValuePair<string, string> keyValuePair)
+        public void Add(KeyValuePair<string, string> keyValuePair)
         {
             if (string.IsNullOrWhiteSpace(keyValuePair.Key)) return;
 

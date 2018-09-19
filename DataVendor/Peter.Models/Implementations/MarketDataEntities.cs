@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DataVendor.Models
+namespace Peter.Models.Implementations
 {
     /// <summary>
     /// Collection of market data informations collected from the data vendor pages.

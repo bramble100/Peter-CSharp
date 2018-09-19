@@ -1,5 +1,6 @@
 ﻿using DataVendor.Models;
 using HtmlAgilityPack;
+using Peter.Models.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;

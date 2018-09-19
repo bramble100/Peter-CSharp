@@ -1,5 +1,6 @@
 ﻿using DataVendor.Models;
 using DataVendor.Repositories;
+using Peter.Models.Implementations;
 
 namespace DataVendor.Services
 {

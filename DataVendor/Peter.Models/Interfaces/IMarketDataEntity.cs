@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace DataVendor.Models
+namespace Peter.Models.Interfaces
 {
     /// <summary>
     /// The very basic data regarding one market data entity.
     /// </summary>
-    public interface IMarketData
+    public interface IMarketDataEntity
     {
         /// <summary>
         /// Latest recorded price (in euro). If recorded after closing it is called closing price.

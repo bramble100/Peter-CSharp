@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Peter.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 
-namespace DataVendor.Models
+namespace Peter.Models.Implementations
 {
     /// <summary>
     /// Stores the data of an entity downloaded from the data vendor page.
     /// </summary>
-    public class MarketDataEntity : IMarketData, IComparable<MarketDataEntity>, IEquatable<MarketDataEntity>
+    public class MarketDataEntity : IMarketDataEntity, IComparable<MarketDataEntity>, IEquatable<MarketDataEntity>
     {
         public decimal ClosingPrice { get; set; }
         public DateTime DateTime { get; set; }
