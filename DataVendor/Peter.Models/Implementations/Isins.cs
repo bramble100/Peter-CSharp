@@ -1,21 +1,17 @@
-﻿using System;
+﻿using Peter.Models.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Peter.Models.Implementations
 {
-    public class Isins : IEnumerable<KeyValuePair<string, string>>
+    public class Isins : IIsins
     {
-        /// <summary>
-        /// Key: Company name; Value: ISIN
-        /// </summary>
-        private Dictionary<string, string> _isins = new Dictionary<string, string>();
+        private Dictionary<string, string> _isins;
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         public Isins()
         {
+            _isins = new Dictionary<string, string>();
         }
 
         public int Count => _isins.Count;

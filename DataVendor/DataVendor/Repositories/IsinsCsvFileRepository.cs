@@ -1,6 +1,7 @@
 ﻿using DataVendor.Models;
 using Microsoft.VisualBasic.FileIO;
 using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -74,10 +75,10 @@ namespace DataVendor.Repositories
         /// Loads the CSV file and stores its content.
         /// </summary>
         /// <returns></returns>
-        internal Isins Load()
+        internal IIsins Load()
         {
             var filePath = Path.Combine(_workingDirectory, _fileName);
-            var isins = new Isins();
+            IIsins isins = new Isins();
 
             using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
             {
@@ -94,7 +95,7 @@ namespace DataVendor.Repositories
             return isins;
         }
 
-        internal void Save(Isins isins)
+        internal void Save(IIsins isins)
         {
             List<string> strings = AddHeader();
 

@@ -1,6 +1,7 @@
 ﻿using DataVendor.Models;
 using DataVendor.Repositories;
 using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace DataVendor.Services
             Console.Write(" done.\n");
         }
 
-        private static void AddIsinToEntities(MarketDataEntities entities, Isins isins)
+        private static void AddIsinToEntities(MarketDataEntities entities, IIsins isins)
         {
             entities
                 .Where(e => isins.ContainsKey(e.Name))
@@ -57,7 +58,7 @@ namespace DataVendor.Services
                 .ForEach(e => e.Isin = isins[e.Name]);
         }
 
-        private int RemoveIsinFromIsins(Isins isins, MarketDataEntities entities)
+        private int RemoveIsinFromIsins(IIsins isins, MarketDataEntities entities)
         {
             // TODO: refactor
 
@@ -75,7 +76,7 @@ namespace DataVendor.Services
             return deadNames.Count;
         }
 
-        private int AddNewNames(Isins isins, MarketDataEntities entities)
+        private int AddNewNames(IIsins isins, MarketDataEntities entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)
