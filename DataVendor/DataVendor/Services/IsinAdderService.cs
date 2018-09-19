@@ -1,17 +1,17 @@
-﻿using DataVendor.Models;
-using DataVendor.Repositories;
-using Peter.Models.Implementations;
+﻿using DataVendor.Repositories.Implementations;
 using Peter.Models.Interfaces;
+using Peter.Repositories.Implementations;
+using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DataVendor.Services
 {
-    internal class IsinAdderService
+    public class IsinAdderService
     {
-        private readonly MarketDataCsvFileRepository _marketDataCsvFileRepository;
-        private readonly IsinsCsvFileRepository _isinsCsvFileRepository;
+        private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
+        private readonly IIsinsCsvFileRepository _isinsCsvFileRepository;
 
         public IsinAdderService()
         {
@@ -19,7 +19,7 @@ namespace DataVendor.Services
             _isinsCsvFileRepository = new IsinsCsvFileRepository();
         }
 
-        internal void AddIsinsToEntities()
+        public void AddIsinsToEntities()
         {
             Console.Write("Market data are loading ...");
             var entities = _marketDataCsvFileRepository.Load();

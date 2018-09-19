@@ -1,6 +1,4 @@
-﻿using DataVendor.Models;
-using DataVendor.Repositories;
-using Peter.Models.Implementations;
+﻿using DataVendor.Repositories.Implementations;
 using Peter.Models.Interfaces;
 
 namespace DataVendor.Services
