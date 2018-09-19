@@ -10,18 +10,11 @@ namespace Peter.Models.Implementations
     {
         private readonly List<IMarketDataEntity> _entities = new List<IMarketDataEntity>();
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         public MarketDataEntities()
         {
         }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="entities"></param>
-        public MarketDataEntities(IEnumerable<IMarketDataEntity> entities)
+        public MarketDataEntities(IEnumerable<IMarketDataEntity> entities) : this()
         {
             _entities.AddRange(entities);
         }
@@ -30,20 +23,10 @@ namespace Peter.Models.Implementations
 
         public void Sort() => _entities.Sort();
 
-        /// <summary>
-        /// Gets the number of market data informations contained in the collection.
-        /// </summary>
         public int Count => _entities.Count;
 
-        /// <summary>
-        /// Gets a value indicating whether the ICollection is read-only.
-        /// </summary>
         public bool IsReadOnly => ((ICollection<IMarketDataEntity>)_entities).IsReadOnly;
 
-        /// <summary>
-        /// Adds a market data information to the collection.
-        /// </summary>
-        /// <param name="entity"></param>
         public void Add(IMarketDataEntity entity)
         {
             var actualOnThatDay = _entities
@@ -70,9 +53,6 @@ namespace Peter.Models.Implementations
             Console.WriteLine($"Number of market data records added: {entities.Count()}");
         }
 
-        /// <summary>
-        /// Removes all information from the collection.
-        /// </summary>
         public void Clear() => _entities.Clear();
 
         public bool Contains(IMarketDataEntity item) => _entities.Contains(item);

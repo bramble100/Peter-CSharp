@@ -1,4 +1,5 @@
 ﻿using Peter.Models.Interfaces;
+using Peter.Models.Validators;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,25 +23,14 @@ namespace Peter.Models.Implementations
 
         public void Add(string[] input)
         {
-            try
+            if (Isin.TryParse(input, out var name, out var isin))
             {
-                var name = string.IsNullOrWhiteSpace(input[0])
-                    ? throw new ArgumentException($"ISIN cannot be added (name is null or empty).")
-                    : input[0];
-                var isin = input[1];
-
-                if (!_isins.ContainsKey(name))
-                {
-                    _isins.Add(name, isin);
-                }
-                else
-                {
-                    _isins[name] = isin;
-                }
+                Add(name, isin);
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex); ;
+                // TODO: log
+                Console.WriteLine($"ISIN cannot be added (name is null or empty).");
             }
         }
 
@@ -58,9 +48,27 @@ namespace Peter.Models.Implementations
 
         public void Add(KeyValuePair<string, string> keyValuePair)
         {
-            if (string.IsNullOrWhiteSpace(keyValuePair.Key)) return;
+            if (Isin.TryParse(keyValuePair, out var name, out var isin))
+            {
+                Add(name, isin);
+            }
+            else
+            {
+                // TODO: log
+                Console.WriteLine($"ISIN cannot be added (name is null or empty).");
+            }
+        }
 
-            _isins.Add(keyValuePair.Key, keyValuePair.Value);
+        private void Add(string name, string isin)
+        {
+            if (!_isins.ContainsKey(name))
+            {
+                _isins.Add(name, isin);
+            }
+            else
+            {
+                _isins[name] = isin;
+            }
         }
     }
 }
