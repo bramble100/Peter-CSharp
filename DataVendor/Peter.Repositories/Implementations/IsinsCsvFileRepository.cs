@@ -76,10 +76,10 @@ namespace Peter.Repositories.Implementations
         /// Loads the CSV file and stores its content.
         /// </summary>
         /// <returns></returns>
-        public IIsins Load()
+        public INameToIsin Load()
         {
             var filePath = Path.Combine(_workingDirectory, _fileName);
-            IIsins isins = new Isins();
+            INameToIsin isins = new NameToIsin();
 
             using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
             {
@@ -96,7 +96,7 @@ namespace Peter.Repositories.Implementations
             return isins;
         }
 
-        public void Save(IIsins isins)
+        public void Save(INameToIsin isins)
         {
             List<string> strings = AddHeader();
 
