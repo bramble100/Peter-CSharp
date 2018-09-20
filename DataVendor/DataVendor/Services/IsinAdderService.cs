@@ -50,7 +50,7 @@ namespace DataVendor.Services
             Console.Write(" done.\n");
         }
 
-        private static void AddIsinToEntities(IMarketDataEntities entities, IIsins isins)
+        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsin isins)
         {
             entities
                 .Where(e => isins.ContainsKey(e.Name))
@@ -58,7 +58,7 @@ namespace DataVendor.Services
                 .ForEach(e => e.Isin = isins[e.Name]);
         }
 
-        private int RemoveIsinFromIsins(IIsins isins, IMarketDataEntities entities)
+        private int RemoveIsinFromIsins(INameToIsin isins, IMarketDataEntities entities)
         {
             // TODO: refactor
 
@@ -76,7 +76,7 @@ namespace DataVendor.Services
             return deadNames.Count;
         }
 
-        private int AddNewNames(IIsins isins, IMarketDataEntities entities)
+        private int AddNewNames(INameToIsin isins, IMarketDataEntities entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)
