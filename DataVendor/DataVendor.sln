@@ -5,9 +5,11 @@ VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataVendor", "DataVendor\DataVendor.csproj", "{D011A456-7D2F-428F-B11B-787EA935F4A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peter.Models", "Peter.Models\Peter.Models.csproj", "{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peter.Models", "Peter.Models\Peter.Models.csproj", "{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peter.Repositories", "Peter.Repositories\Peter.Repositories.csproj", "{A72490E7-1652-4E9C-BBBF-61A7705C00C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models.UnitTests", "Models.UnitTests\Models.UnitTests.csproj", "{A77F5F70-346E-4F31-9AD3-E45FE0582AA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{A72490E7-1652-4E9C-BBBF-61A7705C00C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A72490E7-1652-4E9C-BBBF-61A7705C00C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A72490E7-1652-4E9C-BBBF-61A7705C00C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A77F5F70-346E-4F31-9AD3-E45FE0582AA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A77F5F70-346E-4F31-9AD3-E45FE0582AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A77F5F70-346E-4F31-9AD3-E45FE0582AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A77F5F70-346E-4F31-9AD3-E45FE0582AA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
