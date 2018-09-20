@@ -10,9 +10,9 @@ namespace Peter.Models.Implementations
         public DateTime DateTime { get; set; }
         public string Isin { get; set; }
         public string Name { get; set; }
-        public int Volumen { get; set; }
         public decimal PreviousDayClosingPrice { get; set; }
         public string StockExchange { get; set; }
+        public int Volumen { get; set; }
 
         public int CompareTo(IMarketDataEntity other)
         {
@@ -48,7 +48,7 @@ namespace Peter.Models.Implementations
 
         public override string ToString() => 
             $"{Name}, " +
-            $"{(String.IsNullOrEmpty(Isin) ? String.Empty : $"ISIN: {Isin}, ")}" +
+            $"{(string.IsNullOrEmpty(Isin) ? string.Empty : $"ISIN: {Isin}, ")}" +
             $"Closing Price: {ClosingPrice}, " +
             $"DateTime: {DateTime}, " +
             $"Volumen: {Volumen}, " +

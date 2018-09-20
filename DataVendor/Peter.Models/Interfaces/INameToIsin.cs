@@ -5,7 +5,7 @@ namespace Peter.Models.Interfaces
     /// <summary>
     /// Collection to contain all the ISINs by the company name. Key: Company name; Value: ISIN
     /// </summary>
-    public interface IIsins : IEnumerable<KeyValuePair<string, string>>
+    public interface INameToIsin : IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
         /// Indexer to return the ISIN by the company name.
