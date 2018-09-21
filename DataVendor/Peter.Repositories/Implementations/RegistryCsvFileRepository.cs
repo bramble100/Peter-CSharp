@@ -1,158 +1,36 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using Peter.Models.Implementations;
-using Peter.Models.Interfaces;
-using Peter.Repositories.Helpers;
+﻿using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
-    public class RegistryCsvFileRepository : IRegistryCsvFileRepository
+    public class RegistryCsvFileRepository : CsvFileRepository, IRegistryCsvFileRepository
     {
-        private readonly string _dateFormat;
-        private readonly string _separator;
-        private readonly string _fileNameExtension;
-        private string _workingDirectory;
-
-        private readonly string[] header = {
-            "Name",
-            "ISIN",
-            "Closing Price",
-            "DateTime",
-            "Volumen",
-            "Previous Day Closing Price",
-            "Stock Exchange"
-        };
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public RegistryCsvFileRepository()
+        public RegistryCsvFileRepository() : base()
         {
-            var reader = new AppSettingsReader();
+            _fileName = new AppSettingsReader().GetValue("RegistryFileName", typeof(string)).ToString();
 
-            _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
-            _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
-            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
-
-            var baseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
-            var workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
-            var rawDownloadsDirectory = reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString();
-
-            if (string.IsNullOrWhiteSpace(baseDirectory) || string.Equals(baseDirectory.ToLower(), "desktop"))
+            _header = new string[] 
             {
-                baseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            }
-            if (string.IsNullOrWhiteSpace(workingDirectory))
-            {
-                rawDownloadsDirectory = "StockExchange";
-            }
-            if (string.IsNullOrWhiteSpace(rawDownloadsDirectory))
-            {
-                rawDownloadsDirectory = "RawDownload";
-            }
-
-            WorkingDirectory = Path.Combine(baseDirectory, workingDirectory, rawDownloadsDirectory);
-
-            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
-            _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
+                "Name",
+                "ISIN",
+                "Stock Exchange Link",
+                "Own Investor Link",
+                "EPS",
+                "Months in Report",
+                "Next Report Date",
+                "Position"
+            };
         }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="workingDirectory"></param>
-        internal RegistryCsvFileRepository(string workingDirectory) : this()
+        public IRegistry Load()
         {
-            WorkingDirectory = workingDirectory;
+            throw new System.NotImplementedException();
         }
 
-        /// <summary>
-        /// The directory in which the provider works.
-        /// </summary>
-        internal string WorkingDirectory
+        public void Save(IRegistry entities)
         {
-            get => _workingDirectory;
-            set
-            {
-                if (!Directory.Exists(value))
-                {
-                    throw new Exception($"Invalid directory specified ({value})");
-                }
-                _workingDirectory = value;
-            }
+            throw new System.NotImplementedException();
         }
-
-        /// <summary>
-        /// Loads one CSV file and returns its content.
-        /// </summary>
-        /// <returns></returns>
-        public IMarketDataEntities Load()
-        {
-            var filePath = Directory.GetFiles(_workingDirectory).Max();
-
-            IMarketDataEntities entities = new MarketDataEntities();
-
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                return entities;
-            }
-
-            using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
-            {
-                parser.SetDelimiters(_separator);
-
-                RemoveHeader(parser);
-
-                while (!parser.EndOfData)
-                {
-                    entities.Add(parser.ReadFields().ParserFromCSV());
-                }
-                return entities;
-            }
-        }
-
-        private static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
-
-        /// <summary>
-        /// Adds new market data to the existing data.
-        /// </summary>
-        /// <param name="latestData"></param>
-        public void Update(IMarketDataEntities latestData)
-        {
-            var entities = Load();
-            entities.AddRange(latestData);
-            entities.Sort();
-            Save(entities);
-        }
-
-        /// <summary>
-        /// Saves the entity collection into CSV file.
-        /// </summary>
-        /// <param name="entities"></param>
-        public void Save(IEnumerable<IMarketDataEntity> entities)
-        {
-            List<string> strings = AddHeader();
-
-            strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
-
-            File.WriteAllLines(
-                Path.Combine(WorkingDirectory, FileNameCreator(entities.Max(e => e.DateTime))),
-                strings,
-                Encoding.UTF8);
-        }
-
-        private List<string> AddHeader() => new List<string> { string.Join(_separator, header) };
-
-        private string FileNameCreator(DateTime dateTime) =>
-            $"{dateTime.ToString(_dateFormat)}.{_fileNameExtension}";
-
-        protected string FileNameCreator(DateTime dateTime, string stockExchangeName, string fileNameExtension) =>
-            $"{dateTime.ToString(_dateFormat)} {stockExchangeName}.{fileNameExtension}";
     }
 }

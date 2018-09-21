@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
-using Peter.Models.Interfaces;
+﻿using Peter.Models.Interfaces;
 
 namespace Peter.Repositories.Interfaces
 {
     public interface IRegistryCsvFileRepository
     {
-        IMarketDataEntities Load();
-        void Save(IEnumerable<IMarketDataEntity> entities);
-        void Update(IMarketDataEntities latestData);
+        /// <summary>
+        /// Loads a CSV file and returns its content.
+        /// </summary>
+        /// <returns></returns>
+        IRegistry Load();
+
+        /// <summary>
+        /// Saves the entities into CSV file.
+        /// </summary>
+        /// <param name="entities"></param>
+        void Save(IRegistry entities);
     }
 }

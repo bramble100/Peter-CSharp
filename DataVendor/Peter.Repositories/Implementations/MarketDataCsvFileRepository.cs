@@ -12,86 +12,36 @@ using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
-    public class MarketDataCsvFileRepository : IMarketDataCsvFileRepository
+    public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataCsvFileRepository
     {
         private readonly string _dateFormat;
-        private readonly string _separator;
-        private readonly string _fileNameExtension;
-        private string _workingDirectory;
-
-        private readonly string[] header = {
-            "Name",
-            "ISIN",
-            "Closing Price",
-            "DateTime",
-            "Volumen",
-            "Previous Day Closing Price",
-            "Stock Exchange"
-        };
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public MarketDataCsvFileRepository()
+        
+        public MarketDataCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
 
-            _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
-            _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
-            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
-
-            var baseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
-            var workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
             var rawDownloadsDirectory = reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString();
-
-            if (string.IsNullOrWhiteSpace(baseDirectory) || string.Equals(baseDirectory.ToLower(), "desktop"))
-            {
-                baseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            }
-            if (string.IsNullOrWhiteSpace(workingDirectory))
-            {
-                rawDownloadsDirectory = "StockExchange";
-            }
             if (string.IsNullOrWhiteSpace(rawDownloadsDirectory))
             {
                 rawDownloadsDirectory = "RawDownload";
             }
 
-            WorkingDirectory = Path.Combine(baseDirectory, workingDirectory, rawDownloadsDirectory);
+            WorkingDirectory = Path.Combine(_workingDirectory, rawDownloadsDirectory);
+
+            _header = new string[] 
+            {
+                "Name",
+                "ISIN",
+                "Closing Price",
+                "DateTime",
+                "Volumen",
+                "Previous Day Closing Price",
+                "Stock Exchange"
+            };
 
             _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
-            _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="workingDirectory"></param>
-        internal MarketDataCsvFileRepository(string workingDirectory) : this()
-        {
-            WorkingDirectory = workingDirectory;
-        }
-
-        /// <summary>
-        /// The directory in which the provider works.
-        /// </summary>
-        internal string WorkingDirectory
-        {
-            get => _workingDirectory;
-            set
-            {
-                if (!Directory.Exists(value))
-                {
-                    throw new Exception($"Invalid directory specified ({value})");
-                }
-                _workingDirectory = value;
-            }
-        }
-
-        /// <summary>
-        /// Loads one CSV file and returns its content.
-        /// </summary>
-        /// <returns></returns>
         public IMarketDataEntities Load()
         {
             var filePath = Directory.GetFiles(_workingDirectory).Max();
@@ -117,12 +67,6 @@ namespace Peter.Repositories.Implementations
             }
         }
 
-        private static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
-
-        /// <summary>
-        /// Adds new market data to the existing data.
-        /// </summary>
-        /// <param name="latestData"></param>
         public void Update(IMarketDataEntities latestData)
         {
             var entities = Load();
@@ -131,10 +75,6 @@ namespace Peter.Repositories.Implementations
             Save(entities);
         }
 
-        /// <summary>
-        /// Saves the entity collection into CSV file.
-        /// </summary>
-        /// <param name="entities"></param>
         public void Save(IEnumerable<IMarketDataEntity> entities)
         {
             List<string> strings = AddHeader();
@@ -146,8 +86,6 @@ namespace Peter.Repositories.Implementations
                 strings,
                 Encoding.UTF8);
         }
-
-        private List<string> AddHeader() => new List<string> { string.Join(_separator, header) };
 
         private string FileNameCreator(DateTime dateTime) =>
             $"{dateTime.ToString(_dateFormat)}.{_fileNameExtension}";
