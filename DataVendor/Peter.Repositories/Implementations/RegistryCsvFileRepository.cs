@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
-    public class MarketDataCsvFileRepository : IMarketDataCsvFileRepository
+    public class RegistryCsvFileRepository : IRegistryCsvFileRepository
     {
         private readonly string _dateFormat;
         private readonly string _separator;
@@ -32,7 +32,7 @@ namespace Peter.Repositories.Implementations
         /// <summary>
         /// Constructor.
         /// </summary>
-        public MarketDataCsvFileRepository()
+        public RegistryCsvFileRepository()
         {
             var reader = new AppSettingsReader();
 
@@ -67,7 +67,7 @@ namespace Peter.Repositories.Implementations
         /// Constructor.
         /// </summary>
         /// <param name="workingDirectory"></param>
-        internal MarketDataCsvFileRepository(string workingDirectory) : this()
+        internal RegistryCsvFileRepository(string workingDirectory) : this()
         {
             WorkingDirectory = workingDirectory;
         }

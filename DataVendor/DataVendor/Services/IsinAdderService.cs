@@ -1,5 +1,4 @@
-﻿using DataVendor.Repositories.Implementations;
-using Peter.Models.Interfaces;
+﻿using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using System;

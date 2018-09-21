@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
     <Compile Include="Interfaces\IMarketDataCsvFileRepository.cs" />
+    <Compile Include="Interfaces\IRegistryCsvFileRepository.cs" />
     <Compile Include="Interfaces\IIsinsCsvFileRepository.cs" />
     <Compile Include="Implementations\IsinsCsvFileRepository.cs" />
     <Compile Include="Implementations\MarketDataCsvFileRepository.cs" />
