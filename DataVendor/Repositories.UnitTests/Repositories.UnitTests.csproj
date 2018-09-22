@@ -51,7 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CsvLineRegistryEntryWithIsin.cs" />
+    <Compile Include="CsvLineRegistryEntryWithIsin_TryParseFromCsv - Copy.cs" />
+    <Compile Include="CsvLineRegistryEntryWithIsin_FormatterForCsv.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
