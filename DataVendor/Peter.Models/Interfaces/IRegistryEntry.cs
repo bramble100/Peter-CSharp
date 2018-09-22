@@ -1,18 +1,25 @@
 ﻿using Peter.Models.Enums;
+using System;
 
 namespace Peter.Models.Interfaces
 {
     /// <summary>
     /// Class to hold all the basic stock data for one paper.
     /// </summary>
-    public interface IRegistryEntry
+    public interface IRegistryEntry: IEquatable<IRegistryEntry>
     {
         /// <summary>
         /// Name of the share.
         /// </summary>
         string Name { get; set; }
-        string OwnInvestorLink { get; set; }
-        string StockExchangeLink { get; set; }
+        /// <summary>
+        /// Link to the investor info on the company's own site.
+        /// </summary>
+        Uri OwnInvestorLink { get; set; }
+        /// <summary>
+        /// Link to the investor info on the site of the registering stock exchange.
+        /// </summary>
+        Uri StockExchangeLink { get; set; }
         Position Position { get; set; }
         IFinancialReport FinancialReport { get; set; }
         IFinancialAnalysis FinancialAnalysis { get; set; }
