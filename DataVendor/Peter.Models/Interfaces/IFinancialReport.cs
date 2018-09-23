@@ -2,7 +2,7 @@
 
 namespace Peter.Models.Interfaces
 {
-    public interface IFinancialReport
+    public interface IFinancialReport : IEquatable<IFinancialReport>
     {
         /// <summary>
         /// Earning Per Share.
