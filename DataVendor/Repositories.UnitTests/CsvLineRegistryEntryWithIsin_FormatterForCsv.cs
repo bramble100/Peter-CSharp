@@ -17,8 +17,8 @@ namespace Repositories.UnitTests
             new RegistryEntry
             {
                 Name = "Aareal Bank AG",
-                OwnInvestorLink = new Uri("http://www.aareal-bank.com/investor-relations/"),
-                StockExchangeLink = new Uri("http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116"),
+                OwnInvestorLink = "http://www.aareal-bank.com/investor-relations/",
+                StockExchangeLink = "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
                 FinancialReport = new FinancialReport(2.08m, 6, DateTime.Now.AddDays(1).Date),
                 Position = Position.NoPosition
             });
@@ -27,6 +27,6 @@ namespace Repositories.UnitTests
 
         [Test]
         public void WithValidInput_ReturnsTrueAndValidResult() => 
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.FormatForCSV(_validregistryEntry, ",").Should().Be(_validResult);
+            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.FormatForCSV(_validregistryEntry, ",", new CultureInfo("us-EN")).Should().Be(_validResult);
     }
 }

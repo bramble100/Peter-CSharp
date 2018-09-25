@@ -5,6 +5,7 @@ using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,33 +14,43 @@ namespace Peter.Repositories.Implementations
 {
     public class RegistryCsvFileRepository : CsvFileRepository, IRegistryCsvFileRepository
     {
+        public IRegistry Entities { get; }
+
         public RegistryCsvFileRepository() : base()
         {
-            _fileName = new AppSettingsReader().GetValue("RegistryFileName", typeof(string)).ToString();
+            var reader = new AppSettingsReader();
+
+            _workingDirectory = Path.Combine(
+                _workingDirectory,
+                reader.GetValue("WorkingDirectoryRegistry", typeof(string)).ToString());
+            _fileName = reader.GetValue("RegistryFileName", typeof(string)).ToString();
+
+            Entities = new Registry();
+            Load();
         }
 
-        public IRegistry Load()
+        private void Load()
         {
             var filePath = Path.Combine(_workingDirectory, _fileName);
-            IRegistry registry = new Registry();
+            var baseInfo = GetCsvSeparatorAndCultureInfo(
+                File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
 
             using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
             {
-                parser.SetDelimiters(_separator);
-
+                parser.SetDelimiters(baseInfo.Item1);
                 RemoveHeader(parser);
-
                 while (!parser.EndOfData)
                 {
-                    if(CsvLineRegistryEntryWithIsin.TryParseFromCsv(parser.ReadFields(), out var result))
-                    registry.Add(result);
+                    if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
+                        parser.ReadFields(),
+                        baseInfo.Item2,
+                        out KeyValuePair<string, IRegistryEntry> result))
+                        Entities.Add(result);
                 }
             }
-
-            return registry;
         }
 
-        public void Save(IRegistry entities)
+        public void SaveChanges()
         {
             _header = new string[]
             {
@@ -53,14 +64,19 @@ namespace Peter.Repositories.Implementations
                 "Position"
             };
 
-            List<string> strings = AddHeader();
+            List<string> strings = AddHeader(";");
 
-            strings.AddRange(entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, _separator)));
+            strings.AddRange(Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))));
 
             File.WriteAllLines(
                 Path.Combine(WorkingDirectory, _fileName),
                 strings,
                 Encoding.UTF8);
         }
+
+        public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => 
+            newEntries.ToList().ForEach(e => Entities.Add(e));
+
+        public void RemoveRange(IEnumerable<string> isins) => isins.ToList().ForEach(e => Entities.Remove(e));
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 
 namespace Peter.Repositories.Implementations
@@ -54,8 +55,17 @@ namespace Peter.Repositories.Implementations
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
-        protected List<string> AddHeader() => new List<string> { string.Join(_separator, _header) };
+        protected List<string> AddHeader(string separator) => new List<string> { string.Join(separator, _header) };
 
         protected static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
+
+        protected Tuple<string, CultureInfo> GetCsvSeparatorAndCultureInfo(string header)
+        {
+            if (header.Contains(",") && !header.Contains(";"))
+                return new Tuple<string, CultureInfo>(",", new CultureInfo("us-EN"));
+            else if(header.Contains(";") && !header.Contains(","))
+                return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
+            throw new ArgumentOutOfRangeException("Separator and CultureInfo cannot be determined.");
+        }
     }
 }

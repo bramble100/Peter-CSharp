@@ -8,7 +8,7 @@ namespace Peter.Repositories.Helpers
 {
     public static class CsvLineRegistryEntryWithIsin
     {
-        public static bool TryParseFromCsv(string[] input, out KeyValuePair<string, IRegistryEntry> result)
+        public static bool TryParseFromCsv(string[] input, CultureInfo cultureInfo, out KeyValuePair<string, IRegistryEntry> result)
         {
             if (input.Length != 8)
             {
@@ -17,15 +17,24 @@ namespace Peter.Repositories.Helpers
             }
             try
             {
+                FinancialReport report;
+                try
+                {
+                    report = new FinancialReport(
+                        Convert.ToDecimal(input[4], cultureInfo),
+                        Convert.ToInt32(input[5]),
+                        Convert.ToDateTime(input[6], cultureInfo));
+                }
+                catch
+                {
+                    report = null;
+                }
                 result = new KeyValuePair<string, IRegistryEntry>(input[1], new RegistryEntry
                 {
                     Name = input[0],
-                    OwnInvestorLink = new Uri(input[6]),
-                    StockExchangeLink = new Uri(input[5]),
-                    FinancialReport = new FinancialReport(
-                        Convert.ToDecimal(input[2], new CultureInfo("en-US")),
-                        Convert.ToInt32(input[3]),
-                        Convert.ToDateTime(input[4], CultureInfo.InvariantCulture))
+                    StockExchangeLink = input[2],
+                    OwnInvestorLink = input[3],
+                    FinancialReport = report
                 });
                 return true;
             }
@@ -36,16 +45,16 @@ namespace Peter.Repositories.Helpers
             }
         }
 
-        public static string FormatForCSV(KeyValuePair<string, IRegistryEntry> e, string separator) => 
+        public static string FormatForCSV(KeyValuePair<string, IRegistryEntry> e, string separator, CultureInfo cultureInfo) => 
             string.Join(separator, new string[]
             {
-                e.Value.Name,
+                e.Value.Name.WrapWithQuotes(),
                 e.Key,
-                e.Value.FinancialReport.EPS.ToString(new CultureInfo("us-EN")),
-                e.Value.FinancialReport.MonthsInReport.ToString(),
-                e.Value.FinancialReport.NextReportDate.ToString(new CultureInfo("us-EN")),
-                e.Value.StockExchangeLink.ToString(),
-                e.Value.OwnInvestorLink.ToString(),
+                e.Value.StockExchangeLink?.ToString(),
+                e.Value.OwnInvestorLink?.ToString(),
+                e.Value.FinancialReport?.EPS.ToString(cultureInfo).WrapWithQuotes(),
+                e.Value.FinancialReport?.MonthsInReport.ToString(),
+                e.Value.FinancialReport?.NextReportDate.ToString(cultureInfo),
                 e.Value.Position.ToString()
             });
     }
