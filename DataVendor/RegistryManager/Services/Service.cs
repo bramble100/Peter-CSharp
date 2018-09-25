@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
@@ -23,16 +22,16 @@ namespace RegistryManager.Services
         {
             var marketDataEntries = _marketDataCsvFileRepository.Load();
 
-            _registryCsvFileRepository.AddRange(GetNewRegistryEntries(_registryCsvFileRepository.Entities, marketDataEntries));
-            //RemoveOldRegistryEntries();
+            _registryCsvFileRepository.AddRange(GetNewRegistryEntries(marketDataEntries));
+            _registryCsvFileRepository.RemoveRange(OutdatedRegistryEntries(marketDataEntries));
 
             _registryCsvFileRepository.SaveChanges();
         }
 
-        private IEnumerable<KeyValuePair<string, IRegistryEntry>> GetNewRegistryEntries(IRegistry registryEntries, IMarketDataEntities marketDataEntries)
+        private IEnumerable<KeyValuePair<string, IRegistryEntry>> GetNewRegistryEntries(IMarketDataEntities marketDataEntries)
         {
             var isinsFromMarketData = marketDataEntries.Where(e => !string.IsNullOrWhiteSpace(e.Isin)).Select(e => e.Isin).ToHashSet();
-            var isinsFromRegistry = registryEntries.Select(e => e.Key).ToHashSet();
+            var isinsFromRegistry = _registryCsvFileRepository.Entities.Select(e => e.Key).ToHashSet();
             var newIsins = isinsFromMarketData.Except(isinsFromRegistry);
 
             return newIsins
@@ -43,9 +42,12 @@ namespace RegistryManager.Services
                         .First(d => string.Equals(isin, d.Isin)).Name)));
         }
 
-        private void RemoveOldRegistryEntries()
+        private IEnumerable<string> OutdatedRegistryEntries(IMarketDataEntities marketDataEntries)
         {
-            throw new NotImplementedException();
+            var isinsFromMarketData = marketDataEntries.Where(e => !string.IsNullOrWhiteSpace(e.Isin)).Select(e => e.Isin).ToHashSet();
+            var isinsFromRegistry = _registryCsvFileRepository.Entities.Select(e => e.Key).ToHashSet();
+
+            return isinsFromRegistry.Except(isinsFromMarketData);
         }
     }
 }

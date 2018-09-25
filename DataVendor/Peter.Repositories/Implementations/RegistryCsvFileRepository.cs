@@ -74,8 +74,7 @@ namespace Peter.Repositories.Implementations
                 Encoding.UTF8);
         }
 
-        public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => 
-            newEntries.ToList().ForEach(e => Entities.Add(e));
+        public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => newEntries.ToList().ForEach(e => Entities.Add(e));
 
         public void RemoveRange(IEnumerable<string> isins) => isins.ToList().ForEach(e => Entities.Remove(e));
     }

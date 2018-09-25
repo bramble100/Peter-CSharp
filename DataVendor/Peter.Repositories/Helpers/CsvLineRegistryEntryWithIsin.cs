@@ -8,7 +8,10 @@ namespace Peter.Repositories.Helpers
 {
     public static class CsvLineRegistryEntryWithIsin
     {
-        public static bool TryParseFromCsv(string[] input, CultureInfo cultureInfo, out KeyValuePair<string, IRegistryEntry> result)
+        public static bool TryParseFromCsv(
+            string[] input, 
+            CultureInfo cultureInfo, 
+            out KeyValuePair<string, IRegistryEntry> result)
         {
             if (input.Length != 8)
             {
@@ -17,17 +20,21 @@ namespace Peter.Repositories.Helpers
             }
             try
             {
-                FinancialReport report;
+                FinancialReport report = null;
                 try
                 {
-                    report = new FinancialReport(
-                        Convert.ToDecimal(input[4], cultureInfo),
-                        Convert.ToInt32(input[5]),
-                        Convert.ToDateTime(input[6], cultureInfo));
+                    if(!(string.IsNullOrWhiteSpace(input[4]) && 
+                        string.IsNullOrWhiteSpace(input[5]) &&
+                        string.IsNullOrWhiteSpace(input[6])))
+                    {
+                        report = new FinancialReport(
+                            Convert.ToDecimal(input[4], cultureInfo),
+                            Convert.ToInt32(input[5]),
+                            Convert.ToDateTime(input[6], cultureInfo));
+                    }
                 }
                 catch
                 {
-                    report = null;
                 }
                 result = new KeyValuePair<string, IRegistryEntry>(input[1], new RegistryEntry
                 {
