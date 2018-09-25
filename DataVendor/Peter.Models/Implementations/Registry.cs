@@ -6,71 +6,57 @@ namespace Peter.Models.Implementations
 {
     public class Registry : IRegistry
     {
-        private IRegistryEntry _entries;
+        private Dictionary<string, IRegistryEntry> _entries;
 
-        public IRegistryEntry this[string key] { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public Registry()
+        {
+            _entries = new Dictionary<string, IRegistryEntry>();
+        }
 
-        public ICollection<string> Keys => throw new System.NotImplementedException();
+        public IRegistryEntry this[string key]
+        {
+            get => _entries[key];
+            set => _entries[key] = value;
+        }
 
-        public ICollection<IRegistryEntry> Values => throw new System.NotImplementedException();
+        public ICollection<string> Keys => _entries.Keys;
 
-        public int Count => throw new System.NotImplementedException();
+        public ICollection<IRegistryEntry> Values => _entries.Values;
 
-        public bool IsReadOnly => throw new System.NotImplementedException();
+        public int Count => _entries.Count;
+
+        public bool IsReadOnly => false;
 
         public void Add(string key, IRegistryEntry value)
         {
-            throw new System.NotImplementedException();
+            if (!_entries.ContainsKey(key))
+            {
+                _entries.Add(key, value);
+            }
+            else
+            {
+                _entries[key] = value;
+            }
         }
 
-        public void Add(KeyValuePair<string, IRegistryEntry> item)
-        {
-            throw new System.NotImplementedException();
-        }
+        public void Add(KeyValuePair<string, IRegistryEntry> item) => Add(item.Key, item.Value);
 
-        public void Clear()
-        {
-            throw new System.NotImplementedException();
-        }
+        public void Clear() => _entries.Clear();
 
-        public bool Contains(KeyValuePair<string, IRegistryEntry> item)
-        {
-            throw new System.NotImplementedException();
-        }
+        public bool Contains(KeyValuePair<string, IRegistryEntry> item) => _entries.ContainsKey(item.Key) && _entries.ContainsValue(item.Value);
 
-        public bool ContainsKey(string key)
-        {
-            throw new System.NotImplementedException();
-        }
+        public bool ContainsKey(string key) => _entries.ContainsKey(key);
 
-        public void CopyTo(KeyValuePair<string, IRegistryEntry>[] array, int arrayIndex)
-        {
-            throw new System.NotImplementedException();
-        }
+        public void CopyTo(KeyValuePair<string, IRegistryEntry>[] array, int arrayIndex) => throw new System.NotImplementedException();
 
-        public IEnumerator<KeyValuePair<string, IRegistryEntry>> GetEnumerator()
-        {
-            throw new System.NotImplementedException();
-        }
+        public IEnumerator<KeyValuePair<string, IRegistryEntry>> GetEnumerator() => _entries.GetEnumerator();
 
-        public bool Remove(string key)
-        {
-            throw new System.NotImplementedException();
-        }
+        public bool Remove(string key) => _entries.Remove(key);
 
-        public bool Remove(KeyValuePair<string, IRegistryEntry> item)
-        {
-            throw new System.NotImplementedException();
-        }
+        public bool Remove(KeyValuePair<string, IRegistryEntry> item) => _entries.Remove(item.Key);
 
-        public bool TryGetValue(string key, out IRegistryEntry value)
-        {
-            throw new System.NotImplementedException();
-        }
+        public bool TryGetValue(string key, out IRegistryEntry value) => _entries.TryGetValue(key, out value);
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new System.NotImplementedException();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => _entries.Keys.GetEnumerator();
     }
 }

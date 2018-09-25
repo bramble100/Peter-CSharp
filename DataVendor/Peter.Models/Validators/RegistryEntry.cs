@@ -13,6 +13,12 @@ namespace Peter.Models.Validators
 
         public static bool TryParseLink(string input, out Uri output)
         {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                output = null;
+                return true;
+            }
+
             try
             {
                 output = new Uri(input.Trim());
