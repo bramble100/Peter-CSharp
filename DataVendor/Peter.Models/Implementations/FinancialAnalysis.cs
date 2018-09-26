@@ -9,9 +9,9 @@ namespace Peter.Models.Implementations
         private decimal? _slowSMA;
         private decimal _pe;
 
-        public bool Buyable { get; set; }
         public decimal ClosingPrice { get; set; }
         public decimal? FastSMA { get; set; }
+        public string Name { get; set; }
         public decimal? SlowSMA { get; set; }
         public decimal PE { get; set; }
     }
