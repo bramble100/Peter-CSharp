@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
@@ -63,9 +64,21 @@ namespace Peter.Repositories.Implementations
         {
             if (header.Contains(",") && !header.Contains(";"))
                 return new Tuple<string, CultureInfo>(",", new CultureInfo("us-EN"));
-            else if(header.Contains(";") && !header.Contains(","))
+            else if (header.Contains(";") && !header.Contains(","))
                 return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
             throw new ArgumentOutOfRangeException("Separator and CultureInfo cannot be determined.");
+        }
+
+        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName)
+        {
+            List<string> strings = AddHeader(",");
+
+            strings.AddRange(content);
+
+            File.WriteAllLines(
+                fileName,
+                strings,
+                Encoding.UTF8);
         }
     }
 }
