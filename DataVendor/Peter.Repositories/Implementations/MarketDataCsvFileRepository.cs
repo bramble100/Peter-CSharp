@@ -77,7 +77,7 @@ namespace Peter.Repositories.Implementations
 
         public void Save(IEnumerable<IMarketDataEntity> entities)
         {
-            List<string> strings = AddHeader();
+            List<string> strings = AddHeader(_separator);
 
             strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
 

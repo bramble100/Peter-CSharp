@@ -1,19 +1,17 @@
-﻿using Peter.Models.Interfaces;
+﻿using System.Collections.Generic;
+using Peter.Models.Interfaces;
 
 namespace Peter.Repositories.Interfaces
 {
     public interface IRegistryCsvFileRepository
     {
-        /// <summary>
-        /// Loads a CSV file and returns its content.
-        /// </summary>
-        /// <returns></returns>
-        IRegistry Load();
+        IRegistry Entities { get; }
 
+        void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries);
+        void RemoveRange(IEnumerable<string> isins);
         /// <summary>
         /// Saves the entities into CSV file.
         /// </summary>
-        /// <param name="entities"></param>
-        void Save(IRegistry entities);
+        void SaveChanges();
     }
 }

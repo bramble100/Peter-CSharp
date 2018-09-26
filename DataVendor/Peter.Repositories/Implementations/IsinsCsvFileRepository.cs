@@ -49,7 +49,7 @@ namespace Peter.Repositories.Implementations
 
         public void Save(INameToIsin isins)
         {
-            List<string> strings = AddHeader();
+            List<string> strings = AddHeader(_separator);
 
             strings.AddRange(isins.Select(i => i.FormatterForCSV(_separator)));
 
