@@ -1,11 +1,12 @@
 ﻿using Peter.Repositories.Implementations;
 using Peter.Models.Interfaces;
+using Peter.Repositories.Interfaces;
 
 namespace DataVendor.Services
 {
     public class WebService
     {
-        private readonly MarketDataCsvFileRepository _marketDataCsvFileRepository;
+        private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
 
         public WebService()
         {

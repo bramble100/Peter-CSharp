@@ -43,11 +43,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Controller.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Service.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
+      <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
+      <Name>Peter.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Peter.Repositories\Peter.Repositories.csproj">
+      <Project>{A72490E7-1652-4E9C-BBBF-61A7705C00C3}</Project>
+      <Name>Peter.Repositories</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
