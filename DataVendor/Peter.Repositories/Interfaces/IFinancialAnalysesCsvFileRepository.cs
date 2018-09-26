@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Peter.Repositories.Interfaces
 {
-    public interface IFinancialReportsCsvFileRepository
+    public interface IFinancialAnalysesCsvFileRepository
     {
         /// <summary>
         /// Returns a copy of the entities.

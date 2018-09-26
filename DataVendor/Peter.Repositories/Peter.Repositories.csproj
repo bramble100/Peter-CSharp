@@ -46,9 +46,9 @@
     <Compile Include="Helpers\CsvLineRegistryEntryWithIsin.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Implementations\CsvFileRepository.cs" />
-    <Compile Include="Implementations\FinancialReportsCsvFileRepository.cs" />
+    <Compile Include="Implementations\FinancialAnalysesCsvFileRepository.cs" />
     <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IFinancialReportsCsvFileRepository.cs" />
+    <Compile Include="Interfaces\IFinancialAnalysesCsvFileRepository.cs" />
     <Compile Include="Interfaces\IMarketDataCsvFileRepository.cs" />
     <Compile Include="Interfaces\IRegistryCsvFileRepository.cs" />
     <Compile Include="Interfaces\IIsinsCsvFileRepository.cs" />
