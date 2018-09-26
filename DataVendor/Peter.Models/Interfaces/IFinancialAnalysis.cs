@@ -8,7 +8,7 @@
         /// <summary>
         /// True if the share is recommended to buy.
         /// </summary>
-        bool Buyable { get; }
+        bool Buyable { get; set; }
         /// <summary>
         /// Latest closing price.
         /// </summary>

@@ -4,11 +4,15 @@ namespace Peter.Models.Implementations
 {
     public class FinancialAnalysis : IFinancialAnalysis
     {
-        public bool Buyable => throw new System.NotImplementedException();
+        private decimal _closingPrice;
+        private decimal? _fastSMA;
+        private decimal? _slowSMA;
+        private decimal _pe;
 
-        public decimal ClosingPrice { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-        public decimal? FastSMA { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-        public decimal? SlowSMA { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-        public decimal PE { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public bool Buyable { get; set; }
+        public decimal ClosingPrice { get; set; }
+        public decimal? FastSMA { get; set; }
+        public decimal? SlowSMA { get; set; }
+        public decimal PE { get; set; }
     }
 }
