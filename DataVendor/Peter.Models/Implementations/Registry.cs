@@ -13,6 +13,14 @@ namespace Peter.Models.Implementations
             _entries = new Dictionary<string, IRegistryEntry>();
         }
 
+        public Registry(IEnumerable<KeyValuePair<string, IRegistryEntry>> keyValuePairs) : this()
+        {
+            foreach (var keyValuePair in keyValuePairs)
+            {
+                _entries.Add(keyValuePair.Key, keyValuePair.Value);
+            }
+        }
+
         public IRegistryEntry this[string key]
         {
             get => _entries[key];
