@@ -25,9 +25,14 @@ namespace AnalysesManager.Services
             _registryCsvFileRepository = new RegistryCsvFileRepository();
 
             var reader = new AppSettingsReader();
-
             FastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
             SlowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
+
+            if (FastMovingAverage >= SlowMovingAverage)
+            {
+                throw new Exception($"The timespan for the fast moving average ({FastMovingAverage}) " +
+                    $"must be lower than of the slow moving average ({SlowMovingAverage}).");
+            }
         }
 
         public void GenerateAnalyses()
@@ -43,18 +48,13 @@ namespace AnalysesManager.Services
             RemoveEntriesWithoutUptodateData(marketData, latestDate);
             var registry = GetRegistryEntriesWithoutFinancialReport(_registryCsvFileRepository.Entities);
 
-            var analyses = (from data in marketData
-                           group data by data.Isin into stock
-                           select stock).ToList();
+            var groupedMarketData = from data in marketData
+                                    where registry.ContainsKey(data.Isin)
+                                    group data by data.Isin into dataByIsin
+                                    select dataByIsin.OrderByDescending(d => d.DateTime).Take(SlowMovingAverage);
 
-            analyses.ForEach(AddAnalysis);
-
-
-
-
-
-
-
+            _financialAnalysesCsvFileRepository.AddRange(groupedMarketData.Select(GetAnalysis));
+            _financialAnalysesCsvFileRepository.SaveChanges();
         }
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
@@ -75,9 +75,27 @@ namespace AnalysesManager.Services
                 !entry.Value.FinancialReport.IsOutdated;
         }
 
-        private void AddAnalysis(IGrouping<string, IMarketDataEntity> stock)
+        private KeyValuePair<string, IFinancialAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
         {
-            Console.WriteLine(stock);
+            if (groupedMarketData == null)
+            {
+                throw new ArgumentNullException(nameof(groupedMarketData));
+            }
+            var isin = groupedMarketData.First().Isin;
+
+            var stockBaseData = _registryCsvFileRepository
+                .Entities
+                .First(e => string.Equals(e.Key, isin))
+                .Value;
+
+            return new KeyValuePair<string, IFinancialAnalysis>(isin, new FinancialAnalysis
+            {
+                ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
+                FastSMA = groupedMarketData.Take(FastMovingAverage).Average(d => d.ClosingPrice),
+                Name = stockBaseData.Name,
+                SlowSMA = groupedMarketData.Average(d => d.ClosingPrice),
+                PE = groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS
+            });
         }
     }
 }
