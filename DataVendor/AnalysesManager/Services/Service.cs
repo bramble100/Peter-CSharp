@@ -4,6 +4,7 @@ using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 
 namespace AnalysesManager.Services
@@ -14,11 +15,19 @@ namespace AnalysesManager.Services
         private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
         private readonly IRegistryCsvFileRepository _registryCsvFileRepository;
 
+        private readonly int FastMovingAverage;
+        private readonly int SlowMovingAverage;
+
         public Service()
         {
             _financialAnalysesCsvFileRepository = new FinancialAnalysesCsvFileRepository();
             _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
             _registryCsvFileRepository = new RegistryCsvFileRepository();
+
+            var reader = new AppSettingsReader();
+
+            FastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
+            SlowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
         }
 
         public void GenerateAnalyses()
@@ -30,14 +39,15 @@ namespace AnalysesManager.Services
                 return;
             }
 
-            var latestDate = marketData.Max(d => d.DateTime);
+            var latestDate = marketData.Max(d => d.DateTime).Date;
             RemoveEntriesWithoutUptodateData(marketData, latestDate);
             var registry = GetRegistryEntriesWithoutFinancialReport(_registryCsvFileRepository.Entities);
 
-            var analyses = from data in marketData
+            var analyses = (from data in marketData
                            group data by data.Isin into stock
-                           select stock;
+                           select stock).ToList();
 
+            analyses.ForEach(AddAnalysis);
 
 
 
@@ -53,7 +63,7 @@ namespace AnalysesManager.Services
         internal static void RemoveEntriesWithoutUptodateData(
             List<IMarketDataEntity> marketData,
             DateTime latestDate) =>
-                marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime) != latestDate);
+                marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
 
         internal static IRegistry GetRegistryEntriesWithoutFinancialReport(IRegistry registry) =>
             new Registry(registry.Where(entry => HasValidFinancialReport(entry)));
@@ -63,6 +73,11 @@ namespace AnalysesManager.Services
             return entry.Value?.FinancialReport != null &&
                 entry.Value.FinancialReport.EPS != 0 &&
                 !entry.Value.FinancialReport.IsOutdated;
+        }
+
+        private void AddAnalysis(IGrouping<string, IMarketDataEntity> stock)
+        {
+            Console.WriteLine(stock);
         }
     }
 }
