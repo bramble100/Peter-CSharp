@@ -1,4 +1,5 @@
-﻿using Peter.Models.Interfaces;
+﻿using Peter.Models.Enums;
+using Peter.Models.Interfaces;
 
 namespace Peter.Models.Implementations
 {
@@ -12,7 +13,8 @@ namespace Peter.Models.Implementations
         public decimal ClosingPrice { get; set; }
         public decimal? FastSMA { get; set; }
         public string Name { get; set; }
-        public decimal? SlowSMA { get; set; }
         public decimal PE { get; set; }
+        public decimal? SlowSMA { get; set; }
+        public TAZ TAZ { get; set; }
     }
 }
