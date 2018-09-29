@@ -25,12 +25,14 @@ namespace Peter.Repositories.Implementations
             _analyses = new Dictionary<string, IFinancialAnalysis>();
         }
 
-        public Dictionary<string, IFinancialAnalysis> Entities => throw new System.NotImplementedException();
-
-        public void Add(IFinancialAnalysis analysis)
-        {
+        public Dictionary<string, IFinancialAnalysis> Entities => 
             throw new System.NotImplementedException();
-        }
+
+        public void Add(KeyValuePair<string, IFinancialAnalysis> analysis) => 
+            _analyses.Add(analysis.Key, analysis.Value);
+
+        public void AddRange(IEnumerable<KeyValuePair<string, IFinancialAnalysis>> analyses) => 
+            analyses.ToList().ForEach(Add);
 
         public IFinancialAnalysis Find(string isin)
         {
@@ -55,7 +57,7 @@ namespace Peter.Repositories.Implementations
                 "ISIN",
             };
 
-            base.SaveChanges(
+            SaveChanges(
                 _header,
                 Entities.Select(e => CsvLineFinancialAnalysis.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
                 Path.Combine(_workingDirectory, _fileName));

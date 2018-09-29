@@ -17,7 +17,12 @@ namespace Peter.Repositories.Interfaces
         /// Adds an entity.
         /// </summary>
         /// <param name="analysis"></param>
-        void Add(IFinancialAnalysis analysis);
+        void Add(KeyValuePair<string, IFinancialAnalysis> analysis);
+        /// <summary>
+        /// Adds many entities.
+        /// </summary>
+        /// <param name="analysis"></param>
+        void AddRange(IEnumerable<KeyValuePair<string, IFinancialAnalysis>> entities);
         /// <summary>
         /// Finds the analysis for the stock with the given ISIN.
         /// </summary>
