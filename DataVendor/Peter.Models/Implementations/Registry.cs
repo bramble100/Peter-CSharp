@@ -63,6 +63,8 @@ namespace Peter.Models.Implementations
 
         public bool Remove(KeyValuePair<string, IRegistryEntry> item) => _entries.Remove(item.Key);
 
+        public override string ToString() => $"Registry with {_entries.Count} entries.";
+
         public bool TryGetValue(string key, out IRegistryEntry value) => _entries.TryGetValue(key, out value);
 
         IEnumerator IEnumerable.GetEnumerator() => _entries.Keys.GetEnumerator();

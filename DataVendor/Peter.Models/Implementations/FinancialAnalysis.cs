@@ -11,10 +11,10 @@ namespace Peter.Models.Implementations
         private decimal _pe;
 
         public decimal ClosingPrice { get; set; }
-        public decimal? FastSMA { get; set; }
+        public decimal FastSMA { get; set; }
         public string Name { get; set; }
         public decimal PE { get; set; }
-        public decimal? SlowSMA { get; set; }
+        public decimal SlowSMA { get; set; }
         public TAZ TAZ { get; set; }
     }
 }
