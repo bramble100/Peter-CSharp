@@ -12,8 +12,6 @@ namespace Peter.Repositories.Implementations
 {
     public class FinancialAnalysesCsvFileRepository : CsvFileRepository, IFinancialAnalysesCsvFileRepository
     {
-        private readonly Dictionary<string, IFinancialAnalysis> _analyses;
-
         public FinancialAnalysesCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
@@ -22,27 +20,20 @@ namespace Peter.Repositories.Implementations
                 _workingDirectory,
                 reader.GetValue("WorkingDirectoryAnalyses", typeof(string)).ToString());
 
-            _analyses = new Dictionary<string, IFinancialAnalysis>();
+            Entities = new Dictionary<string, IFinancialAnalysis>();
         }
 
-        public Dictionary<string, IFinancialAnalysis> Entities => 
-            throw new System.NotImplementedException();
+        public Dictionary<string, IFinancialAnalysis> Entities { get; }
 
-        public void Add(KeyValuePair<string, IFinancialAnalysis> analysis) => 
-            _analyses.Add(analysis.Key, analysis.Value);
+        public void Add(KeyValuePair<string, IFinancialAnalysis> analysis) =>
+            Entities.Add(analysis.Key, analysis.Value);
 
-        public void AddRange(IEnumerable<KeyValuePair<string, IFinancialAnalysis>> analyses) => 
+        public void AddRange(IEnumerable<KeyValuePair<string, IFinancialAnalysis>> analyses) =>
             analyses.ToList().ForEach(Add);
 
-        public IFinancialAnalysis Find(string isin)
-        {
-            throw new System.NotImplementedException();
-        }
+        public IFinancialAnalysis Find(string isin) => throw new System.NotImplementedException();
 
-        public void Remove(string isin)
-        {
-            throw new System.NotImplementedException();
-        }
+        public void Remove(string isin) => throw new System.NotImplementedException();
 
         public void SaveChanges()
         {
@@ -51,16 +42,11 @@ namespace Peter.Repositories.Implementations
                 $" {DateTime.Now.ToString(reader.GetValue("DateFormatForFileName", typeof(string)).ToString())}" +
                 $".{reader.GetValue("CsvFileNameExtension", typeof(string)).ToString()}";
 
-            _header = new string[]
-            {
-                "Name",
-                "ISIN",
-            };
-
             SaveChanges(
-                _header,
+                CsvLineFinancialAnalysis.Header,
                 Entities.Select(e => CsvLineFinancialAnalysis.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
-                Path.Combine(_workingDirectory, _fileName));
+                Path.Combine(_workingDirectory, _fileName),
+                ";");
         }
     }
 }

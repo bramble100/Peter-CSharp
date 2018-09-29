@@ -64,7 +64,7 @@ namespace Peter.Repositories.Implementations
                 "Position"
             };
 
-            List<string> strings = AddHeader(";");
+            List<string> strings = AddHeader(_header, ";");
 
             strings.AddRange(Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))));
 

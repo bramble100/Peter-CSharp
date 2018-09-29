@@ -46,13 +46,14 @@ namespace AnalysesManager.Services
 
             var latestDate = marketData.Max(d => d.DateTime).Date;
             RemoveEntriesWithoutUptodateData(marketData, latestDate);
-            var registry = GetRegistryEntriesWithoutFinancialReport(_registryCsvFileRepository.Entities);
+
+            var localRegistry = GetRegistryEntriesWithFinancialReport(_registryCsvFileRepository.Entities);
 
             var groupedMarketData = from data in marketData
-                                    where registry.ContainsKey(data.Isin)
+                                    where localRegistry.ContainsKey(data.Isin)
                                     group data by data.Isin into dataByIsin
                                     select dataByIsin.OrderByDescending(d => d.DateTime).Take(SlowMovingAverage);
-
+             
             _financialAnalysesCsvFileRepository.AddRange(groupedMarketData.Select(GetAnalysis));
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
@@ -65,14 +66,14 @@ namespace AnalysesManager.Services
             DateTime latestDate) =>
                 marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
 
-        internal static IRegistry GetRegistryEntriesWithoutFinancialReport(IRegistry registry) =>
+        internal static IRegistry GetRegistryEntriesWithFinancialReport(IRegistry registry) =>
             new Registry(registry.Where(entry => HasValidFinancialReport(entry)));
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
             return entry.Value?.FinancialReport != null &&
                 entry.Value.FinancialReport.EPS != 0 &&
-                !entry.Value.FinancialReport.IsOutdated;
+                entry.Value.FinancialReport.MonthsInReport != 0;
         }
 
         private KeyValuePair<string, IFinancialAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
@@ -94,7 +95,7 @@ namespace AnalysesManager.Services
                 FastSMA = groupedMarketData.Take(FastMovingAverage).Average(d => d.ClosingPrice),
                 Name = stockBaseData.Name,
                 SlowSMA = groupedMarketData.Average(d => d.ClosingPrice),
-                PE = groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS
+                PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
             });
         }
     }

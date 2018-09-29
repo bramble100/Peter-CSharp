@@ -56,7 +56,7 @@ namespace Peter.Repositories.Implementations
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
-        protected List<string> AddHeader(string separator) => new List<string> { string.Join(separator, _header) };
+        protected static List<string> AddHeader(string[] header, string separator) => new List<string> { string.Join(separator, header) };
 
         protected static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
 
@@ -69,9 +69,9 @@ namespace Peter.Repositories.Implementations
             throw new ArgumentOutOfRangeException("Separator and CultureInfo cannot be determined.");
         }
 
-        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName)
+        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
         {
-            List<string> strings = AddHeader(",");
+            List<string> strings = AddHeader(header, separator);
 
             strings.AddRange(content);
 

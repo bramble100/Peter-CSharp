@@ -1,4 +1,5 @@
 ﻿using AnalysesManager.Controllers;
+using System;
 
 namespace AnalysesManager
 {
@@ -7,6 +8,7 @@ namespace AnalysesManager
         static void Main(string[] args)
         {
             new Controller().GenerateAnalyses();
+            Console.ReadKey();
         }
     }
 }
