@@ -15,30 +15,16 @@ namespace Peter.Repositories.Implementations
     public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataCsvFileRepository
     {
         private readonly string _dateFormat;
-        
+
         public MarketDataCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
 
             var rawDownloadsDirectory = reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString();
-            if (string.IsNullOrWhiteSpace(rawDownloadsDirectory))
-            {
-                rawDownloadsDirectory = "RawDownload";
-            }
 
             WorkingDirectory = Path.Combine(_workingDirectory, rawDownloadsDirectory);
 
-            _header = new string[] 
-            {
-                "Name",
-                "ISIN",
-                "Closing Price",
-                "DateTime",
-                "Volumen",
-                "Previous Day Closing Price",
-                "Stock Exchange"
-            };
-
+            _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
             _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
         }
 
@@ -49,9 +35,7 @@ namespace Peter.Repositories.Implementations
             IMarketDataEntities entities = new MarketDataEntities();
 
             if (string.IsNullOrWhiteSpace(filePath))
-            {
                 return entities;
-            }
 
             using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
             {
@@ -63,8 +47,8 @@ namespace Peter.Repositories.Implementations
                 {
                     entities.Add(parser.ReadFields().ParserFromCSV());
                 }
-                return entities;
             }
+            return entities;
         }
 
         public void Update(IMarketDataEntities latestData)
@@ -77,12 +61,23 @@ namespace Peter.Repositories.Implementations
 
         public void Save(IEnumerable<IMarketDataEntity> entities)
         {
+            _header = new string[]
+            {
+                "Name",
+                "ISIN",
+                "Closing Price",
+                "DateTime",
+                "Volumen",
+                "Previous Day Closing Price",
+                "Stock Exchange"
+            };
+
             List<string> strings = AddHeader(_header, _separator);
 
             strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
 
             File.WriteAllLines(
-                Path.Combine(WorkingDirectory, FileNameCreator(entities.Max(e => e.DateTime))),
+                Path.Combine(WorkingDirectory, _fileName),
                 strings,
                 Encoding.UTF8);
         }
