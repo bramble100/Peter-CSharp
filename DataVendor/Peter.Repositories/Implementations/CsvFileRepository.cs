@@ -11,13 +11,13 @@ namespace Peter.Repositories.Implementations
     public abstract class CsvFileRepository
     {
         protected readonly string _separator;
-
         protected string _workingDirectory;
         protected readonly string _baseDirectory;
         protected string _fileName;
         protected readonly string _fileNameExtension;
-
         protected string[] _header;
+
+        private readonly string _dateFormat;
 
         /// <summary>
         /// The directory in which the provider works.
@@ -49,10 +49,12 @@ namespace Peter.Repositories.Implementations
             }
 
             _workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
-
             WorkingDirectory = Path.Combine(_baseDirectory, _workingDirectory);
 
             _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
+
+            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
+
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
@@ -68,6 +70,17 @@ namespace Peter.Repositories.Implementations
                 return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
             throw new ArgumentOutOfRangeException("Separator and CultureInfo cannot be determined.");
         }
+
+        protected void CreateBackUp(string path, string fileName)
+        {
+            var splitFilename = Path.GetFileName(fileName).Split('.');
+
+            File.Move(
+                Path.Combine(WorkingDirectory, fileName),
+                Path.Combine(WorkingDirectory, $"{splitFilename[0]} {DateTime.Now.ToString(_dateFormat)}.{splitFilename[1]}"));
+        }
+
+        protected void SaveActualFile(string fullPath, IEnumerable<string> content) => File.WriteAllLines(fullPath, content, Encoding.UTF8);
 
         internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
         {
