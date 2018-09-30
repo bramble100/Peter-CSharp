@@ -43,8 +43,8 @@ namespace Peter.Repositories.Implementations
                 $".{reader.GetValue("CsvFileNameExtension", typeof(string)).ToString()}";
 
             SaveChanges(
-                CsvLineFinancialAnalysis.Header,
-                Entities.Select(e => CsvLineFinancialAnalysis.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
+                CsvLineAnalysis.Header,
+                Entities.Select(e => CsvLineAnalysis.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
                 Path.Combine(_workingDirectory, _fileName),
                 ";");
         }

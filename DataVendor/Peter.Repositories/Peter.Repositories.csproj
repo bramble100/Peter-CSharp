@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\CsvLineFinancialAnalysis.cs" />
+    <Compile Include="Helpers\CsvLineAnalysis.cs" />
     <Compile Include="Helpers\CsvLineRegistryEntryWithIsin.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Implementations\CsvFileRepository.cs" />

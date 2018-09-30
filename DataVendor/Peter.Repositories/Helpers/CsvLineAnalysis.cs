@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Peter.Repositories.Helpers
 {
-    public static class CsvLineFinancialAnalysis
+    public static class CsvLineAnalysis
     {
         public static string[] Header => new string[]
         {
@@ -22,7 +22,7 @@ namespace Peter.Repositories.Helpers
                         e.Value.Name.WrapWithQuotes(),
                         e.Key,
                         e.Value.ClosingPrice.WrapWithQuotes(),
-                        e.Value.FinancialAnalysis.WrapWithQuotes()
+                        e.Value.FinancialAnalysis.PE.WrapWithQuotes()
                     });
     }
 }
