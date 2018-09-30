@@ -3,7 +3,6 @@ using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -14,8 +13,6 @@ namespace Peter.Repositories.Implementations
 {
     public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataCsvFileRepository
     {
-        private readonly string _dateFormat;
-
         public MarketDataCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
@@ -25,7 +22,6 @@ namespace Peter.Repositories.Implementations
             WorkingDirectory = Path.Combine(_workingDirectory, rawDownloadsDirectory);
 
             _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
-            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
         }
 
         public IMarketDataEntities Load()
@@ -76,16 +72,8 @@ namespace Peter.Repositories.Implementations
 
             strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
 
-            File.WriteAllLines(
-                Path.Combine(WorkingDirectory, _fileName),
-                strings,
-                Encoding.UTF8);
+            CreateBackUp(WorkingDirectory, _fileName);
+            SaveActualFile(Path.Combine(WorkingDirectory, _fileName), strings);
         }
-
-        private string FileNameCreator(DateTime dateTime) =>
-            $"{dateTime.ToString(_dateFormat)}.{_fileNameExtension}";
-
-        protected string FileNameCreator(DateTime dateTime, string stockExchangeName, string fileNameExtension) =>
-            $"{dateTime.ToString(_dateFormat)} {stockExchangeName}.{fileNameExtension}";
     }
 }
