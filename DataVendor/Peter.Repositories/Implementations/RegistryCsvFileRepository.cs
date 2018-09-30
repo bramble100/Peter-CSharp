@@ -52,19 +52,7 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            _header = new string[]
-            {
-                "Name",
-                "ISIN",
-                "Stock Exchange Link",
-                "Own Investor Link",
-                "EPS",
-                "Months in Report",
-                "Next Report Date",
-                "Position"
-            };
-
-            List<string> strings = AddHeader(_header, ";");
+            List<string> strings = AddHeader(CsvLineRegistryEntryWithIsin.Header, ";");
 
             strings.AddRange(Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))));
 
