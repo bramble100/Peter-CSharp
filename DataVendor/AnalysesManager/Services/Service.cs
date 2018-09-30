@@ -11,7 +11,7 @@ namespace AnalysesManager.Services
 {
     public class Service
     {
-        private readonly IFinancialAnalysesCsvFileRepository _financialAnalysesCsvFileRepository;
+        private readonly IAnalysesCsvFileRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
         private readonly IRegistryCsvFileRepository _registryCsvFileRepository;
 
@@ -20,7 +20,7 @@ namespace AnalysesManager.Services
 
         public Service()
         {
-            _financialAnalysesCsvFileRepository = new FinancialAnalysesCsvFileRepository();
+            _financialAnalysesCsvFileRepository = new AnalysesCsvFileRepository();
             _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
             _registryCsvFileRepository = new RegistryCsvFileRepository();
 
@@ -53,7 +53,7 @@ namespace AnalysesManager.Services
                                     where localRegistry.ContainsKey(data.Isin)
                                     group data by data.Isin into dataByIsin
                                     select dataByIsin.OrderByDescending(d => d.DateTime).Take(SlowMovingAverage);
-             
+
             _financialAnalysesCsvFileRepository.AddRange(groupedMarketData.Select(GetAnalysis));
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
@@ -76,7 +76,7 @@ namespace AnalysesManager.Services
                 entry.Value.FinancialReport.MonthsInReport != 0;
         }
 
-        private KeyValuePair<string, IFinancialAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
+        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
         {
             if (groupedMarketData == null)
             {
@@ -89,13 +89,19 @@ namespace AnalysesManager.Services
                 .First(e => string.Equals(e.Key, isin))
                 .Value;
 
-            return new KeyValuePair<string, IFinancialAnalysis>(isin, new FinancialAnalysis
+            return new KeyValuePair<string, IAnalysis>(isin, new Analysis
             {
-                ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
-                FastSMA = groupedMarketData.Take(FastMovingAverage).Average(d => d.ClosingPrice),
                 Name = stockBaseData.Name,
-                SlowSMA = groupedMarketData.Average(d => d.ClosingPrice),
-                PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
+                ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
+                TechnicalAnalysis = new TechnicalAnalysis
+                {
+                    FastSMA = groupedMarketData.Take(FastMovingAverage).Average(d => d.ClosingPrice),
+                    SlowSMA = groupedMarketData.Average(d => d.ClosingPrice)
+                },
+                FinancialAnalysis = new FinancialAnalysis
+                {
+                    PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
+                }
             });
         }
     }

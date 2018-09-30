@@ -10,9 +10,9 @@ using Peter.Repositories.Interfaces;
 
 namespace Peter.Repositories.Implementations
 {
-    public class FinancialAnalysesCsvFileRepository : CsvFileRepository, IFinancialAnalysesCsvFileRepository
+    public class AnalysesCsvFileRepository : CsvFileRepository, IAnalysesCsvFileRepository
     {
-        public FinancialAnalysesCsvFileRepository() : base()
+        public AnalysesCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
 
@@ -20,15 +20,15 @@ namespace Peter.Repositories.Implementations
                 _workingDirectory,
                 reader.GetValue("WorkingDirectoryAnalyses", typeof(string)).ToString());
 
-            Entities = new Dictionary<string, IFinancialAnalysis>();
+            Entities = new Dictionary<string, IAnalysis>();
         }
 
-        public Dictionary<string, IFinancialAnalysis> Entities { get; }
+        public Dictionary<string, IAnalysis> Entities { get; }
 
-        public void Add(KeyValuePair<string, IFinancialAnalysis> analysis) =>
+        public void Add(KeyValuePair<string, IAnalysis> analysis) =>
             Entities.Add(analysis.Key, analysis.Value);
 
-        public void AddRange(IEnumerable<KeyValuePair<string, IFinancialAnalysis>> analyses) =>
+        public void AddRange(IEnumerable<KeyValuePair<string, IAnalysis>> analyses) =>
             analyses.ToList().ForEach(Add);
 
         public IFinancialAnalysis Find(string isin) => throw new System.NotImplementedException();

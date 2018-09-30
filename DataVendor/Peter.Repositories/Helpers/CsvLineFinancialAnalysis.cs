@@ -14,7 +14,7 @@ namespace Peter.Repositories.Helpers
             "Price/Earning"
         };
 
-        public static string FormatForCSV(KeyValuePair<string, IFinancialAnalysis> e, string separator, CultureInfo cultureInfo) =>
+        public static string FormatForCSV(KeyValuePair<string, IAnalysis> e, string separator, CultureInfo cultureInfo) =>
                 string.Join(
                     separator,
                     new string[]
@@ -22,7 +22,7 @@ namespace Peter.Repositories.Helpers
                         e.Value.Name.WrapWithQuotes(),
                         e.Key,
                         e.Value.ClosingPrice.WrapWithQuotes(),
-                        e.Value.PE.WrapWithQuotes()
+                        e.Value.FinancialAnalysis.WrapWithQuotes()
                     });
     }
 }
