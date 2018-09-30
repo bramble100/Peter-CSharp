@@ -41,11 +41,11 @@ namespace Repositories.UnitTests
         {
             "Aareal Bank AG",
             "DE0005408116",
-            "2.08",
-            "6",
-            DateTime.Now.AddDays(1).Date.ToString(),
             "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
             "http://www.aareal-bank.com/investor-relations/",
+            "2,08",
+            "6",
+            DateTime.Now.AddDays(1).Date.ToString(),
             string.Empty
         };
 

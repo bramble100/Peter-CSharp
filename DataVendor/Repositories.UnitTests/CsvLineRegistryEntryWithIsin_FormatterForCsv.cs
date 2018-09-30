@@ -27,6 +27,6 @@ namespace Repositories.UnitTests
 
         [Test]
         public void WithValidInput_ReturnsTrueAndValidResult() => 
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.FormatForCSV(_validregistryEntry, ",", new CultureInfo("us-EN")).Should().Be(_validResult);
+            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.FormatForCSV(_validregistryEntry, ";", new CultureInfo("hu-HU")).Should().Be(_validResult);
     }
 }

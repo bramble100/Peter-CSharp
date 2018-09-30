@@ -1,5 +1,4 @@
-﻿using Peter.Models.Implementations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Peter.Models.Interfaces

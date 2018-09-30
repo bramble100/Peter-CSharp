@@ -14,7 +14,7 @@ namespace Peter.Models.Implementations
 
         public FinancialReport(decimal eps, int monthsInReport, DateTime nextReportDate)
         {
-            if (_validMonths.Contains(monthsInReport) && nextReportDate.Date >= DateTime.Now.AddYears(-1).Date)
+            if (_validMonths.Contains(monthsInReport) && nextReportDate.Date >= DateTime.Now.AddYears(-5).Date)
             {
                 EPS = eps;
                 MonthsInReport = monthsInReport;

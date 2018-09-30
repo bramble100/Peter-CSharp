@@ -13,6 +13,14 @@ namespace Peter.Models.Implementations
             _entries = new Dictionary<string, IRegistryEntry>();
         }
 
+        public Registry(IEnumerable<KeyValuePair<string, IRegistryEntry>> keyValuePairs) : this()
+        {
+            foreach (var keyValuePair in keyValuePairs)
+            {
+                _entries.Add(keyValuePair.Key, keyValuePair.Value);
+            }
+        }
+
         public IRegistryEntry this[string key]
         {
             get => _entries[key];
@@ -54,6 +62,8 @@ namespace Peter.Models.Implementations
         public bool Remove(string key) => _entries.Remove(key);
 
         public bool Remove(KeyValuePair<string, IRegistryEntry> item) => _entries.Remove(item.Key);
+
+        public override string ToString() => $"Registry with {_entries.Count} entries.";
 
         public bool TryGetValue(string key, out IRegistryEntry value) => _entries.TryGetValue(key, out value);
 

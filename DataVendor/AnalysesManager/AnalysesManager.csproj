@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A72490E7-1652-4E9C-BBBF-61A7705C00C3}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Peter.Repositories</RootNamespace>
-    <AssemblyName>Peter.Repositories</AssemblyName>
+    <ProjectGuid>{A2535EDE-CD01-4ECB-B445-4D6E9F3621E3}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>AnalysesManager</RootNamespace>
+    <AssemblyName>AnalysesManager</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,7 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,24 +43,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\CsvLineFinancialAnalysis.cs" />
-    <Compile Include="Helpers\CsvLineRegistryEntryWithIsin.cs" />
-    <Compile Include="Helpers\Extensions.cs" />
-    <Compile Include="Implementations\CsvFileRepository.cs" />
-    <Compile Include="Implementations\FinancialAnalysesCsvFileRepository.cs" />
-    <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IFinancialAnalysesCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IMarketDataCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IRegistryCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IIsinsCsvFileRepository.cs" />
-    <Compile Include="Implementations\IsinsCsvFileRepository.cs" />
-    <Compile Include="Implementations\MarketDataCsvFileRepository.cs" />
+    <Compile Include="Controllers\Controller.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Service.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
-      <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
+      <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
       <Name>Peter.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Peter.Repositories\Peter.Repositories.csproj">
+      <Project>{A72490E7-1652-4E9C-BBBF-61A7705C00C3}</Project>
+      <Name>Peter.Repositories</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
