@@ -8,6 +8,8 @@ namespace AnalysesManager
         static void Main(string[] args)
         {
             new Controller().GenerateAnalyses();
+
+            Console.WriteLine("Press any key to continue ...");
             Console.ReadKey();
         }
     }
