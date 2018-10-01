@@ -6,6 +6,7 @@ namespace Peter.Models.Implementations
     {
         public string Name { get; set; }
         public decimal ClosingPrice { get; set; }
+        public int QtyInBuyingPacket { get; set; }
         public ITechnicalAnalysis TechnicalAnalysis { get; set; }
         public IFinancialAnalysis FinancialAnalysis { get; set; }
     }

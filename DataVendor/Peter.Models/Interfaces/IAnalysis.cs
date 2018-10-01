@@ -11,6 +11,10 @@
         /// </summary>
         decimal ClosingPrice { get; set; }
         /// <summary>
+        /// The number of stocks to buy in one packet (for preset amount of money).
+        /// </summary>
+        int QtyInBuyingPacket { get; set; }
+        /// <summary>
         /// All the metrics based on technical analysis.
         /// </summary>
         ITechnicalAnalysis TechnicalAnalysis { get; set; }
