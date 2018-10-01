@@ -107,6 +107,7 @@ namespace AnalysesManager.Services
             {
                 Name = stockBaseData.Name,
                 ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
+                QtyInBuyingPacket = (int)Math.Floor(_buyingPacketInEuro / groupedMarketData.FirstOrDefault().ClosingPrice),
                 TechnicalAnalysis = new TechnicalAnalysis
                 {
                     FastSMA = groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice),
