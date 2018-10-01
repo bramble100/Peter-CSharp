@@ -42,13 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\CsvLineFinancialAnalysis.cs" />
+    <Compile Include="Helpers\CsvLineAnalysis.cs" />
     <Compile Include="Helpers\CsvLineRegistryEntryWithIsin.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Implementations\CsvFileRepository.cs" />
-    <Compile Include="Implementations\FinancialAnalysesCsvFileRepository.cs" />
+    <Compile Include="Implementations\AnalysesCsvFileRepository.cs" />
     <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IFinancialAnalysesCsvFileRepository.cs" />
+    <Compile Include="Interfaces\IAnalysesCsvFileRepository.cs" />
     <Compile Include="Interfaces\IMarketDataCsvFileRepository.cs" />
     <Compile Include="Interfaces\IRegistryCsvFileRepository.cs" />
     <Compile Include="Interfaces\IIsinsCsvFileRepository.cs" />

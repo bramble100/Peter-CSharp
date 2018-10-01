@@ -8,6 +8,18 @@ namespace Peter.Repositories.Helpers
 {
     public static class CsvLineRegistryEntryWithIsin
     {
+        public static string[] Header => new string[]
+        {
+                "Name",
+                "ISIN",
+                "Stock Exchange Link",
+                "Own Investor Link",
+                "EPS",
+                "Months in Report",
+                "Next Report Date",
+                "Position"
+        };
+
         public static bool TryParseFromCsv(
             string[] input, 
             CultureInfo cultureInfo, 

@@ -1,4 +1,5 @@
-﻿using Peter.Models.Implementations;
+﻿using Peter.Models.Enums;
+using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
@@ -11,32 +12,36 @@ namespace AnalysesManager.Services
 {
     public class Service
     {
-        private readonly IFinancialAnalysesCsvFileRepository _financialAnalysesCsvFileRepository;
+        private readonly IAnalysesCsvFileRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
         private readonly IRegistryCsvFileRepository _registryCsvFileRepository;
 
-        private readonly int FastMovingAverage;
-        private readonly int SlowMovingAverage;
+        private readonly int _fastMovingAverage;
+        private readonly int _slowMovingAverage;
+        private readonly int _buyingPacketInEuro;
 
         public Service()
         {
-            _financialAnalysesCsvFileRepository = new FinancialAnalysesCsvFileRepository();
+            _financialAnalysesCsvFileRepository = new AnalysesCsvFileRepository();
             _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
             _registryCsvFileRepository = new RegistryCsvFileRepository();
 
             var reader = new AppSettingsReader();
-            FastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
-            SlowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
+            _fastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
+            _slowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
 
-            if (FastMovingAverage >= SlowMovingAverage)
+            if (_fastMovingAverage >= _slowMovingAverage)
             {
-                throw new Exception($"The timespan for the fast moving average ({FastMovingAverage}) " +
-                    $"must be lower than of the slow moving average ({SlowMovingAverage}).");
+                throw new Exception($"The timespan for the fast moving average ({_fastMovingAverage}) " +
+                    $"must be lower than of the slow moving average ({_slowMovingAverage}).");
             }
+
+            _buyingPacketInEuro = (int)reader.GetValue("BuyingPacketInEuro", typeof(int));
         }
 
         public void GenerateAnalyses()
         {
+            Console.Write("Loading market data ...");
             var marketData = _marketDataCsvFileRepository.Load().ToList();
             if (ContainsDataWithoutIsin(marketData))
             {
@@ -44,16 +49,25 @@ namespace AnalysesManager.Services
                 return;
             }
 
+            Console.Write($" {marketData.Count} data entries loaded.\n");
+
+
+            Console.Write("Removing discontinued market data rows ...");
             var latestDate = marketData.Max(d => d.DateTime).Date;
             RemoveEntriesWithoutUptodateData(marketData, latestDate);
+            Console.Write($" {marketData.Count} data entries remained.\n");
 
+            Console.Write("Loading registry ...");
             var localRegistry = GetRegistryEntriesWithFinancialReport(_registryCsvFileRepository.Entities);
+            Console.Write($" {localRegistry.Count} entries loaded.\n");
 
+            Console.WriteLine("Grouping market data.");
             var groupedMarketData = from data in marketData
                                     where localRegistry.ContainsKey(data.Isin)
                                     group data by data.Isin into dataByIsin
-                                    select dataByIsin.OrderByDescending(d => d.DateTime).Take(SlowMovingAverage);
-             
+                                    select dataByIsin.OrderByDescending(d => d.DateTime).Take(_slowMovingAverage);
+
+            Console.WriteLine("Saving analyses.");
             _financialAnalysesCsvFileRepository.AddRange(groupedMarketData.Select(GetAnalysis));
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
@@ -76,7 +90,7 @@ namespace AnalysesManager.Services
                 entry.Value.FinancialReport.MonthsInReport != 0;
         }
 
-        private KeyValuePair<string, IFinancialAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
+        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
         {
             if (groupedMarketData == null)
             {
@@ -89,14 +103,38 @@ namespace AnalysesManager.Services
                 .First(e => string.Equals(e.Key, isin))
                 .Value;
 
-            return new KeyValuePair<string, IFinancialAnalysis>(isin, new FinancialAnalysis
+            var analysis = new Analysis
             {
-                ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
-                FastSMA = groupedMarketData.Take(FastMovingAverage).Average(d => d.ClosingPrice),
                 Name = stockBaseData.Name,
-                SlowSMA = groupedMarketData.Average(d => d.ClosingPrice),
-                PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
-            });
+                ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
+                QtyInBuyingPacket = (int)Math.Floor(_buyingPacketInEuro / groupedMarketData.FirstOrDefault().ClosingPrice),
+                TechnicalAnalysis = new TechnicalAnalysis
+                {
+                    FastSMA = groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice),
+                    SlowSMA = groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice)
+                },
+                FinancialAnalysis = new FinancialAnalysis
+                {
+                    PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
+                }
+            };
+            var tazUpperLimit = Math.Max(analysis.TechnicalAnalysis.FastSMA, analysis.TechnicalAnalysis.SlowSMA);
+            var tazLowerLimit = Math.Min(analysis.TechnicalAnalysis.FastSMA, analysis.TechnicalAnalysis.SlowSMA);
+
+            if (analysis.ClosingPrice > tazUpperLimit)
+            {
+                analysis.TechnicalAnalysis.TAZ = TAZ.AboveTAZ;
+            }
+            else if (analysis.ClosingPrice < tazLowerLimit)
+            {
+                analysis.TechnicalAnalysis.TAZ = TAZ.BelowTAZ;
+            }
+            else
+            {
+                analysis.TechnicalAnalysis.TAZ = TAZ.InTAZ;
+            }
+
+            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
         }
     }
 }
