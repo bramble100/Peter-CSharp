@@ -68,7 +68,7 @@ namespace Peter.Repositories.Implementations
                 return new Tuple<string, CultureInfo>(",", new CultureInfo("us-EN"));
             else if (header.Contains(";") && !header.Contains(","))
                 return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
-            throw new ArgumentOutOfRangeException("Separator and CultureInfo cannot be determined.");
+            throw new ArgumentOutOfRangeException(nameof(header), "Separator and CultureInfo cannot be determined.");
         }
 
         protected void CreateBackUp(string path, string fileName)

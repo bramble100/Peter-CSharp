@@ -1,28 +1,27 @@
 ﻿using Peter.Models.Interfaces;
-using System;
 using System.Collections.Generic;
 
 namespace Peter.Repositories.Interfaces
 {
-    public interface IFinancialAnalysesCsvFileRepository
+    public interface IAnalysesCsvFileRepository
     {
         /// <summary>
         /// Returns a copy of the entities.
         /// Key: ISIN. 
         /// Value: the analysis.
         /// </summary>
-        Dictionary<string, IFinancialAnalysis> Entities { get; }
+        Dictionary<string, IAnalysis> Entities { get; }
 
         /// <summary>
         /// Adds an entity.
         /// </summary>
         /// <param name="analysis"></param>
-        void Add(KeyValuePair<string, IFinancialAnalysis> analysis);
+        void Add(KeyValuePair<string, IAnalysis> analysis);
         /// <summary>
         /// Adds many entities.
         /// </summary>
         /// <param name="analysis"></param>
-        void AddRange(IEnumerable<KeyValuePair<string, IFinancialAnalysis>> entities);
+        void AddRange(IEnumerable<KeyValuePair<string, IAnalysis>> entities);
         /// <summary>
         /// Finds the analysis for the stock with the given ISIN.
         /// </summary>

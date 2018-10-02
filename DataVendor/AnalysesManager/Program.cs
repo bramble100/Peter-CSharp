@@ -8,7 +8,6 @@ namespace AnalysesManager
         static void Main(string[] args)
         {
             new Controller().GenerateAnalyses();
-            Console.ReadKey();
         }
     }
 }
