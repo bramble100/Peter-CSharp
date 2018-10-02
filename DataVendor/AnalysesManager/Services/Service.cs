@@ -16,8 +16,9 @@ namespace AnalysesManager.Services
         private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
         private readonly IRegistryCsvFileRepository _registryCsvFileRepository;
 
-        private readonly int FastMovingAverage;
-        private readonly int SlowMovingAverage;
+        private readonly int _fastMovingAverage;
+        private readonly int _slowMovingAverage;
+        private readonly int _buyingPacketInEuro;
 
         public Service()
         {
@@ -26,14 +27,16 @@ namespace AnalysesManager.Services
             _registryCsvFileRepository = new RegistryCsvFileRepository();
 
             var reader = new AppSettingsReader();
-            FastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
-            SlowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
+            _fastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
+            _slowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
 
-            if (FastMovingAverage >= SlowMovingAverage)
+            if (_fastMovingAverage >= _slowMovingAverage)
             {
-                throw new Exception($"The timespan for the fast moving average ({FastMovingAverage}) " +
-                    $"must be lower than of the slow moving average ({SlowMovingAverage}).");
+                throw new Exception($"The timespan for the fast moving average ({_fastMovingAverage}) " +
+                    $"must be lower than of the slow moving average ({_slowMovingAverage}).");
             }
+
+            _buyingPacketInEuro = (int)reader.GetValue("BuyingPacketInEuro", typeof(int));
         }
 
         public void GenerateAnalyses()
@@ -62,7 +65,7 @@ namespace AnalysesManager.Services
             var groupedMarketData = from data in marketData
                                     where localRegistry.ContainsKey(data.Isin)
                                     group data by data.Isin into dataByIsin
-                                    select dataByIsin.OrderByDescending(d => d.DateTime).Take(SlowMovingAverage);
+                                    select dataByIsin.OrderByDescending(d => d.DateTime).Take(_slowMovingAverage);
 
             Console.WriteLine("Saving analyses.");
             _financialAnalysesCsvFileRepository.AddRange(groupedMarketData.Select(GetAnalysis));
@@ -104,10 +107,11 @@ namespace AnalysesManager.Services
             {
                 Name = stockBaseData.Name,
                 ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
+                QtyInBuyingPacket = (int)Math.Floor(_buyingPacketInEuro / groupedMarketData.FirstOrDefault().ClosingPrice),
                 TechnicalAnalysis = new TechnicalAnalysis
                 {
-                    FastSMA = groupedMarketData.Take(FastMovingAverage).Average(d => d.ClosingPrice),
-                    SlowSMA = groupedMarketData.Take(SlowMovingAverage).Average(d => d.ClosingPrice)
+                    FastSMA = groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice),
+                    SlowSMA = groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice)
                 },
                 FinancialAnalysis = new FinancialAnalysis
                 {

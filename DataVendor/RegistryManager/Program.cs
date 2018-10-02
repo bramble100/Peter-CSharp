@@ -8,12 +8,7 @@ namespace RegistryManager
     {
         static void Main(string[] args)
         {
-            var reader = new AppSettingsReader();
-
             new Controller().Update();
-
-            Console.WriteLine("Press any key to continue ...");
-            Console.ReadKey();
         }
     }
 }

@@ -12,7 +12,8 @@ namespace Peter.Repositories.Helpers
             "ISIN",
             "Closing Price",
             "Price/Earning",
-            "TAZ Status"
+            "TAZ Status",
+            "Qty In Buying Packet"
         };
 
         public static string FormatForCSV(KeyValuePair<string, IAnalysis> e, string separator, CultureInfo cultureInfo) =>
@@ -24,7 +25,8 @@ namespace Peter.Repositories.Helpers
                         e.Key,
                         e.Value.ClosingPrice.WrapWithQuotes(),
                         e.Value.FinancialAnalysis.PE.WrapWithQuotes(),
-                        e.Value.TechnicalAnalysis.TAZ.ToString()
+                        e.Value.TechnicalAnalysis.TAZ.ToString(),
+                        e.Value.QtyInBuyingPacket.ToString()
                     });
     }
 }
