@@ -121,23 +121,28 @@ namespace AnalysesManager.Services
                     PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
                 }
             };
-            var tazUpperLimit = Math.Max(analysis.TechnicalAnalysis.FastSMA, analysis.TechnicalAnalysis.SlowSMA);
-            var tazLowerLimit = Math.Min(analysis.TechnicalAnalysis.FastSMA, analysis.TechnicalAnalysis.SlowSMA);
 
-            if (analysis.ClosingPrice > tazUpperLimit)
-            {
-                analysis.TechnicalAnalysis.TAZ = TAZ.AboveTAZ;
-            }
-            else if (analysis.ClosingPrice < tazLowerLimit)
-            {
-                analysis.TechnicalAnalysis.TAZ = TAZ.BelowTAZ;
-            }
-            else
-            {
-                analysis.TechnicalAnalysis.TAZ = TAZ.InTAZ;
-            }
+            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
 
             return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
+        }
+
+        private static TAZ GetTAZ(Analysis analysis)
+        {
+            if (analysis.ClosingPrice > Math.Max(
+                analysis.TechnicalAnalysis.FastSMA,
+                analysis.TechnicalAnalysis.SlowSMA))
+            {
+                return TAZ.AboveTAZ;
+            }
+            else if (analysis.ClosingPrice < Math.Min(
+                analysis.TechnicalAnalysis.FastSMA,
+                analysis.TechnicalAnalysis.SlowSMA))
+            {
+                return TAZ.BelowTAZ;
+            }
+
+            return TAZ.InTAZ;
         }
     }
 }
