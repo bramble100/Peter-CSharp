@@ -23,7 +23,7 @@ namespace RegistryManager.Services
             var marketDataEntries = _marketDataCsvFileRepository.Load();
 
             _registryCsvFileRepository.AddRange(GetNewRegistryEntries(marketDataEntries));
-            _registryCsvFileRepository.RemoveRange(OutdatedRegistryEntries(marketDataEntries));
+            _registryCsvFileRepository.RemoveRange(GetOutdatedRegistryEntries(marketDataEntries));
 
             _registryCsvFileRepository.SaveChanges();
         }
@@ -42,10 +42,16 @@ namespace RegistryManager.Services
                         .First(d => string.Equals(isin, d.Isin)).Name)));
         }
 
-        private IEnumerable<string> OutdatedRegistryEntries(IMarketDataEntities marketDataEntries)
+        private IEnumerable<string> GetOutdatedRegistryEntries(IMarketDataEntities marketDataEntries)
         {
-            var isinsFromMarketData = marketDataEntries.Where(e => !string.IsNullOrWhiteSpace(e.Isin)).Select(e => e.Isin).ToHashSet();
-            var isinsFromRegistry = _registryCsvFileRepository.Entities.Select(e => e.Key).ToHashSet();
+            var isinsFromMarketData = marketDataEntries
+                .Where(e => !string.IsNullOrWhiteSpace(e.Isin))
+                .Select(e => e.Isin)
+                .ToHashSet();
+            var isinsFromRegistry = _registryCsvFileRepository
+                .Entities
+                .Select(e => e.Key)
+                .ToHashSet();
 
             return isinsFromRegistry.Except(isinsFromMarketData);
         }
