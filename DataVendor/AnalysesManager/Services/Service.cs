@@ -58,7 +58,9 @@ namespace AnalysesManager.Services
             Console.Write($" {marketData.Count} data entries remained.\n");
 
             Console.Write("Loading registry ...");
-            var localRegistry = new Registry(_registryCsvFileRepository.Entities.Where(entry => entry.Value?.FinancialReport?.EPS > 0));
+            var localRegistry = new Registry(_registryCsvFileRepository
+                .Entities
+                .Where(entry => !(entry.Value?.FinancialReport?.EPS < 0)));
             Console.Write($" {localRegistry.Count} entries loaded.\n");
 
             Console.WriteLine("Grouping market data.");
@@ -109,11 +111,11 @@ namespace AnalysesManager.Services
                 {
                     FastSMA = groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice),
                     SlowSMA = groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice)
-                },
-                FinancialAnalysis = new FinancialAnalysis
-                {
-                    PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
                 }
+                ,
+                FinancialAnalysis = new FinancialAnalysis(
+                    groupedMarketData.FirstOrDefault().ClosingPrice,
+                    stockBaseData.FinancialReport?.EPS)
             };
 
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);

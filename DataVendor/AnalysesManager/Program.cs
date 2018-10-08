@@ -1,5 +1,4 @@
 ﻿using AnalysesManager.Controllers;
-using System;
 
 namespace AnalysesManager
 {
