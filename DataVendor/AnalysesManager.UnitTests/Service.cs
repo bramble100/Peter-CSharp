@@ -106,7 +106,7 @@ namespace AnalysesManager.UnitTests
                 }),
             };
 
-            Services.Service.GetRegistryEntriesWithFinancialReport(testRegistry).Should().Equal(expectedResult);
+            Services.Service.GetInterestingRegistryEntries(testRegistry).Should().Equal(expectedResult);
         }
     }
 }

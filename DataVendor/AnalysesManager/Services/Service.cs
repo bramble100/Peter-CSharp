@@ -58,7 +58,7 @@ namespace AnalysesManager.Services
             Console.Write($" {marketData.Count} data entries remained.\n");
 
             Console.Write("Loading registry ...");
-            var localRegistry = GetRegistryEntriesWithFinancialReport(_registryCsvFileRepository.Entities);
+            var localRegistry = GetInterestingRegistryEntries(_registryCsvFileRepository.Entities);
             Console.Write($" {localRegistry.Count} entries loaded.\n");
 
             Console.WriteLine("Grouping market data.");
@@ -80,8 +80,11 @@ namespace AnalysesManager.Services
             DateTime latestDate) =>
                 marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
 
-        internal static IRegistry GetRegistryEntriesWithFinancialReport(IRegistry registry) =>
-            new Registry(registry.Where(entry => HasValidFinancialReport(entry)));
+        internal static IRegistry GetInterestingRegistryEntries(IRegistry registry) =>
+            new Registry(registry.Where(
+                entry => HasValidFinancialReport(entry) &&
+                !entry.Value.FinancialReport.IsOutdated &&
+                entry.Value.FinancialReport.EPS > 0));
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {

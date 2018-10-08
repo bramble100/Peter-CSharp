@@ -23,7 +23,7 @@ namespace Peter.Models.Implementations
         }
 
         public decimal EPS { get; private set; }
-        public bool IsOutdated => NextReportDate < DateTime.Now.Date;
+        public bool IsOutdated => NextReportDate.Date < DateTime.Now.Date;
         public int MonthsInReport { get; private set; }
         public DateTime NextReportDate { get; private set; } = DateTime.Now.Date;
 
