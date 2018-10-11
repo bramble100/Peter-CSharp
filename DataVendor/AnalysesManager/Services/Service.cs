@@ -58,7 +58,9 @@ namespace AnalysesManager.Services
             Console.Write($" {marketData.Count} data entries remained.\n");
 
             Console.Write("Loading registry ...");
-            var localRegistry = GetInterestingRegistryEntries(_registryCsvFileRepository.Entities);
+            var localRegistry = new Registry(_registryCsvFileRepository
+                .Entities
+                .Where(entry => !(entry.Value?.FinancialReport?.EPS < 0)));
             Console.Write($" {localRegistry.Count} entries loaded.\n");
 
             Console.WriteLine("Grouping market data.");
@@ -79,12 +81,6 @@ namespace AnalysesManager.Services
             List<IMarketDataEntity> marketData,
             DateTime latestDate) =>
                 marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
-
-        internal static IRegistry GetInterestingRegistryEntries(IRegistry registry) =>
-            new Registry(registry.Where(
-                entry => HasValidFinancialReport(entry) &&
-                !entry.Value.FinancialReport.IsOutdated &&
-                entry.Value.FinancialReport.EPS > 0));
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
@@ -115,29 +111,34 @@ namespace AnalysesManager.Services
                 {
                     FastSMA = groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice),
                     SlowSMA = groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice)
-                },
-                FinancialAnalysis = new FinancialAnalysis
-                {
-                    PE = Math.Round(groupedMarketData.FirstOrDefault().ClosingPrice / stockBaseData.FinancialReport.EPS, 1)
                 }
+                ,
+                FinancialAnalysis = new FinancialAnalysis(
+                    groupedMarketData.FirstOrDefault().ClosingPrice,
+                    stockBaseData.FinancialReport?.EPS)
             };
-            var tazUpperLimit = Math.Max(analysis.TechnicalAnalysis.FastSMA, analysis.TechnicalAnalysis.SlowSMA);
-            var tazLowerLimit = Math.Min(analysis.TechnicalAnalysis.FastSMA, analysis.TechnicalAnalysis.SlowSMA);
 
-            if (analysis.ClosingPrice > tazUpperLimit)
-            {
-                analysis.TechnicalAnalysis.TAZ = TAZ.AboveTAZ;
-            }
-            else if (analysis.ClosingPrice < tazLowerLimit)
-            {
-                analysis.TechnicalAnalysis.TAZ = TAZ.BelowTAZ;
-            }
-            else
-            {
-                analysis.TechnicalAnalysis.TAZ = TAZ.InTAZ;
-            }
+            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
 
             return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
+        }
+
+        private static TAZ GetTAZ(Analysis analysis)
+        {
+            if (analysis.ClosingPrice > Math.Max(
+                analysis.TechnicalAnalysis.FastSMA,
+                analysis.TechnicalAnalysis.SlowSMA))
+            {
+                return TAZ.AboveTAZ;
+            }
+            else if (analysis.ClosingPrice < Math.Min(
+                analysis.TechnicalAnalysis.FastSMA,
+                analysis.TechnicalAnalysis.SlowSMA))
+            {
+                return TAZ.BelowTAZ;
+            }
+
+            return TAZ.InTAZ;
         }
     }
 }
