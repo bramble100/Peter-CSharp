@@ -13,6 +13,7 @@ namespace Peter.Repositories.Helpers
             "Closing Price",
             "Price/Earning",
             "TAZ Status",
+            "Trend",
             "Qty In Buying Packet"
         };
 
@@ -26,6 +27,7 @@ namespace Peter.Repositories.Helpers
                         e.Value.ClosingPrice.WrapWithQuotes(),
                         e.Value.FinancialAnalysis?.PE.WrapWithQuotes(),
                         e.Value.TechnicalAnalysis?.TAZ.ToString(),
+                        e.Value.TechnicalAnalysis?.Trend.ToString(),
                         e.Value.QtyInBuyingPacket.ToString()
                     });
     }

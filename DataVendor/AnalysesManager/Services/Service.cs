@@ -110,15 +110,15 @@ namespace AnalysesManager.Services
                 TechnicalAnalysis = new TechnicalAnalysis
                 {
                     FastSMA = groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice),
-                    SlowSMA = groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice)
-                }
-                ,
+                    SlowSMA = groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice),
+                },
                 FinancialAnalysis = new FinancialAnalysis(
                     groupedMarketData.FirstOrDefault().ClosingPrice,
                     stockBaseData.FinancialReport?.EPS)
             };
 
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
+            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
 
             return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
         }
@@ -139,6 +139,20 @@ namespace AnalysesManager.Services
             }
 
             return TAZ.InTAZ;
+        }
+
+        private Trend GetTrend(Analysis analysis)
+        {
+            if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
+            {
+                return Trend.Up;
+            }
+            else if(analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
+            {
+                return Trend.Down;
+            }
+
+            return Trend.Undefined;
         }
     }
 }
