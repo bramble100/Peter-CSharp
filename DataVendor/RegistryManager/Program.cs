@@ -1,6 +1,4 @@
 ﻿using RegistryManager.Controllers;
-using System;
-using System.Configuration;
 
 namespace RegistryManager
 {
