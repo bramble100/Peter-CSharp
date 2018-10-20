@@ -10,11 +10,14 @@ namespace Peter.Repositories.Implementations
 {
     public abstract class CsvFileRepository
     {
-        protected readonly string _separator;
-        protected string _workingDirectory;
         protected readonly string _baseDirectory;
-        protected string _fileName;
         protected readonly string _fileNameExtension;
+        protected readonly string _separator;
+
+        protected string _backupDirectory;
+        protected string _fileName;
+        protected string _workingDirectory;
+
         protected string[] _header;
 
         private readonly string _dateFormat;
@@ -27,11 +30,47 @@ namespace Peter.Repositories.Implementations
             get => _workingDirectory;
             set
             {
-                if (!Directory.Exists(value))
+                if (Directory.Exists(value))
                 {
-                    throw new Exception($"Invalid directory specified ({value})");
+                    _workingDirectory = value;
+                    return;
                 }
-                _workingDirectory = value;
+
+                try
+                {
+                    Directory.CreateDirectory(value);
+                    _workingDirectory = value;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Directory ({value}) cannot be created. {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// The directory in which the provider saves backups.
+        /// </summary>
+        protected string BackupDirectory
+        {
+            get => _backupDirectory;
+            set
+            {
+                if (Directory.Exists(value))
+                {
+                    _backupDirectory = value;
+                    return;
+                }
+
+                try
+                {
+                    Directory.CreateDirectory(value);
+                    _backupDirectory = value;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Directory ({value}) cannot be created. {ex.Message}");
+                }
             }
         }
 
@@ -50,6 +89,9 @@ namespace Peter.Repositories.Implementations
 
             _workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
             WorkingDirectory = Path.Combine(_baseDirectory, _workingDirectory);
+
+            _backupDirectory = reader.GetValue("BackupDirectory", typeof(string)).ToString();
+            BackupDirectory = Path.Combine(_baseDirectory, _backupDirectory);
 
             _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
 
@@ -77,7 +119,7 @@ namespace Peter.Repositories.Implementations
 
             File.Move(
                 Path.Combine(WorkingDirectory, fileName),
-                Path.Combine(WorkingDirectory, $"{splitFilename[0]} {DateTime.Now.ToString(_dateFormat)}.{splitFilename[1]}"));
+                Path.Combine(BackupDirectory, $"{splitFilename[0]} {DateTime.Now.ToString(_dateFormat)}.{splitFilename[1]}"));
         }
 
         protected void SaveActualFile(string fullPath, IEnumerable<string> content) => File.WriteAllLines(fullPath, content, Encoding.UTF8);
