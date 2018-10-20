@@ -56,10 +56,8 @@ namespace Peter.Repositories.Implementations
 
             strings.AddRange(Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))));
 
-            File.WriteAllLines(
-                Path.Combine(WorkingDirectory, _fileName),
-                strings,
-                Encoding.UTF8);
+            CreateBackUp(WorkingDirectory, _fileName);
+            SaveActualFile(Path.Combine(WorkingDirectory, _fileName), strings);
         }
 
         public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => newEntries.ToList().ForEach(e => Entities.Add(e));
