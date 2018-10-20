@@ -115,11 +115,18 @@ namespace Peter.Repositories.Implementations
 
         protected void CreateBackUp(string path, string fileName)
         {
-            var splitFilename = Path.GetFileName(fileName).Split('.');
-
-            File.Move(
-                Path.Combine(WorkingDirectory, fileName),
-                Path.Combine(BackupDirectory, $"{splitFilename[0]} {DateTime.Now.ToString(_dateFormat)}.{splitFilename[1]}"));
+            try
+            {
+                File.Move(
+                    Path.Combine(WorkingDirectory, fileName),
+                    Path.Combine(
+                        BackupDirectory,
+                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)[1]}"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Backup ({fileName}) cannot be created. {ex.Message}");
+            }
         }
 
         protected void SaveActualFile(string fullPath, IEnumerable<string> content) => File.WriteAllLines(fullPath, content, Encoding.UTF8);
