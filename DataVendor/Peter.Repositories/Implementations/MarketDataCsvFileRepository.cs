@@ -72,8 +72,8 @@ namespace Peter.Repositories.Implementations
 
             strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
 
-            CreateBackUp(WorkingDirectory, _fileName);
-            SaveActualFile(Path.Combine(WorkingDirectory, _fileName), strings);
+            CreateBackUp(WorkingDirectory, BackupDirectory, _fileName);
+            SaveActualFile(WorkingDirectory, _fileName, strings);
         }
     }
 }

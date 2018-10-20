@@ -3,6 +3,7 @@ using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
@@ -31,9 +32,18 @@ namespace Peter.Repositories.Implementations
 
         private void Load()
         {
+            Tuple<string, CultureInfo> baseInfo;
             var filePath = Path.Combine(_workingDirectory, _fileName);
-            var baseInfo = GetCsvSeparatorAndCultureInfo(
-                File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
+
+            try
+            {
+                baseInfo = GetCsvSeparatorAndCultureInfo(
+                    File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
             {
@@ -56,8 +66,8 @@ namespace Peter.Repositories.Implementations
 
             strings.AddRange(Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))));
 
-            CreateBackUp(WorkingDirectory, _fileName);
-            SaveActualFile(Path.Combine(WorkingDirectory, _fileName), strings);
+            CreateBackUp(WorkingDirectory, BackupDirectory, _fileName);
+            SaveActualFile(WorkingDirectory, _fileName, strings);
         }
 
         public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => newEntries.ToList().ForEach(e => Entities.Add(e));

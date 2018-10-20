@@ -91,12 +91,10 @@ namespace Peter.Repositories.Implementations
             WorkingDirectory = Path.Combine(_baseDirectory, _workingDirectory);
 
             _backupDirectory = reader.GetValue("BackupDirectory", typeof(string)).ToString();
-            BackupDirectory = Path.Combine(_baseDirectory, _backupDirectory);
+            BackupDirectory = Path.Combine(_workingDirectory, _backupDirectory);
 
             _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
-
             _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
-
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
@@ -113,15 +111,15 @@ namespace Peter.Repositories.Implementations
             throw new ArgumentOutOfRangeException(nameof(header), "Separator and CultureInfo cannot be determined.");
         }
 
-        protected void CreateBackUp(string path, string fileName)
+        protected void CreateBackUp(string workingDir, string backupDir, string fileName)
         {
             try
             {
                 File.Move(
-                    Path.Combine(WorkingDirectory, fileName),
+                    Path.Combine(workingDir, fileName),
                     Path.Combine(
-                        BackupDirectory,
-                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)[1]}"));
+                        backupDir,
+                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"));
             }
             catch (Exception ex)
             {
@@ -129,9 +127,20 @@ namespace Peter.Repositories.Implementations
             }
         }
 
-        protected void SaveActualFile(string fullPath, IEnumerable<string> content) => File.WriteAllLines(fullPath, content, Encoding.UTF8);
+        protected static void SaveActualFile(string workingDir, string fileName, IEnumerable<string> content)
+        {
+            try
+            {
+                File.WriteAllLines(Path.Combine(workingDir, fileName), content, Encoding.UTF8);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
+        }
 
-        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
+        internal static void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
         {
             List<string> strings = AddHeader(header, separator);
 
