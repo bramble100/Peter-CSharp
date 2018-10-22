@@ -106,7 +106,7 @@ namespace Peter.Repositories.Implementations
         {
             if (header.Contains(",") && !header.Contains(";"))
                 return new Tuple<string, CultureInfo>(",", new CultureInfo("us-EN"));
-            else if (header.Contains(";") && !header.Contains(","))
+            else if ((header.Contains(";") || header.Contains("\t")) && !header.Contains(","))
                 return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
             throw new ArgumentOutOfRangeException(nameof(header), "Separator and CultureInfo cannot be determined.");
         }
