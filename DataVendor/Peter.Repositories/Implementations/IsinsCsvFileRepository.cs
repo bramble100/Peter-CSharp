@@ -3,7 +3,6 @@ using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -19,8 +18,6 @@ namespace Peter.Repositories.Implementations
         public IsinsCsvFileRepository() : base()
         {
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
-
-            _header = new string[] { "Name", "ISIN" };
         }
 
         /// <summary>
@@ -49,14 +46,11 @@ namespace Peter.Repositories.Implementations
 
         public void Save(INameToIsin isins)
         {
-            List<string> strings = AddHeader(_header, _separator);
-
-            strings.AddRange(isins.Select(i => i.FormatterForCSV(_separator)));
-
-            File.WriteAllLines(
-                Path.Combine(WorkingDirectory, _fileName),
-                strings,
-                Encoding.UTF8);
+            SaveChanges(
+                CsvLineIsin.Header,
+                isins.Select(i => i.FormatterForCSV(_separator)),
+                Path.Combine(_workingDirectory, _fileName),
+                ";");
         }
     }
 }
