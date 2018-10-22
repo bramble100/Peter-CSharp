@@ -18,8 +18,6 @@ namespace Peter.Repositories.Implementations
         protected string _fileName;
         protected string _workingDirectory;
 
-        protected string[] _header;
-
         private readonly string _dateFormat;
 
         /// <summary>
@@ -127,7 +125,7 @@ namespace Peter.Repositories.Implementations
             }
         }
 
-        protected static void SaveActualFile(string workingDir, string fileName, IEnumerable<string> content)
+        private static void SaveActualFile(string workingDir, string fileName, IEnumerable<string> content)
         {
             try
             {
@@ -140,14 +138,13 @@ namespace Peter.Repositories.Implementations
             
         }
 
-        internal static void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
+        internal static void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
         {
             List<string> strings = AddHeader(header, separator);
-
             strings.AddRange(content);
 
             File.WriteAllLines(
-                fileName,
+                fullPath,
                 strings,
                 Encoding.UTF8);
         }
