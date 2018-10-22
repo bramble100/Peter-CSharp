@@ -19,5 +19,9 @@ namespace Peter.Models.Interfaces
         /// Traders Action Zone. Determined by the slow and the fast moving average.
         /// </summary>
         TAZ TAZ { get; set; }
+        /// <summary>
+        /// Trend that may go up or down (or rarely can be undefined).
+        /// </summary>
+        Trend Trend { get; set; }
     }
 }

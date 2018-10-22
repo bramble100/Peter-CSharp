@@ -8,5 +8,6 @@ namespace Peter.Models.Implementations
         public decimal FastSMA { get; set; }
         public decimal SlowSMA { get; set; }
         public TAZ TAZ { get; set; }
+        public Trend Trend { get; set; }
     }
 }

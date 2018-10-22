@@ -10,11 +10,14 @@ namespace Peter.Repositories.Implementations
 {
     public abstract class CsvFileRepository
     {
-        protected readonly string _separator;
-        protected string _workingDirectory;
         protected readonly string _baseDirectory;
-        protected string _fileName;
         protected readonly string _fileNameExtension;
+        protected readonly string _separator;
+
+        protected string _backupDirectory;
+        protected string _fileName;
+        protected string _workingDirectory;
+
         protected string[] _header;
 
         private readonly string _dateFormat;
@@ -27,11 +30,47 @@ namespace Peter.Repositories.Implementations
             get => _workingDirectory;
             set
             {
-                if (!Directory.Exists(value))
+                if (Directory.Exists(value))
                 {
-                    throw new Exception($"Invalid directory specified ({value})");
+                    _workingDirectory = value;
+                    return;
                 }
-                _workingDirectory = value;
+
+                try
+                {
+                    Directory.CreateDirectory(value);
+                    _workingDirectory = value;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Directory ({value}) cannot be created. {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// The directory in which the provider saves backups.
+        /// </summary>
+        protected string BackupDirectory
+        {
+            get => _backupDirectory;
+            set
+            {
+                if (Directory.Exists(value))
+                {
+                    _backupDirectory = value;
+                    return;
+                }
+
+                try
+                {
+                    Directory.CreateDirectory(value);
+                    _backupDirectory = value;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Directory ({value}) cannot be created. {ex.Message}");
+                }
             }
         }
 
@@ -51,10 +90,11 @@ namespace Peter.Repositories.Implementations
             _workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
             WorkingDirectory = Path.Combine(_baseDirectory, _workingDirectory);
 
+            _backupDirectory = reader.GetValue("BackupDirectory", typeof(string)).ToString();
+            BackupDirectory = Path.Combine(_workingDirectory, _backupDirectory);
+
             _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
-
             _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
-
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
@@ -71,18 +111,36 @@ namespace Peter.Repositories.Implementations
             throw new ArgumentOutOfRangeException(nameof(header), "Separator and CultureInfo cannot be determined.");
         }
 
-        protected void CreateBackUp(string path, string fileName)
+        protected void CreateBackUp(string workingDir, string backupDir, string fileName)
         {
-            var splitFilename = Path.GetFileName(fileName).Split('.');
-
-            File.Move(
-                Path.Combine(WorkingDirectory, fileName),
-                Path.Combine(WorkingDirectory, $"{splitFilename[0]} {DateTime.Now.ToString(_dateFormat)}.{splitFilename[1]}"));
+            try
+            {
+                File.Move(
+                    Path.Combine(workingDir, fileName),
+                    Path.Combine(
+                        backupDir,
+                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Backup ({fileName}) cannot be created. {ex.Message}");
+            }
         }
 
-        protected void SaveActualFile(string fullPath, IEnumerable<string> content) => File.WriteAllLines(fullPath, content, Encoding.UTF8);
+        protected static void SaveActualFile(string workingDir, string fileName, IEnumerable<string> content)
+        {
+            try
+            {
+                File.WriteAllLines(Path.Combine(workingDir, fileName), content, Encoding.UTF8);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
+        }
 
-        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
+        internal static void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
         {
             List<string> strings = AddHeader(header, separator);
 
