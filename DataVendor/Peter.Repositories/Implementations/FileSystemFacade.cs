@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using Peter.Repositories.Interfaces;
 
@@ -7,65 +6,30 @@ namespace Peter.Repositories.Implementations
 {
     internal class FileSystemFacade : IFileSystemFacade
     {
-        public bool TryBackup(string fullPath, string backupFullPath, out string message)
+        public void Backup(string fullPath, string backupFullPath)
         {
-            message = string.Empty;
+            var backupDir = Path.GetDirectoryName(backupFullPath);
 
-            try
+            if (!Directory.Exists(backupDir))
             {
-                var backupDir = Path.GetDirectoryName(backupFullPath);
-                if (!Directory.Exists(backupDir))
-                {
-                    Directory.CreateDirectory(backupDir);
-                }
+                Directory.CreateDirectory(backupDir);
+            }
 
-                File.Move(fullPath, backupFullPath);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                message = ex.Message;
-                return false;
-            }
+            File.Move(fullPath, backupFullPath);
         }
 
-        public bool TryLoad(string fullPath, out string content, out string message)
+        public string Load(string fullPath) => File.ReadAllText(fullPath, Encoding.UTF8);
+
+        public void Save(string fullPath, string content)
         {
-            content = string.Empty;
-            message = string.Empty;
+            var dir = Path.GetDirectoryName(fullPath);
 
-            try
+            if (!Directory.Exists(dir))
             {
-                content = File.ReadAllText(fullPath, Encoding.UTF8);
-                return true;
+                Directory.CreateDirectory(dir);
             }
-            catch (Exception ex)
-            {
-                message = ex.Message;
-                return false;
-            }
-        }
 
-        public bool TrySave(string fullPath, string content, out string message)
-        {
-            message = string.Empty;
-
-            try
-            {
-                var dir = Path.GetDirectoryName(fullPath);
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                File.WriteAllText(fullPath, content, Encoding.UTF8);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                message = ex.Message;
-                return false;
-            }
+            File.WriteAllText(fullPath, content, Encoding.UTF8);
         }
     }
 }

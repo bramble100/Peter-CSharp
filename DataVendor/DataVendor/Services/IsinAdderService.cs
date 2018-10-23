@@ -55,8 +55,6 @@ namespace DataVendor.Services
 
         private int RemoveIsinFromIsins(INameToIsin isins, IMarketDataEntities entities)
         {
-            // TODO: refactor
-
             var namesInEntities = entities
                 .Select(e => e.Name)
                 .Distinct();

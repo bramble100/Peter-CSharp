@@ -12,9 +12,9 @@ namespace Peter.Models.Implementations
         {
         }
 
-        public FinancialReport(decimal eps, int monthsInReport, DateTime nextReportDate)
+        public FinancialReport(decimal eps, int monthsInReport, DateTime nextReportDate) : this()
         {
-            if (_validMonths.Contains(monthsInReport) && nextReportDate.Date >= DateTime.Now.Date)
+            if (_validMonths.Contains(monthsInReport) && nextReportDate.Date >= DateTime.Now.AddDays(-7).Date)
             {
                 EPS = eps;
                 MonthsInReport = monthsInReport;

@@ -2,6 +2,7 @@
 using NLog;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
+using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System.Configuration;
@@ -13,8 +14,6 @@ namespace Peter.Repositories.Implementations
 {
     public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataCsvFileRepository
     {
-        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
-
         private readonly IMarketDataEntities _entities;
 
         public MarketDataCsvFileRepository() : base()
@@ -30,26 +29,34 @@ namespace Peter.Repositories.Implementations
 
         public IMarketDataEntities Load()
         {
-            var filePath = Directory.GetFiles(WorkingDirectory).Max();
-
-            IMarketDataEntities entities = new MarketDataEntities();
-
-            if (string.IsNullOrWhiteSpace(filePath))
-                return entities;
-
-            using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
+            try
             {
-                parser.SetDelimiters(_separator);
+                var filePath = Directory.GetFiles(WorkingDirectory).Max();
 
-                RemoveHeader(parser);
+                IMarketDataEntities entities = new MarketDataEntities();
 
-                while (!parser.EndOfData)
+                if (string.IsNullOrWhiteSpace(filePath))
+                    return entities;
+
+                using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
                 {
-                    entities.Add(parser.ReadFields().ParserFromCSV());
+                    parser.SetDelimiters(_separator);
+
+                    RemoveHeader(parser);
+
+                    while (!parser.EndOfData)
+                    {
+                        entities.Add(parser.ReadFields().ParserFromCSV());
+                    }
                 }
+                _logger.Info($"{entities.Count} new market data entities loaded.");
+                return entities;
             }
-            _logger.Info($"{entities.Count} new market data entities loaded.");
-            return entities;
+            catch (System.Exception ex)
+            {
+                _logger.Error($"Error when loading entities in {GetType().Name}.");
+                throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
+            }
         }
 
         public void Update(IMarketDataEntities latestData)
@@ -61,8 +68,6 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            // TODO handle return bool
-            // TODO handle return message
             CreateBackUp(
                 WorkingDirectory,
                 BackupDirectory,

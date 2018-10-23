@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
+using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
+using System;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -26,39 +28,44 @@ namespace Peter.Repositories.Implementations
         /// <returns></returns>
         public INameToIsin Load()
         {
-            var filePath = Path.Combine(_workingDirectory, _fileName);
-            INameToIsin isins = new NameToIsin();
-
-            using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
+            try
             {
-                parser.SetDelimiters(_separator);
+                var filePath = Path.Combine(_workingDirectory, _fileName);
+                INameToIsin isins = new NameToIsin();
 
-                RemoveHeader(parser);
-
-                while (!parser.EndOfData)
+                using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
                 {
-                    isins.Add(parser.ReadFields());
-                }
-            }
+                    parser.SetDelimiters(_separator);
 
-            return isins;
+                    RemoveHeader(parser);
+
+                    while (!parser.EndOfData)
+                    {
+                        isins.Add(parser.ReadFields());
+                    }
+                }
+
+                return isins;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error when loading entities in {GetType().Name}.");
+                throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
+            }
         }
 
         public void Save(INameToIsin isins)
         {
-            // TODO handle return bool
-            // TODO handle return message
             CreateBackUp(
                 WorkingDirectory,
                 BackupDirectory,
                 _fileName);
-            // clean up separator
             SaveChanges(
                 CsvLineIsin.Header,
                 // TODO use CsvLineMarketData for CSV formatting
                 isins.Select(i => i.FormatterForCSV(_separator)),
                 Path.Combine(WorkingDirectory, _fileName),
-                ";");
+                _separator);
         }
     }
 }

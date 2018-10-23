@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
+using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
@@ -32,38 +33,38 @@ namespace Peter.Repositories.Implementations
 
         private void Load()
         {
-            Tuple<string, CultureInfo> baseInfo;
-            var filePath = Path.Combine(_workingDirectory, _fileName);
 
             try
             {
+                Tuple<string, CultureInfo> baseInfo;
+                var filePath = Path.Combine(_workingDirectory, _fileName);
+
                 baseInfo = GetCsvSeparatorAndCultureInfo(
                     File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
-            }
-            catch (Exception)
-            {
-                throw;
-            }
 
-            using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
-            {
-                parser.SetDelimiters(baseInfo.Item1);
-                RemoveHeader(parser);
-                while (!parser.EndOfData)
+                using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
                 {
-                    if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
-                        parser.ReadFields(),
-                        baseInfo.Item2,
-                        out KeyValuePair<string, IRegistryEntry> result))
-                        Entities.Add(result);
+                    parser.SetDelimiters(baseInfo.Item1);
+                    RemoveHeader(parser);
+                    while (!parser.EndOfData)
+                    {
+                        if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
+                            parser.ReadFields(),
+                            baseInfo.Item2,
+                            out KeyValuePair<string, IRegistryEntry> result))
+                            Entities.Add(result);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error when loading entities in {GetType().Name}.");
+                throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
             }
         }
 
         public void SaveChanges()
         {
-            // TODO handle return bool
-            // TODO handle return message
             CreateBackUp(
                 WorkingDirectory, 
                 BackupDirectory, 

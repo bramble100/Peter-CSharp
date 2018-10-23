@@ -1,16 +1,19 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using NLog;
+using Peter.Repositories.Exceptions;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
     public abstract class CsvFileRepository
     {
+        protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         protected readonly string _baseDirectory;
         protected readonly string _fileNameExtension;
         protected readonly string _separator;
@@ -30,21 +33,12 @@ namespace Peter.Repositories.Implementations
             get => _workingDirectory;
             set
             {
-                if (Directory.Exists(value))
+                if (!Directory.Exists(value))
                 {
-                    _workingDirectory = value;
-                    return;
+                    _logger.Error($"Working directory ({value}) does not exist.");
+                    throw new RepositoryException($"Working directory ({value}) does not exist.");
                 }
-
-                try
-                {
-                    Directory.CreateDirectory(value);
-                    _workingDirectory = value;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Directory ({value}) cannot be created. {ex.Message}");
-                }
+                _workingDirectory = value;
             }
         }
 
@@ -69,7 +63,8 @@ namespace Peter.Repositories.Implementations
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Directory ({value}) cannot be created. {ex.Message}");
+                    _logger.Error(ex, $"Backup directory ({value}) cannot be created. {ex.Message}");
+                    throw new RepositoryException($"Backup directory ({value}) cannot be created. {ex.Message}", ex);
                 }
             }
         }
@@ -100,18 +95,21 @@ namespace Peter.Repositories.Implementations
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
-        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
+        internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
         {
-            List<string> contentWithHeader = AddHeader(header, separator);
-            contentWithHeader.AddRange(content);
-            var stringContent = string.Join("\n", contentWithHeader);
+            try
+            {
+                List<string> contentWithHeader = AddHeader(header, separator);
+                contentWithHeader.AddRange(content);
+                var stringContent = string.Join("\n", contentWithHeader);
 
-            // TODO handle return bool
-            // TODO handle return message
-            _fileSystemFacade.TrySave(
-                fileName,
-                stringContent,
-                out var message);
+                _fileSystemFacade.Save(fullPath, stringContent);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error when saving changes. {ex.Message}");
+                throw new RepositoryException($"Error when saving changes.", ex);
+            }
         }
 
         protected static List<string> AddHeader(string[] header, string separator) => new List<string> { string.Join(separator, header) };
@@ -120,23 +118,30 @@ namespace Peter.Repositories.Implementations
 
         protected Tuple<string, CultureInfo> GetCsvSeparatorAndCultureInfo(string header)
         {
-            if (header.Contains(",") && !header.Contains(";"))
+            if (header.Contains(","))
                 return new Tuple<string, CultureInfo>(",", new CultureInfo("us-EN"));
-            else if ((header.Contains(";") || header.Contains("\t")) && !header.Contains(","))
+            else if (header.Contains(";"))
                 return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
+            else if (header.Contains("\t"))
+                return new Tuple<string, CultureInfo>("\t", new CultureInfo("hu-HU"));
             throw new ArgumentOutOfRangeException(nameof(header), "Separator and CultureInfo cannot be determined.");
         }
 
         protected void CreateBackUp(string workingDir, string backupDir, string fileName)
         {
-            // TODO handle return bool
-            // TODO handle return message
-            _fileSystemFacade.TryBackup(
-                Path.Combine(workingDir, fileName),
-                Path.Combine(
+            try
+            {
+                _fileSystemFacade.Backup(
+                    Path.Combine(workingDir, fileName),
+                    Path.Combine(
                         backupDir,
-                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"),
-                out var message);
+                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error when saving changes. {ex.Message}");
+                throw new RepositoryException($"Error when creating backup.", ex);
+            }
         }
     }
 }
