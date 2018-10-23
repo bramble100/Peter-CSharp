@@ -100,6 +100,20 @@ namespace Peter.Repositories.Implementations
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
+        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
+        {
+            List<string> contentWithHeader = AddHeader(header, separator);
+            contentWithHeader.AddRange(content);
+            var stringContent = string.Join("\n", contentWithHeader);
+
+            // TODO handle return bool
+            // TODO handle return message
+            _fileSystemFacade.TrySave(
+                fileName,
+                stringContent,
+                out var message);
+        }
+
         protected static List<string> AddHeader(string[] header, string separator) => new List<string> { string.Join(separator, header) };
 
         protected static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
@@ -122,20 +136,6 @@ namespace Peter.Repositories.Implementations
                 Path.Combine(
                         backupDir,
                         $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"),
-                out var message);
-        }
-
-        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
-        {
-            List<string> contentWithHeader = AddHeader(header, separator);
-            contentWithHeader.AddRange(content);
-            var stringContent = string.Join("\n", contentWithHeader);
-
-            // TODO handle return bool
-            // TODO handle return message
-            _fileSystemFacade.TrySave(
-                fileName, 
-                stringContent, 
                 out var message);
         }
     }

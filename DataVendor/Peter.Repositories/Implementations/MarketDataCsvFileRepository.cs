@@ -16,12 +16,10 @@ namespace Peter.Repositories.Implementations
         public MarketDataCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
-
-            var rawDownloadsDirectory = reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString();
-
-            WorkingDirectory = Path.Combine(_workingDirectory, rawDownloadsDirectory);
-
             _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
+            WorkingDirectory = Path.Combine(
+                _workingDirectory, 
+                reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString());
         }
 
         public IMarketDataEntities Load()
