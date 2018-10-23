@@ -42,7 +42,7 @@ namespace AnalysesManager.Services
         public void GenerateAnalyses()
         {
             Console.Write("Loading market data ...");
-            var marketData = _marketDataCsvFileRepository.Load().ToList();
+            var marketData = _marketDataCsvFileRepository.GetAll().ToList();
             if (ContainsDataWithoutIsin(marketData))
             {
                 Console.WriteLine("ERROR: There are marketdata without ISIN. No analysis generated.");

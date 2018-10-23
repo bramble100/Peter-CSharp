@@ -1,5 +1,7 @@
 ﻿using DataVendor.Models;
 using HtmlAgilityPack;
+using NLog;
+using NLog.Fluent;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
@@ -26,7 +28,7 @@ namespace DataVendor.Services
             string stockExchangeName)
         {
             IMarketDataEntities entities = new MarketDataEntities(rows.Select(row => GetMarketDataEntity(row, stockExchangeName)));
-            Console.WriteLine($"Number of records added from {stockExchangeName}: {entities.Count}");
+            LogManager.GetCurrentClassLogger().Info($"Number of records added from {stockExchangeName}: {entities.Count}");
             return entities;
         }
 
@@ -51,7 +53,7 @@ namespace DataVendor.Services
             return htmlDoc
                 .DocumentNode
                 .Descendants()
-                .Where(n => String.Equals(n.Name, "table"))
+                .Where(n => string.Equals(n.Name, "table"))
                 .ToList()[1];
         }
 
@@ -59,7 +61,7 @@ namespace DataVendor.Services
         {
             return htmlTable
                 .Descendants()
-                .Where(n => String.Equals(n.Name, "tr"))
+                .Where(n => string.Equals(n.Name, "tr"))
                 .Skip(3);
         }
     }

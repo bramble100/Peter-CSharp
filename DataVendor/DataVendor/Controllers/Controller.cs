@@ -7,14 +7,9 @@ namespace DataVendor.Controllers
         internal void WebToCsv()
         {
             var webService = new WebService();
-            var latestData = webService.DownloadFromWeb();
-            webService.Update(latestData);
+            webService.Update(webService.DownloadFromWeb());
         }
 
-        internal void AddIsins()
-        {
-            var isinAdderService = new IsinAdderService();
-            isinAdderService.AddIsinsToEntities();
-        }
+        internal void AddIsins() => new IsinAdderService().AddIsinsToEntities();
     }
 }

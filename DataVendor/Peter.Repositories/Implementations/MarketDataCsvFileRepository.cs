@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using NLog;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -13,20 +13,24 @@ namespace Peter.Repositories.Implementations
 {
     public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataCsvFileRepository
     {
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
+        private readonly IMarketDataEntities _entities;
+
         public MarketDataCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
-
-            var rawDownloadsDirectory = reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString();
-
-            WorkingDirectory = Path.Combine(_workingDirectory, rawDownloadsDirectory);
-
             _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
+            WorkingDirectory = Path.Combine(
+                _workingDirectory,
+                reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString());
+
+            _entities = Load();
         }
 
         public IMarketDataEntities Load()
         {
-            var filePath = Directory.GetFiles(_workingDirectory).Max();
+            var filePath = Directory.GetFiles(WorkingDirectory).Max();
 
             IMarketDataEntities entities = new MarketDataEntities();
 
@@ -44,36 +48,36 @@ namespace Peter.Repositories.Implementations
                     entities.Add(parser.ReadFields().ParserFromCSV());
                 }
             }
+            _logger.Info($"{entities.Count} new market data entities loaded.");
             return entities;
         }
 
         public void Update(IMarketDataEntities latestData)
         {
-            var entities = Load();
-            entities.AddRange(latestData);
-            entities.Sort();
-            Save(entities);
+            _entities.AddRange(latestData);
+            _logger.Info($"{latestData.Count} new market data entities added.");
+            SaveChanges();
         }
 
-        public void Save(IEnumerable<IMarketDataEntity> entities)
+        public void SaveChanges()
         {
-            _header = new string[]
-            {
-                "Name",
-                "ISIN",
-                "Closing Price",
-                "DateTime",
-                "Volumen",
-                "Previous Day Closing Price",
-                "Stock Exchange"
-            };
+            // TODO handle return bool
+            // TODO handle return message
+            CreateBackUp(
+                WorkingDirectory,
+                BackupDirectory,
+                _fileName);
 
-            List<string> strings = AddHeader(_header, _separator);
+            _entities.Sort();
 
-            strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
-
-            CreateBackUp(WorkingDirectory, BackupDirectory, _fileName);
-            SaveActualFile(WorkingDirectory, _fileName, strings);
+            SaveChanges(
+                CsvLineMarketData.Header,
+                // TODO use CsvLineMarketData for CSV formatting
+                _entities.Select(e => e.FormatterForCSV(_separator)),
+                Path.Combine(WorkingDirectory, _fileName),
+                _separator);
         }
+
+        public IMarketDataEntities GetAll() => _entities;
     }
 }

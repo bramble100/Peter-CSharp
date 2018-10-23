@@ -1,4 +1,5 @@
 ﻿using DataVendor.Models;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,8 @@ namespace DataVendor.Services
 
         private static byte[] Download(KeyValuePair<string, Uri> link, WebClient client)
         {
-            Console.WriteLine($"Downloading: {link.Key}");
+            var logger = LogManager.GetCurrentClassLogger();
+            logger.Info($"Downloading: {link.Key}");
             return client.DownloadData(link.Value);
         }
     }

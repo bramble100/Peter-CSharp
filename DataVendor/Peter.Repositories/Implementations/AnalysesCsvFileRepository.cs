@@ -42,10 +42,13 @@ namespace Peter.Repositories.Implementations
                 $" {DateTime.Now.ToString(reader.GetValue("DateFormatForFileName", typeof(string)).ToString())}" +
                 $".{reader.GetValue("CsvFileNameExtension", typeof(string)).ToString()}";
 
+            // clean up separator
+            // TODO handle return bool
+            // TODO handle return message
             SaveChanges(
                 CsvLineAnalysis.Header,
                 Entities.Select(e => CsvLineAnalysis.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
-                Path.Combine(_workingDirectory, _fileName),
+                Path.Combine(WorkingDirectory, _fileName),
                 ";");
         }
     }

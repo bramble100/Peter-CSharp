@@ -32,8 +32,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.10\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,13 +50,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\CsvLineIsin.cs" />
     <Compile Include="Helpers\CsvLineAnalysis.cs" />
+    <Compile Include="Helpers\CsvLineMarketData.cs" />
     <Compile Include="Helpers\CsvLineRegistryEntryWithIsin.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Implementations\CsvFileRepository.cs" />
     <Compile Include="Implementations\AnalysesCsvFileRepository.cs" />
+    <Compile Include="Implementations\FileSystemFacade.cs" />
     <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
     <Compile Include="Interfaces\IAnalysesCsvFileRepository.cs" />
+    <Compile Include="Interfaces\IFileSystemFacade.cs" />
     <Compile Include="Interfaces\IMarketDataCsvFileRepository.cs" />
     <Compile Include="Interfaces\IRegistryCsvFileRepository.cs" />
     <Compile Include="Interfaces\IIsinsCsvFileRepository.cs" />
@@ -61,6 +73,9 @@
       <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
       <Name>Peter.Models</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
