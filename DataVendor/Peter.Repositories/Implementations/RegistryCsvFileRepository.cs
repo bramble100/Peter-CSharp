@@ -62,12 +62,13 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            List<string> strings = AddHeader(CsvLineRegistryEntryWithIsin.Header, ";");
-
-            strings.AddRange(Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))));
-
             CreateBackUp(WorkingDirectory, BackupDirectory, _fileName);
-            SaveActualFile(WorkingDirectory, _fileName, strings);
+            // clean up separator
+            SaveChanges(
+                CsvLineRegistryEntryWithIsin.Header,
+                Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
+                Path.Combine(WorkingDirectory, _fileName),
+                _separator);
         }
 
         public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => newEntries.ToList().ForEach(e => Entities.Add(e));

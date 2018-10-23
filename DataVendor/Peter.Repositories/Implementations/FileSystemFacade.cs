@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Peter.Repositories.Interfaces;
 
 namespace Peter.Repositories.Implementations
@@ -35,7 +36,7 @@ namespace Peter.Repositories.Implementations
 
             try
             {
-                content = File.ReadAllText(fullPath);
+                content = File.ReadAllText(fullPath, Encoding.UTF8);
                 return true;
             }
             catch (Exception ex)
@@ -57,7 +58,7 @@ namespace Peter.Repositories.Implementations
                     Directory.CreateDirectory(dir);
                 }
 
-                File.WriteAllText(fullPath, content);
+                File.WriteAllText(fullPath, content, Encoding.UTF8);
                 return true;
             }
             catch (Exception ex)

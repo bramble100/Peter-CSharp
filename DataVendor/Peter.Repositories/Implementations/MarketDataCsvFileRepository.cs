@@ -68,12 +68,12 @@ namespace Peter.Repositories.Implementations
                 "Stock Exchange"
             };
 
-            List<string> strings = AddHeader(_header, _separator);
-
-            strings.AddRange(entities.Select(e => e.FormatterForCSV(_separator)));
-
             CreateBackUp(WorkingDirectory, BackupDirectory, _fileName);
-            SaveActualFile(WorkingDirectory, _fileName, strings);
+            SaveChanges(
+                _header,
+                entities.Select(e => e.FormatterForCSV(_separator)),
+                Path.Combine(WorkingDirectory, _fileName),
+                _separator);
         }
     }
 }
