@@ -57,12 +57,15 @@ namespace Peter.Repositories.Implementations
 
         public void Save(IEnumerable<IMarketDataEntity> entities)
         {
+            // TODO handle return bool
+            // TODO handle return message
             CreateBackUp(
                 WorkingDirectory, 
                 BackupDirectory, 
                 _fileName);
             SaveChanges(
                 CsvLineMarketData.Header,
+                // TODO use CsvLineMarketData for CSV formatting
                 entities.Select(e => e.FormatterForCSV(_separator)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
