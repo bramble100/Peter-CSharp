@@ -59,6 +59,7 @@
     <Compile Include="Implementations\AnalysesCsvFileRepository.cs" />
     <Compile Include="Implementations\FileSystemFacade.cs" />
     <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
+    <Compile Include="Exceptions\RepositoryException.cs" />
     <Compile Include="Interfaces\IAnalysesCsvFileRepository.cs" />
     <Compile Include="Interfaces\IFileSystemFacade.cs" />
     <Compile Include="Interfaces\IMarketDataCsvFileRepository.cs" />
