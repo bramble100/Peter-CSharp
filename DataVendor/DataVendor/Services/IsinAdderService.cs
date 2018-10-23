@@ -1,4 +1,5 @@
-﻿using Peter.Models.Interfaces;
+﻿using NLog;
+using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using System;
@@ -9,6 +10,8 @@ namespace DataVendor.Services
 {
     public class IsinAdderService
     {
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
         private readonly IIsinsCsvFileRepository _isinsCsvFileRepository;
 
@@ -20,33 +23,26 @@ namespace DataVendor.Services
 
         public void AddIsinsToEntities()
         {
-            Console.Write("Market data are loading ...");
-            var entities = _marketDataCsvFileRepository.Load();
-            Console.Write($" {entities.Count} lines are loaded.\n");
+            var entities = _marketDataCsvFileRepository.GetAll();
+            _logger.Info($"{entities.Count} lines of market data are loaded.");
 
-            Console.Write("ISINs are loading ...");
             var isins = _isinsCsvFileRepository.Load();
-            Console.Write($" {isins.Count} lines are loaded.\n");
+            _logger.Info($"{isins.Count} of ISIN lines are loaded.");
 
-            Console.Write("ISINs are being added ...");
             AddIsinToEntities(entities, isins);
-            Console.Write(" done.\n");
+            _logger.Info("ISINs are added.");
 
-            Console.Write("Market data are being saved ...");
-            _marketDataCsvFileRepository.Save(entities);
-            Console.Write(" done.\n");
+            _marketDataCsvFileRepository.SaveChanges();
+            _logger.Info("Market data saved.");
 
-            Console.Write("Unused ISINs are being removed ...");
             var count = RemoveIsinFromIsins(isins, entities);
-            Console.Write($" {count} ISIN(s) are removed.\n");
+            _logger.Info($"{count} ISIN(s) are removed.");
 
-            Console.Write("New names are being added ...");
             count = AddNewNames(isins, entities);
-            Console.Write($" {count} name(s) are added.\n");
+            _logger.Info($"{count} new name(s) are added.");
 
-            Console.Write("ISINs data are being saved ...");
             _isinsCsvFileRepository.Save(isins);
-            Console.Write(" done.\n");
+            _logger.Info("ISINs data are being saved");
         }
 
         private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsin isins)
