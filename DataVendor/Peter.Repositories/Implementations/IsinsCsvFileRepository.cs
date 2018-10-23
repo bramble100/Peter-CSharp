@@ -46,10 +46,18 @@ namespace Peter.Repositories.Implementations
 
         public void Save(INameToIsin isins)
         {
+            // TODO handle return bool
+            // TODO handle return message
+            CreateBackUp(
+                WorkingDirectory,
+                BackupDirectory,
+                _fileName);
+            // clean up separator
             SaveChanges(
                 CsvLineIsin.Header,
+                // TODO use CsvLineMarketData for CSV formatting
                 isins.Select(i => i.FormatterForCSV(_separator)),
-                Path.Combine(_workingDirectory, _fileName),
+                Path.Combine(WorkingDirectory, _fileName),
                 ";");
         }
     }

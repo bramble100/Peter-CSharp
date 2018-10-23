@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -19,6 +20,7 @@ namespace Peter.Repositories.Implementations
         protected string _workingDirectory;
 
         private readonly string _dateFormat;
+        private readonly IFileSystemFacade _fileSystemFacade;
 
         /// <summary>
         /// The directory in which the provider works.
@@ -77,6 +79,8 @@ namespace Peter.Repositories.Implementations
         /// </summary>
         public CsvFileRepository()
         {
+            _fileSystemFacade = new FileSystemFacade();
+
             var reader = new AppSettingsReader();
 
             _baseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
@@ -96,6 +100,20 @@ namespace Peter.Repositories.Implementations
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
         }
 
+        internal void SaveChanges(string[] header, IEnumerable<string> content, string fileName, string separator)
+        {
+            List<string> contentWithHeader = AddHeader(header, separator);
+            contentWithHeader.AddRange(content);
+            var stringContent = string.Join("\n", contentWithHeader);
+
+            // TODO handle return bool
+            // TODO handle return message
+            _fileSystemFacade.TrySave(
+                fileName,
+                stringContent,
+                out var message);
+        }
+
         protected static List<string> AddHeader(string[] header, string separator) => new List<string> { string.Join(separator, header) };
 
         protected static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
@@ -111,42 +129,14 @@ namespace Peter.Repositories.Implementations
 
         protected void CreateBackUp(string workingDir, string backupDir, string fileName)
         {
-            try
-            {
-                File.Move(
-                    Path.Combine(workingDir, fileName),
-                    Path.Combine(
+            // TODO handle return bool
+            // TODO handle return message
+            _fileSystemFacade.TryBackup(
+                Path.Combine(workingDir, fileName),
+                Path.Combine(
                         backupDir,
-                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Backup ({fileName}) cannot be created. {ex.Message}");
-            }
-        }
-
-        private static void SaveActualFile(string workingDir, string fileName, IEnumerable<string> content)
-        {
-            try
-            {
-                File.WriteAllLines(Path.Combine(workingDir, fileName), content, Encoding.UTF8);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            
-        }
-
-        internal static void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
-        {
-            List<string> strings = AddHeader(header, separator);
-            strings.AddRange(content);
-
-            File.WriteAllLines(
-                fullPath,
-                strings,
-                Encoding.UTF8);
+                        $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"),
+                out var message);
         }
     }
 }

@@ -16,12 +16,10 @@ namespace Peter.Repositories.Implementations
         public MarketDataCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
-
-            var rawDownloadsDirectory = reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString();
-
-            WorkingDirectory = Path.Combine(_workingDirectory, rawDownloadsDirectory);
-
             _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
+            WorkingDirectory = Path.Combine(
+                _workingDirectory, 
+                reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString());
         }
 
         public IMarketDataEntities Load()
@@ -57,12 +55,15 @@ namespace Peter.Repositories.Implementations
 
         public void Save(IEnumerable<IMarketDataEntity> entities)
         {
+            // TODO handle return bool
+            // TODO handle return message
             CreateBackUp(
                 WorkingDirectory, 
                 BackupDirectory, 
                 _fileName);
             SaveChanges(
                 CsvLineMarketData.Header,
+                // TODO use CsvLineMarketData for CSV formatting
                 entities.Select(e => e.FormatterForCSV(_separator)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
