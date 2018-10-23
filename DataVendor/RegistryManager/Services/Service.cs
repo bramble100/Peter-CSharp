@@ -20,7 +20,7 @@ namespace RegistryManager.Services
 
         internal void Update()
         {
-            var marketDataEntries = _marketDataCsvFileRepository.Load();
+            var marketDataEntries = _marketDataCsvFileRepository.GetAll();
 
             _registryCsvFileRepository.AddRange(GetNewRegistryEntries(marketDataEntries));
             _registryCsvFileRepository.RemoveRange(GetOutdatedRegistryEntries(marketDataEntries));
