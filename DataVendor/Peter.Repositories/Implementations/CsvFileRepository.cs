@@ -19,8 +19,6 @@ namespace Peter.Repositories.Implementations
         protected string _fileName;
         protected string _workingDirectory;
 
-        protected string[] _header;
-
         private readonly string _dateFormat;
         private readonly IFileSystemFacade _fileSystemFacade;
 

@@ -18,8 +18,6 @@ namespace Peter.Repositories.Implementations
         public IsinsCsvFileRepository() : base()
         {
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
-
-            _header = new string[] { "Name", "ISIN" };
         }
 
         /// <summary>
@@ -49,10 +47,10 @@ namespace Peter.Repositories.Implementations
         public void Save(INameToIsin isins)
         {
             SaveChanges(
-                _header,
+                CsvLineIsin.Header,
                 isins.Select(i => i.FormatterForCSV(_separator)),
-                Path.Combine(WorkingDirectory, _fileName),
-                _separator);
+                Path.Combine(_workingDirectory, _fileName),
+                ";");
         }
     }
 }

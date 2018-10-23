@@ -68,7 +68,7 @@ namespace Peter.Repositories.Implementations
                 CsvLineRegistryEntryWithIsin.Header,
                 Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
                 Path.Combine(WorkingDirectory, _fileName),
-                _separator);
+                ";");
         }
 
         public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => newEntries.ToList().ForEach(e => Entities.Add(e));

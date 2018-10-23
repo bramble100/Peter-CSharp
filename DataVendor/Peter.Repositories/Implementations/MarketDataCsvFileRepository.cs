@@ -57,20 +57,12 @@ namespace Peter.Repositories.Implementations
 
         public void Save(IEnumerable<IMarketDataEntity> entities)
         {
-            _header = new string[]
-            {
-                "Name",
-                "ISIN",
-                "Closing Price",
-                "DateTime",
-                "Volumen",
-                "Previous Day Closing Price",
-                "Stock Exchange"
-            };
-
-            CreateBackUp(WorkingDirectory, BackupDirectory, _fileName);
+            CreateBackUp(
+                WorkingDirectory, 
+                BackupDirectory, 
+                _fileName);
             SaveChanges(
-                _header,
+                CsvLineMarketData.Header,
                 entities.Select(e => e.FormatterForCSV(_separator)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
