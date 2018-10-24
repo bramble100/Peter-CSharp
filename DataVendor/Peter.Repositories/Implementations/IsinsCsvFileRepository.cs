@@ -6,46 +6,56 @@ using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
-    public class IsinsCsvFileRepository : CsvFileRepository, IIsinsCsvFileRepository
+    public class IsinsCsvFileRepository : CsvFileRepository, IIsinsRepository
     {
+        private readonly INameToIsin _isins;
         /// <summary>
         /// Constructor.
         /// </summary>
         public IsinsCsvFileRepository() : base()
         {
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
+            _isins = new NameToIsin();
+            Load();
         }
+
+        public INameToIsin GetAll() => _isins;
 
         /// <summary>
         /// Loads the CSV file and stores its content.
         /// </summary>
         /// <returns></returns>
-        public INameToIsin Load()
+        public void Load()
         {
             try
             {
-                var filePath = Path.Combine(_workingDirectory, _fileName);
-                INameToIsin isins = new NameToIsin();
+                Tuple<string, CultureInfo> baseInfo;
+                var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
-                using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
+                baseInfo = GetCsvSeparatorAndCultureInfo(
+                    File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
+
+                _logger.Info($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
+
+                using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {
-                    parser.SetDelimiters(_separator);
+                    parser.SetDelimiters(baseInfo.Item1);
 
                     RemoveHeader(parser);
 
                     while (!parser.EndOfData)
                     {
-                        isins.Add(parser.ReadFields());
+                        _isins.Add(parser.ReadFields());
                     }
                 }
-
-                return isins;
+                _logger.Info($"{_isins.Count} new ISIN entries loaded.");
             }
             catch (Exception ex)
             {
@@ -54,7 +64,7 @@ namespace Peter.Repositories.Implementations
             }
         }
 
-        public void Save(INameToIsin isins)
+        public void SaveChanges(INameToIsin isins)
         {
             CreateBackUp(
                 WorkingDirectory,
@@ -62,7 +72,7 @@ namespace Peter.Repositories.Implementations
                 _fileName);
             SaveChanges(
                 CsvLineIsin.Header,
-                // TODO use CsvLineMarketData for CSV formatting
+                // TODO use CsvLineIsin for CSV formatting
                 isins.Select(i => i.FormatterForCSV(_separator)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
