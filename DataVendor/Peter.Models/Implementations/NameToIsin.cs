@@ -1,5 +1,5 @@
-﻿using Peter.Models.Interfaces;
-using System;
+﻿using NLog;
+using Peter.Models.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -26,8 +26,7 @@ namespace Peter.Models.Implementations
             }
             else
             {
-                // TODO: log
-                Console.WriteLine($"ISIN cannot be added (name is null or empty).");
+                LogManager.GetCurrentClassLogger().Warn($"ISIN cannot be added (name is null or empty).");
             }
         }
 
@@ -39,8 +38,7 @@ namespace Peter.Models.Implementations
             }
             else
             {
-                // TODO: log
-                Console.WriteLine($"ISIN cannot be added (name is null or empty).");
+                LogManager.GetCurrentClassLogger().Warn($"ISIN cannot be added (name is null or empty).");
             }
         }
 

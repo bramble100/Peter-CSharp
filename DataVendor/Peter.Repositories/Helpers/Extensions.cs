@@ -8,7 +8,7 @@ namespace Peter.Repositories.Helpers
 {
     public static class Extensions
     {
-        private static readonly CultureInfo culture = new CultureInfo("en-US");
+        private static readonly CultureInfo culture = new CultureInfo("hu-HU");
 
         public static IMarketDataEntity ParserFromCSV(this IEnumerable<string> strings)
         {
@@ -24,24 +24,6 @@ namespace Peter.Repositories.Helpers
                 PreviousDayClosingPrice = Convert.ToDecimal(queue.Dequeue(), culture),
                 StockExchange = queue.Dequeue()
             };
-        }
-
-        /// <summary>
-        /// Returns a formatted string for writing into CSV file.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
-        public static string FormatterForCSV(this IMarketDataEntity entity, string separator)
-        {
-            return string.Join(separator,
-                entity.Name.WrapWithQuotes(),
-                entity.Isin,
-                entity.ClosingPrice.ToString(culture),
-                entity.DateTime.ToString(culture),
-                entity.Volumen.ToString(culture),
-                entity.PreviousDayClosingPrice.ToString(culture),
-                entity.StockExchange);
         }
 
         public static string FormatterForCSV(this KeyValuePair<string, string> kvp, string separator)

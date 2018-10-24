@@ -14,9 +14,11 @@ using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
-    public class RegistryCsvFileRepository : CsvFileRepository, IRegistryCsvFileRepository
+    public class RegistryCsvFileRepository : CsvFileRepository, IRegistryRepository
     {
-        public IRegistry Entities { get; }
+        private readonly IRegistry _entities;
+
+        public IEnumerable<string> Isins => _entities.Select(e => e.Key);
 
         public RegistryCsvFileRepository() : base()
         {
@@ -27,13 +29,12 @@ namespace Peter.Repositories.Implementations
                 reader.GetValue("WorkingDirectoryRegistry", typeof(string)).ToString());
             _fileName = reader.GetValue("RegistryFileName", typeof(string)).ToString();
 
-            Entities = new Registry();
+            _entities = new Registry();
             Load();
         }
 
         private void Load()
         {
-
             try
             {
                 Tuple<string, CultureInfo> baseInfo;
@@ -41,6 +42,8 @@ namespace Peter.Repositories.Implementations
 
                 baseInfo = GetCsvSeparatorAndCultureInfo(
                     File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
+
+                _logger.Info($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
                 using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
                 {
@@ -52,9 +55,11 @@ namespace Peter.Repositories.Implementations
                             parser.ReadFields(),
                             baseInfo.Item2,
                             out KeyValuePair<string, IRegistryEntry> result))
-                            Entities.Add(result);
+                            _entities.Add(result);
                     }
                 }
+
+                _logger.Info($"{_entities.Count} new registry item loaded.");
             }
             catch (Exception ex)
             {
@@ -69,16 +74,25 @@ namespace Peter.Repositories.Implementations
                 WorkingDirectory, 
                 BackupDirectory, 
                 _fileName);
-            // clean up separator
             SaveChanges(
                 CsvLineRegistryEntryWithIsin.Header,
-                Entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, ";", new CultureInfo("hu-HU"))),
+                _entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, _separator, new CultureInfo("hu-HU"))),
                 Path.Combine(WorkingDirectory, _fileName),
-                ";");
+                _separator);
         }
 
-        public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries) => newEntries.ToList().ForEach(e => Entities.Add(e));
+        public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries)
+        {
+            newEntries.ToList().ForEach(e => _entities.Add(e));
+            _logger.Info($"{newEntries.Count()} new registry item added.");
+        }
 
-        public void RemoveRange(IEnumerable<string> isins) => isins.ToList().ForEach(e => Entities.Remove(e));
+        public void RemoveRange(IEnumerable<string> isins)
+        {
+            isins.ToList().ForEach(e => _entities.Remove(e));
+            _logger.Info($"{isins.Count()} registry item removed.");
+        }
+
+        public IRegistry GetAll() => _entities.Select(e => e) as IRegistry;
     }
 }

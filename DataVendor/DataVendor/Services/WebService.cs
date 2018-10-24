@@ -6,7 +6,7 @@ namespace DataVendor.Services
 {
     public class WebService
     {
-        private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
+        private readonly IMarketDataRepository _marketDataCsvFileRepository;
 
         public WebService()
         {
@@ -20,6 +20,6 @@ namespace DataVendor.Services
                 .GetMarketDataEntities();
         }
 
-        internal void Update(IMarketDataEntities latestData) => _marketDataCsvFileRepository.Update(latestData);
+        internal void Update(IMarketDataEntities latestData) => _marketDataCsvFileRepository.AddRange(latestData);
     }
 }

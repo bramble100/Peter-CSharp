@@ -2,23 +2,23 @@
 
 namespace Peter.Repositories.Interfaces
 {
-    public interface IMarketDataCsvFileRepository
+    public interface IMarketDataRepository
     {
-        /// <summary>
-        /// Saves the entities into CSV file.
-        /// </summary>
-        void SaveChanges();
-
         /// <summary>
         /// Adds new market data to the existing data.
         /// </summary>
         /// <param name="latestData"></param>
-        void Update(IMarketDataEntities latestData);
+        void AddRange(IMarketDataEntities latestData);
 
         /// <summary>
         /// Gets all the stored entities.
         /// </summary>
         /// <returns></returns>
         IMarketDataEntities GetAll();
+
+        /// <summary>
+        /// Saves the entities into CSV file.
+        /// </summary>
+        void SaveChanges();
     }
 }

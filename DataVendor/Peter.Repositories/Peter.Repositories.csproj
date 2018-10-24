@@ -60,11 +60,11 @@
     <Compile Include="Implementations\FileSystemFacade.cs" />
     <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
     <Compile Include="Exceptions\RepositoryException.cs" />
-    <Compile Include="Interfaces\IAnalysesCsvFileRepository.cs" />
+    <Compile Include="Interfaces\IAnalysesRepository.cs" />
     <Compile Include="Interfaces\IFileSystemFacade.cs" />
-    <Compile Include="Interfaces\IMarketDataCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IRegistryCsvFileRepository.cs" />
-    <Compile Include="Interfaces\IIsinsCsvFileRepository.cs" />
+    <Compile Include="Interfaces\IMarketDataRepository.cs" />
+    <Compile Include="Interfaces\IRegistryRepository.cs" />
+    <Compile Include="Interfaces\IIsinsRepository.cs" />
     <Compile Include="Implementations\IsinsCsvFileRepository.cs" />
     <Compile Include="Implementations\MarketDataCsvFileRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

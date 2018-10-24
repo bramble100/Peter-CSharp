@@ -17,7 +17,7 @@ namespace Peter.Models.Implementations
         {
         }
 
-        public RegistryEntry(string name)
+        public RegistryEntry(string name) : this()
         {
             Name = name;
         }
@@ -46,5 +46,7 @@ namespace Peter.Models.Implementations
             hashCode = hashCode * -1521134295 + EqualityComparer<IFinancialAnalysis>.Default.GetHashCode(FinancialAnalysis);
             return hashCode;
         }
+
+        public override string ToString() => $"{Name}: {Position}";
     }
 }
