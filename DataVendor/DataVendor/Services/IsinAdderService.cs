@@ -12,8 +12,8 @@ namespace DataVendor.Services
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
-        private readonly IIsinsCsvFileRepository _isinsCsvFileRepository;
+        private readonly IMarketDataRepository _marketDataCsvFileRepository;
+        private readonly IIsinsRepository _isinsCsvFileRepository;
 
         public IsinAdderService()
         {
@@ -24,13 +24,10 @@ namespace DataVendor.Services
         public void AddIsinsToEntities()
         {
             var entities = _marketDataCsvFileRepository.GetAll();
-            _logger.Info($"{entities.Count} lines of market data are loaded.");
 
-            var isins = _isinsCsvFileRepository.Load();
-            _logger.Info($"{isins.Count} of ISIN lines are loaded.");
+            var isins = _isinsCsvFileRepository.GetAll();
 
             AddIsinToEntities(entities, isins);
-            _logger.Info("ISINs are added.");
 
             _marketDataCsvFileRepository.SaveChanges();
             _logger.Info("Market data saved.");
@@ -41,22 +38,17 @@ namespace DataVendor.Services
             count = AddNewNames(isins, entities);
             _logger.Info($"{count} new name(s) are added.");
 
-            _isinsCsvFileRepository.Save(isins);
-            _logger.Info("ISINs data are being saved");
+            _isinsCsvFileRepository.SaveChanges(isins);
         }
 
-        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsin isins)
-        {
+        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsin isins) => 
             entities
                 .Where(e => isins.ContainsKey(e.Name))
                 .ToList()
                 .ForEach(e => e.Isin = isins[e.Name]);
-        }
 
         private int RemoveIsinFromIsins(INameToIsin isins, IMarketDataEntities entities)
         {
-            // TODO: refactor
-
             var namesInEntities = entities
                 .Select(e => e.Name)
                 .Distinct();
