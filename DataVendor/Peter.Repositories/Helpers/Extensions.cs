@@ -8,7 +8,7 @@ namespace Peter.Repositories.Helpers
 {
     public static class Extensions
     {
-        private static readonly CultureInfo culture = new CultureInfo("en-US");
+        private static readonly CultureInfo culture = new CultureInfo("hu-HU");
 
         public static IMarketDataEntity ParserFromCSV(this IEnumerable<string> strings)
         {
