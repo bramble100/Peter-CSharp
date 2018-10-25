@@ -6,6 +6,7 @@ using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,17 +31,23 @@ namespace Peter.Repositories.Implementations
         {
             try
             {
-                var filePath = Path.Combine(_workingDirectory, _fileName);
+                Tuple<string, CultureInfo> baseInfo;
+                var fullPath = Path.Combine(WorkingDirectory, _fileName);
+
+                baseInfo = GetCsvSeparatorAndCultureInfo(
+                    File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
+
                 INameToIsin isins = new NameToIsin();
 
-                using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
+                using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {
-                    parser.SetDelimiters(_separator);
+                    parser.SetDelimiters(baseInfo.Item1);
 
                     RemoveHeader(parser);
 
                     while (!parser.EndOfData)
                     {
+                        // TODO add baseInfo culture
                         isins.Add(parser.ReadFields());
                     }
                 }

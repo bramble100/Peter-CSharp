@@ -5,7 +5,9 @@ using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
+using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,7 +33,11 @@ namespace Peter.Repositories.Implementations
         {
             try
             {
-                var filePath = Directory.GetFiles(WorkingDirectory).Max();
+                Tuple<string, CultureInfo> baseInfo;
+                var filePath = Path.Combine(_workingDirectory, _fileName);
+
+                baseInfo = GetCsvSeparatorAndCultureInfo(
+                    File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
 
                 IMarketDataEntities entities = new MarketDataEntities();
 
@@ -40,12 +46,13 @@ namespace Peter.Repositories.Implementations
 
                 using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
                 {
-                    parser.SetDelimiters(_separator);
+                    parser.SetDelimiters(baseInfo.Item1);
 
                     RemoveHeader(parser);
 
                     while (!parser.EndOfData)
                     {
+                        // TODO replace extension
                         entities.Add(parser.ReadFields().ParserFromCSV());
                     }
                 }
