@@ -17,6 +17,7 @@ namespace Peter.Repositories.Implementations
         protected readonly string _baseDirectory;
         protected readonly string _fileNameExtension;
         protected readonly string _separator;
+        protected readonly CultureInfo _cultureInfo;
 
         protected string _backupDirectory;
         protected string _fileName;
@@ -50,15 +51,9 @@ namespace Peter.Repositories.Implementations
             get => _backupDirectory;
             set
             {
-                if (Directory.Exists(value))
-                {
-                    _backupDirectory = value;
-                    return;
-                }
-
                 try
                 {
-                    Directory.CreateDirectory(value);
+                    Directory.CreateDirectory(value);                    
                     _backupDirectory = value;
                 }
                 catch (Exception ex)
@@ -93,6 +88,7 @@ namespace Peter.Repositories.Implementations
             _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
             _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
+            _cultureInfo = new CultureInfo("hu-HU");
         }
 
         internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
@@ -104,6 +100,7 @@ namespace Peter.Repositories.Implementations
                 var stringContent = string.Join("\n", contentWithHeader);
 
                 _fileSystemFacade.Save(fullPath, stringContent);
+                _logger.Info($"{Path.GetFileName(fullPath)} saved.");
             }
             catch (Exception ex)
             {
@@ -136,6 +133,7 @@ namespace Peter.Repositories.Implementations
                     Path.Combine(
                         backupDir,
                         $"{Path.GetFileNameWithoutExtension(fileName)} {DateTime.Now.ToString(_dateFormat)}{Path.GetExtension(fileName)}"));
+                _logger.Info($"{fileName} backed up.");
             }
             catch (Exception ex)
             {

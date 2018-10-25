@@ -13,9 +13,9 @@ using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
-    public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataCsvFileRepository
+    public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataRepository
     {
-        private readonly IMarketDataEntities _entities;
+        private readonly IMarketDataEntities _entities;        
 
         public MarketDataCsvFileRepository() : base()
         {
@@ -24,26 +24,23 @@ namespace Peter.Repositories.Implementations
             WorkingDirectory = Path.Combine(
                 _workingDirectory,
                 reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString());
-
-            _entities = Load();
+            _entities = new MarketDataEntities();
+            Load();
         }
 
-        public IMarketDataEntities Load()
+        public void Load()
         {
             try
             {
                 Tuple<string, CultureInfo> baseInfo;
-                var filePath = Path.Combine(_workingDirectory, _fileName);
+                var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
                 baseInfo = GetCsvSeparatorAndCultureInfo(
-                    File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
+                    File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
 
-                IMarketDataEntities entities = new MarketDataEntities();
+                _logger.Info($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
-                if (string.IsNullOrWhiteSpace(filePath))
-                    return entities;
-
-                using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
+                using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {
                     parser.SetDelimiters(baseInfo.Item1);
 
@@ -51,25 +48,28 @@ namespace Peter.Repositories.Implementations
 
                     while (!parser.EndOfData)
                     {
-                        // TODO replace extension
-                        entities.Add(parser.ReadFields().ParserFromCSV());
+                        if (CsvLineMarketData.TryParseFromCsv(
+                            parser.ReadFields(),
+                            baseInfo.Item2,
+                            out IMarketDataEntity result))
+                        {
+                            _entities.Add(result);
+                        }
                     }
                 }
-                _logger.Info($"{entities.Count} new market data entities loaded.");
-                return entities;
+                _logger.Info($"{_entities.Count} new market data entities loaded.");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error($"Error when loading entities in {GetType().Name}.");
                 throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
             }
         }
 
-        public void Update(IMarketDataEntities latestData)
+        public void AddRange(IMarketDataEntities latestData)
         {
             _entities.AddRange(latestData);
             _logger.Info($"{latestData.Count} new market data entities added.");
-            SaveChanges();
         }
 
         public void SaveChanges()
@@ -83,8 +83,7 @@ namespace Peter.Repositories.Implementations
 
             SaveChanges(
                 CsvLineMarketData.Header,
-                // TODO use CsvLineMarketData for CSV formatting
-                _entities.Select(e => e.FormatterForCSV(_separator)),
+                _entities.Select(e => CsvLineMarketData.FormatForCSV(e,_separator, _cultureInfo)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
         }

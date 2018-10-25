@@ -26,24 +26,6 @@ namespace Peter.Repositories.Helpers
             };
         }
 
-        /// <summary>
-        /// Returns a formatted string for writing into CSV file.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
-        public static string FormatterForCSV(this IMarketDataEntity entity, string separator)
-        {
-            return string.Join(separator,
-                entity.Name.WrapWithQuotes(),
-                entity.Isin,
-                entity.ClosingPrice.ToString(culture),
-                entity.DateTime.ToString(culture),
-                entity.Volumen.ToString(culture),
-                entity.PreviousDayClosingPrice.ToString(culture),
-                entity.StockExchange);
-        }
-
         public static string FormatterForCSV(this KeyValuePair<string, string> kvp, string separator)
         {
             return string.Join(separator,

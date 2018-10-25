@@ -13,21 +13,26 @@ using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
-    public class IsinsCsvFileRepository : CsvFileRepository, IIsinsCsvFileRepository
+    public class IsinsCsvFileRepository : CsvFileRepository, IIsinsRepository
     {
+        private readonly INameToIsin _isins;
         /// <summary>
         /// Constructor.
         /// </summary>
         public IsinsCsvFileRepository() : base()
         {
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
+            _isins = new NameToIsin();
+            Load();
         }
+
+        public INameToIsin GetAll() => _isins;
 
         /// <summary>
         /// Loads the CSV file and stores its content.
         /// </summary>
         /// <returns></returns>
-        public INameToIsin Load()
+        public void Load()
         {
             try
             {
@@ -37,7 +42,7 @@ namespace Peter.Repositories.Implementations
                 baseInfo = GetCsvSeparatorAndCultureInfo(
                     File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
 
-                INameToIsin isins = new NameToIsin();
+                _logger.Info($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
                 using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {
@@ -47,12 +52,10 @@ namespace Peter.Repositories.Implementations
 
                     while (!parser.EndOfData)
                     {
-                        // TODO add baseInfo culture
-                        isins.Add(parser.ReadFields());
+                        _isins.Add(parser.ReadFields());
                     }
                 }
-
-                return isins;
+                _logger.Info($"{_isins.Count} new ISIN entries loaded.");
             }
             catch (Exception ex)
             {
@@ -61,7 +64,7 @@ namespace Peter.Repositories.Implementations
             }
         }
 
-        public void Save(INameToIsin isins)
+        public void SaveChanges(INameToIsin isins)
         {
             CreateBackUp(
                 WorkingDirectory,

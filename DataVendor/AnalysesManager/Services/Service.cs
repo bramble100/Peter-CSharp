@@ -12,9 +12,9 @@ namespace AnalysesManager.Services
 {
     public class Service
     {
-        private readonly IAnalysesCsvFileRepository _financialAnalysesCsvFileRepository;
-        private readonly IMarketDataCsvFileRepository _marketDataCsvFileRepository;
-        private readonly IRegistryCsvFileRepository _registryCsvFileRepository;
+        private readonly IAnalysesRepository _financialAnalysesCsvFileRepository;
+        private readonly IMarketDataRepository _marketDataRepository;
+        private readonly IRegistryRepository _registryRepository;
 
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
@@ -23,8 +23,8 @@ namespace AnalysesManager.Services
         public Service()
         {
             _financialAnalysesCsvFileRepository = new AnalysesCsvFileRepository();
-            _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
-            _registryCsvFileRepository = new RegistryCsvFileRepository();
+            _marketDataRepository = new MarketDataCsvFileRepository();
+            _registryRepository = new RegistryCsvFileRepository();
 
             var reader = new AppSettingsReader();
             _fastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
@@ -42,7 +42,7 @@ namespace AnalysesManager.Services
         public void GenerateAnalyses()
         {
             Console.Write("Loading market data ...");
-            var marketData = _marketDataCsvFileRepository.GetAll().ToList();
+            var marketData = _marketDataRepository.GetAll().ToList();
             if (ContainsDataWithoutIsin(marketData))
             {
                 Console.WriteLine("ERROR: There are marketdata without ISIN. No analysis generated.");
@@ -58,8 +58,8 @@ namespace AnalysesManager.Services
             Console.Write($" {marketData.Count} data entries remained.\n");
 
             Console.Write("Loading registry ...");
-            var localRegistry = new Registry(_registryCsvFileRepository
-                .Entities
+            var localRegistry = new Registry(_registryRepository
+                .GetAll()
                 .Where(entry => !(entry.Value?.FinancialReport?.EPS < 0)));
             Console.Write($" {localRegistry.Count} entries loaded.\n");
 
@@ -97,8 +97,8 @@ namespace AnalysesManager.Services
             }
             var isin = groupedMarketData.First().Isin;
 
-            var stockBaseData = _registryCsvFileRepository
-                .Entities
+            var stockBaseData = _registryRepository
+                .GetAll()
                 .First(e => string.Equals(e.Key, isin))
                 .Value;
 
