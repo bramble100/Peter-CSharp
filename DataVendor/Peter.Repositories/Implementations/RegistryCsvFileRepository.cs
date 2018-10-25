@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using NLog;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
@@ -16,6 +17,8 @@ namespace Peter.Repositories.Implementations
 {
     public class RegistryCsvFileRepository : CsvFileRepository, IRegistryRepository
     {
+        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly IRegistry _entities;
 
         public IEnumerable<string> Isins => _entities.Select(e => e.Key);
@@ -24,8 +27,8 @@ namespace Peter.Repositories.Implementations
         {
             var reader = new AppSettingsReader();
 
-            _workingDirectory = Path.Combine(
-                _workingDirectory,
+            WorkingDirectory = Path.Combine(
+                WorkingDirectory,
                 reader.GetValue("WorkingDirectoryRegistry", typeof(string)).ToString());
             _fileName = reader.GetValue("RegistryFileName", typeof(string)).ToString();
 
@@ -38,12 +41,12 @@ namespace Peter.Repositories.Implementations
             try
             {
                 Tuple<string, CultureInfo> baseInfo;
-                var filePath = Path.Combine(_workingDirectory, _fileName);
+                var filePath = Path.Combine(WorkingDirectory, _fileName);
 
                 baseInfo = GetCsvSeparatorAndCultureInfo(
                     File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
 
-                _logger.Info($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
+                _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
                 using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
                 {
@@ -93,6 +96,6 @@ namespace Peter.Repositories.Implementations
             _logger.Info($"{isins.Count()} registry item removed.");
         }
 
-        public IRegistry GetAll() => _entities.Select(e => e) as IRegistry;
+        public IRegistry GetAll() => new Registry(_entities.Select(e => e));
     }
 }
