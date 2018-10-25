@@ -69,7 +69,7 @@ namespace Peter.Repositories.Implementations
                 _fileName);
             SaveChanges(
                 CsvLineIsin.Header,
-                // TODO use CsvLineMarketData for CSV formatting
+                // TODO use CsvLineIsin for CSV formatting
                 isins.Select(i => i.FormatterForCSV(_separator)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
