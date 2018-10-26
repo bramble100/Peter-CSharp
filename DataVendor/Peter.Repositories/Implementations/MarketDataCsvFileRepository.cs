@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using NLog;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
@@ -15,6 +16,8 @@ namespace Peter.Repositories.Implementations
 {
     public class MarketDataCsvFileRepository : CsvFileRepository, IMarketDataRepository
     {
+        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly IMarketDataEntities _entities;        
 
         public MarketDataCsvFileRepository() : base()
@@ -22,7 +25,7 @@ namespace Peter.Repositories.Implementations
             var reader = new AppSettingsReader();
             _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
             WorkingDirectory = Path.Combine(
-                _workingDirectory,
+                WorkingDirectory,
                 reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString());
             _entities = new MarketDataEntities();
             Load();
@@ -38,7 +41,7 @@ namespace Peter.Repositories.Implementations
                 baseInfo = GetCsvSeparatorAndCultureInfo(
                     File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
 
-                _logger.Info($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
+                _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
                 using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {

@@ -1,4 +1,5 @@
-﻿using Peter.Models.Enums;
+﻿using NLog;
+using Peter.Models.Enums;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
@@ -12,6 +13,8 @@ namespace AnalysesManager.Services
 {
     public class Service
     {
+        protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly IAnalysesRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
@@ -22,55 +25,71 @@ namespace AnalysesManager.Services
 
         public Service()
         {
-            _financialAnalysesCsvFileRepository = new AnalysesCsvFileRepository();
-            _marketDataRepository = new MarketDataCsvFileRepository();
-            _registryRepository = new RegistryCsvFileRepository();
-
-            var reader = new AppSettingsReader();
-            _fastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
-            _slowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
-
-            if (_fastMovingAverage >= _slowMovingAverage)
+            try
             {
-                throw new Exception($"The timespan for the fast moving average ({_fastMovingAverage}) " +
-                    $"must be lower than of the slow moving average ({_slowMovingAverage}).");
-            }
+                _financialAnalysesCsvFileRepository = new AnalysesCsvFileRepository();
+                _marketDataRepository = new MarketDataCsvFileRepository();
+                _registryRepository = new RegistryCsvFileRepository();
 
-            _buyingPacketInEuro = (int)reader.GetValue("BuyingPacketInEuro", typeof(int));
+                var reader = new AppSettingsReader();
+
+                _buyingPacketInEuro = (int)reader.GetValue("BuyingPacketInEuro", typeof(int));
+                _fastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
+                _slowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
+
+                _logger.Debug($"Buying Packet is {_buyingPacketInEuro} EUR from config file.");
+                _logger.Debug($"Fast Moving Average subset size is {_fastMovingAverage} from config file.");
+                _logger.Debug($"Slow Moving Average subset size is {_slowMovingAverage} from config file.");
+
+                if (_fastMovingAverage >= _slowMovingAverage)
+                {
+                    throw new BusinessException("The timespan for the fast moving average must be lower than of the slow moving average.");
+                }
+                if (_buyingPacketInEuro <= 0 || _fastMovingAverage <=0 || _slowMovingAverage <= 0)
+                {
+                    throw new BusinessException("Buying packet and moving average subset sizes must be positive numbers.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                throw new BusinessException($"Error when initializing {GetType().Name}.", ex);
+            }
         }
 
         public void GenerateAnalyses()
         {
-            Console.Write("Loading market data ...");
+            _logger.Info("Start generating analyses.");
+
             var marketData = _marketDataRepository.GetAll().ToList();
             if (ContainsDataWithoutIsin(marketData))
             {
-                Console.WriteLine("ERROR: There are marketdata without ISIN. No analysis generated.");
-                return;
+                throw new BusinessException("There are marketdata without ISIN. No analysis generated.");
             }
 
-            Console.Write($" {marketData.Count} data entries loaded.\n");
-
-
-            Console.Write("Removing discontinued market data rows ...");
+            _logger.Info("Removing discontinued market data rows.");
             var latestDate = marketData.Max(d => d.DateTime).Date;
             RemoveEntriesWithoutUptodateData(marketData, latestDate);
-            Console.Write($" {marketData.Count} data entries remained.\n");
+            _logger.Info($"Having discontinued market data rows removed {marketData.Count} data entries remained.");
 
-            Console.Write("Loading registry ...");
-            var localRegistry = new Registry(_registryRepository
+            var filteredRegistry = new Registry(
+                _registryRepository
                 .GetAll()
-                .Where(entry => !(entry.Value?.FinancialReport?.EPS < 0)));
-            Console.Write($" {localRegistry.Count} entries loaded.\n");
+                .Where(entry => entry.Value?.FinancialReport?.EPS > 0));
+            _logger.Info($"{filteredRegistry.Count()} registry entry found with positive EPS.");
 
-            Console.WriteLine("Grouping market data.");
             var groupedMarketData = from data in marketData
-                                    where localRegistry.ContainsKey(data.Isin)
+                                    where filteredRegistry.ContainsKey(data.Isin)
                                     group data by data.Isin into dataByIsin
-                                    select dataByIsin.OrderByDescending(d => d.DateTime).Take(_slowMovingAverage);
+                                    select dataByIsin
+                                        .OrderByDescending(d => d.DateTime)
+                                        .Take(_slowMovingAverage);
 
-            Console.WriteLine("Saving analyses.");
-            _financialAnalysesCsvFileRepository.AddRange(groupedMarketData.Select(GetAnalysis));
+            var analyses = groupedMarketData.Select(GetAnalysis);
+            _logger.Info($"{analyses.Count()} analyses generated.");
+
+            _financialAnalysesCsvFileRepository.AddRange(analyses);
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
 
@@ -147,7 +166,7 @@ namespace AnalysesManager.Services
             {
                 return Trend.Up;
             }
-            else if(analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
+            else if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
             {
                 return Trend.Down;
             }

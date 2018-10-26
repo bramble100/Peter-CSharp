@@ -1,16 +1,37 @@
 ﻿using AnalysesManager.Services;
+using NLog;
+using System;
 
 namespace AnalysesManager.Controllers
 {
     public class Controller
     {
+        protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly Service _service;
 
         public Controller()
         {
-            _service = new Service();
+            try
+            {
+                _service = new Service();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
-        public void GenerateAnalyses() => _service.GenerateAnalyses();
+        public void GenerateAnalyses()
+        {
+            try
+            {
+                _service.GenerateAnalyses();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
     }
 }
