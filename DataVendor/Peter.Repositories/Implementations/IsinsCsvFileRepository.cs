@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using NLog;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
@@ -15,6 +16,8 @@ namespace Peter.Repositories.Implementations
 {
     public class IsinsCsvFileRepository : CsvFileRepository, IIsinsRepository
     {
+        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly INameToIsin _isins;
         /// <summary>
         /// Constructor.
@@ -42,7 +45,7 @@ namespace Peter.Repositories.Implementations
                 baseInfo = GetCsvSeparatorAndCultureInfo(
                     File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
 
-                _logger.Info($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
+                _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
                 using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {

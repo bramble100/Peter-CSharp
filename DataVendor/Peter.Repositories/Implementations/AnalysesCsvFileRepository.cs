@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using NLog;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
@@ -12,24 +13,31 @@ namespace Peter.Repositories.Implementations
 {
     public class AnalysesCsvFileRepository : CsvFileRepository, IAnalysesRepository
     {
+        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private Dictionary<string, IAnalysis> _entities;
 
         public AnalysesCsvFileRepository() : base()
         {
-            var reader = new AppSettingsReader();
-
-            _workingDirectory = Path.Combine(
-                _workingDirectory,
-                reader.GetValue("WorkingDirectoryAnalyses", typeof(string)).ToString());
+            WorkingDirectory = Path.Combine(
+                WorkingDirectory,
+                new AppSettingsReader().GetValue("WorkingDirectoryAnalyses", typeof(string)).ToString());
 
             _entities = new Dictionary<string, IAnalysis>();
         }
 
-        public void Add(KeyValuePair<string, IAnalysis> analysis) =>
+        public void Add(KeyValuePair<string, IAnalysis> analysis)
+        {
             _entities.Add(analysis.Key, analysis.Value);
+        }
 
         public void AddRange(IEnumerable<KeyValuePair<string, IAnalysis>> analyses)
         {
+            if (analyses == null)
+            {
+                throw new ArgumentNullException(nameof(analyses));
+            }
+
             analyses.ToList().ForEach(Add);
             _logger.Info($"{analyses.Count()} new analyses added.");
         }
