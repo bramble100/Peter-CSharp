@@ -8,30 +8,20 @@ namespace AnalysesManager.Controllers
     {
         protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly Service _service;
-
-        public Controller()
-        {
-            try
-            {
-                _service = new Service();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-            }
-        }
-
         public void GenerateAnalyses()
         {
+            _logger.Info("*** Generate Analyses ***");
+
             try
             {
-                _service.GenerateAnalyses();
+                new Service().GenerateAnalyses();
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
             }
+
+            _logger.Info("*** *** ***");
         }
     }
 }

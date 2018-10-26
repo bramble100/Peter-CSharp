@@ -18,10 +18,11 @@ namespace Peter.Repositories.Implementations
         protected readonly string _separator;
         protected readonly CultureInfo _cultureInfo;
 
-        protected string _backupDirectory;
-        protected string _baseDirectory;
         protected string _fileName;
-        protected string _workingDirectory;
+
+        private string _backupDirectory;
+        private string _baseDirectory;
+        private string _workingDirectory;
 
         private readonly string _dateFormat;
         private readonly IFileSystemFacade _fileSystemFacade;
@@ -98,23 +99,24 @@ namespace Peter.Repositories.Implementations
 
             var reader = new AppSettingsReader();
 
+
             BaseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
             if (string.IsNullOrWhiteSpace(BaseDirectory) || string.Equals(BaseDirectory.ToLower(), "desktop"))
             {
                 BaseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
 
-            BackupDirectory = Path.Combine(_workingDirectory, reader.GetValue("BackupDirectory", typeof(string)).ToString());
-            WorkingDirectory = Path.Combine(_baseDirectory, reader.GetValue("WorkingDirectory", typeof(string)).ToString());
+            WorkingDirectory = Path.Combine(BaseDirectory, reader.GetValue("WorkingDirectory", typeof(string)).ToString());
+            BackupDirectory = Path.Combine(WorkingDirectory, reader.GetValue("BackupDirectory", typeof(string)).ToString());
 
             _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
             _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
             _cultureInfo = new CultureInfo(reader.GetValue("CultureInfo", typeof(string)).ToString());
 
-            _logger.Debug($"Base directory is {_baseDirectory} from config file.");
-            _logger.Debug($"Working directory is {_workingDirectory} from config file.");
-            _logger.Debug($"Backup directory is {_backupDirectory} from config file.");
+            _logger.Debug($"Base directory is {BaseDirectory} from config file.");
+            _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
+            _logger.Debug($"Backup directory is {BackupDirectory} from config file.");
 
             _logger.Debug($"File name for file writing is {_fileName} from config file.");
             _logger.Debug($"File name extension is {_fileNameExtension} from config file.");
