@@ -19,12 +19,15 @@ namespace Peter.Repositories.Implementations
         protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly INameToIsin _isins;
+
         /// <summary>
         /// Constructor.
         /// </summary>
         public IsinsCsvFileRepository() : base()
         {
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
+            _logger.Debug($"Isin filename is {_fileName} from config file.");
+
             _isins = new NameToIsin();
             Load();
         }
