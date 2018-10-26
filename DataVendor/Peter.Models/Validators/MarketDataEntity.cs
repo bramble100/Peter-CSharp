@@ -5,11 +5,11 @@ namespace Peter.Models.Validators
 {
     public static class MarketDataEntity
     {
-        public static bool TryParseClosingPrice(string input, out decimal output)
+        public static bool TryParseClosingPrice(string input, CultureInfo cultureInfo, out decimal output)
         {
             try
             {
-                output = Convert.ToDecimal(input.Trim(), new CultureInfo("hu-HU"));
+                output = Convert.ToDecimal(input.Trim(), cultureInfo);
                 return output > 0;
             }
             catch (Exception)
