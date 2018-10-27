@@ -135,9 +135,10 @@ namespace AnalysesManager.Services
                     .SetFastSMA(groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
                     .SetSlowSMA(groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
                     .Build(),
-                FinancialAnalysis = new FinancialAnalysis(
-                    groupedMarketData.FirstOrDefault().ClosingPrice,
-                    stockBaseData.FinancialReport?.EPS)
+                FinancialAnalysis = new FinancialAnalysisBuilder()
+                    .SetClosingPrice(groupedMarketData.FirstOrDefault().ClosingPrice)
+                    .SetEPS(stockBaseData.FinancialReport?.EPS)
+                    .Build()
             };
 
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
