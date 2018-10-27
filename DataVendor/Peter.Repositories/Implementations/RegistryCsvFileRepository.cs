@@ -44,14 +44,14 @@ namespace Peter.Repositories.Implementations
             try
             {
                 Tuple<string, CultureInfo> baseInfo;
-                var filePath = Path.Combine(WorkingDirectory, _fileName);
+                var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
                 baseInfo = GetCsvSeparatorAndCultureInfo(
-                    File.ReadLines(filePath, Encoding.UTF8).FirstOrDefault());
+                    File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
 
                 _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
-                using (var parser = new TextFieldParser(filePath, Encoding.UTF8))
+                using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {
                     parser.SetDelimiters(baseInfo.Item1);
                     RemoveHeader(parser);
