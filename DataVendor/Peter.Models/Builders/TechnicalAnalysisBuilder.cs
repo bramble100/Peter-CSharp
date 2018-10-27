@@ -1,13 +1,12 @@
-﻿using Peter.Models.Enums;
-using Peter.Models.Implementations;
+﻿using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
 
 namespace Peter.Models.Builders
 {
-    public class TechnicalAnalysisBuilder : IBuilder<TechnicalAnalysis>
+    public class TechnicalAnalysisBuilder : IBuilder<ITechnicalAnalysis>
     {
-        private readonly TechnicalAnalysis _technicalAnalysis;
+        private readonly ITechnicalAnalysis _technicalAnalysis;
         private bool _fastSMAset;
         private bool _slowSMAset;
 
@@ -30,6 +29,6 @@ namespace Peter.Models.Builders
             return this;
         }
 
-        public TechnicalAnalysis Build() => _fastSMAset && _slowSMAset ? _technicalAnalysis : null;
+        public ITechnicalAnalysis Build() => _fastSMAset && _slowSMAset ? _technicalAnalysis : null;
     }
 }
