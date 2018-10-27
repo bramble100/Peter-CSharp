@@ -30,7 +30,10 @@ namespace Peter.Repositories.Implementations
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
                 reader.GetValue("WorkingDirectoryRegistry", typeof(string)).ToString());
+            _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
+
             _fileName = reader.GetValue("RegistryFileName", typeof(string)).ToString();
+            _logger.Debug($"Market data filename is {_fileName} from config file.");
 
             _entities = new Registry();
             Load();

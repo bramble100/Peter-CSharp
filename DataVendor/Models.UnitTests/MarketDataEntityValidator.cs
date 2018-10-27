@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Peter.Models.Validators;
+using System.Globalization;
 
 namespace Models.UnitTests
 {
@@ -17,7 +18,7 @@ namespace Models.UnitTests
         public void TryParseClosingPrice_WithValid_ShouldReturnTrue()
         {
             MarketDataEntity
-                .TryParseClosingPrice(_validString, out var result)
+                .TryParseClosingPrice(_validString, new CultureInfo("hu-HU"), out var result)
                 .Should()
                 .BeTrue();
 
@@ -28,7 +29,7 @@ namespace Models.UnitTests
         public void TryParseClosingPrice_WithEmpty_ShouldReturnFalse()
         {
             MarketDataEntity
-                .TryParseClosingPrice(_empty, out var result)
+                .TryParseClosingPrice(_empty, new CultureInfo("hu-HU"), out var result)
                 .Should()
                 .BeFalse();
         }
@@ -37,7 +38,7 @@ namespace Models.UnitTests
         public void TryParseClosingPrice_WithZero_ShouldReturnFalse()
         {
             MarketDataEntity
-                .TryParseClosingPrice(_zero, out var result)
+                .TryParseClosingPrice(_zero, new CultureInfo("hu-HU"), out var result)
                 .Should()
                 .BeFalse();
         }
@@ -46,7 +47,7 @@ namespace Models.UnitTests
         public void TryParseClosingPrice_WithNegative_ShouldReturnFalse()
         {
             MarketDataEntity
-                .TryParseClosingPrice(_negative, out var result)
+                .TryParseClosingPrice(_negative, new CultureInfo("hu-HU"), out var result)
                 .Should()
                 .BeFalse();
         }

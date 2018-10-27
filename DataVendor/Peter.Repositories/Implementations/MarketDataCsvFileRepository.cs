@@ -18,15 +18,20 @@ namespace Peter.Repositories.Implementations
     {
         protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IMarketDataEntities _entities;        
+        private readonly IMarketDataEntities _entities;
 
         public MarketDataCsvFileRepository() : base()
         {
             var reader = new AppSettingsReader();
-            _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
+
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
                 reader.GetValue("WorkingDirectoryRawDownloads", typeof(string)).ToString());
+            _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
+
+            _fileName = reader.GetValue("MarketDataFileName", typeof(string)).ToString();
+            _logger.Debug($"Market data filename is {_fileName} from config file.");
+
             _entities = new MarketDataEntities();
             Load();
         }
@@ -86,7 +91,7 @@ namespace Peter.Repositories.Implementations
 
             SaveChanges(
                 CsvLineMarketData.Header,
-                _entities.Select(e => CsvLineMarketData.FormatForCSV(e,_separator, _cultureInfo)),
+                _entities.Select(e => CsvLineMarketData.FormatForCSV(e, _separator, _cultureInfo)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
         }
