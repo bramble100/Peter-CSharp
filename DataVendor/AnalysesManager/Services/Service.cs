@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Peter.Models.Builders;
 using Peter.Models.Enums;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
@@ -45,7 +46,7 @@ namespace AnalysesManager.Services
                 {
                     throw new BusinessException("The timespan for the fast moving average must be lower than of the slow moving average.");
                 }
-                if (_buyingPacketInEuro <= 0 || _fastMovingAverage <=0 || _slowMovingAverage <= 0)
+                if (_buyingPacketInEuro <= 0 || _fastMovingAverage <= 0 || _slowMovingAverage <= 0)
                 {
                     throw new BusinessException("Buying packet and moving average subset sizes must be positive numbers.");
                 }
@@ -93,7 +94,7 @@ namespace AnalysesManager.Services
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
 
-        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) => 
+        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
             keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
@@ -119,6 +120,7 @@ namespace AnalysesManager.Services
             }
             var isin = groupedMarketData.First().Isin;
 
+            // TODO add registry repository GetByIsin()
             var stockBaseData = _registryRepository
                 .GetAll()
                 .First(e => string.Equals(e.Key, isin))
@@ -129,11 +131,10 @@ namespace AnalysesManager.Services
                 Name = stockBaseData.Name,
                 ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
                 QtyInBuyingPacket = (int)Math.Floor(_buyingPacketInEuro / groupedMarketData.FirstOrDefault().ClosingPrice),
-                TechnicalAnalysis = new TechnicalAnalysis
-                {
-                    FastSMA = groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice),
-                    SlowSMA = groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice),
-                },
+                TechnicalAnalysis = new TechnicalAnalysisBuilder()
+                    .SetFastSMA(groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
+                    .SetSlowSMA(groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
+                    .Build(),
                 FinancialAnalysis = new FinancialAnalysis(
                     groupedMarketData.FirstOrDefault().ClosingPrice,
                     stockBaseData.FinancialReport?.EPS)
