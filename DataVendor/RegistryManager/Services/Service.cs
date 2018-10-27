@@ -39,7 +39,8 @@ namespace RegistryManager.Services
                     isin,
                     new RegistryEntry(
                         marketDataEntries
-                        .First(d => string.Equals(isin, d.Isin)).Name)));
+                        .First(d => string.Equals(isin, d.Isin))
+                        .Name)));
         }
 
         private IEnumerable<string> GetOutdatedRegistryEntries(IMarketDataEntities marketDataEntries)
