@@ -1,4 +1,5 @@
-﻿using Peter.Models.Implementations;
+﻿using Peter.Models.Builders;
+using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -32,28 +33,16 @@ namespace Peter.Repositories.Helpers
             }
             try
             {
-                FinancialReport report = null;
-                try
-                {
-                    if(!(string.IsNullOrWhiteSpace(input[4]) && 
-                        string.IsNullOrWhiteSpace(input[5]) &&
-                        string.IsNullOrWhiteSpace(input[6])))
-                    {
-                        report = new FinancialReport(
-                            Convert.ToDecimal(input[4], cultureInfo),
-                            Convert.ToInt32(input[5]),
-                            Convert.ToDateTime(input[6], cultureInfo));
-                    }
-                }
-                catch
-                {
-                }
                 result = new KeyValuePair<string, IRegistryEntry>(input[1], new RegistryEntry
                 {
                     Name = input[0],
                     StockExchangeLink = input[2],
                     OwnInvestorLink = input[3],
-                    FinancialReport = report
+                    FinancialReport = new FinancialReportBuilder()
+                        .SetEPS(input[4])
+                        .SetMonthsInReport(input[5])
+                        .SetNextReportDate(input[6])
+                        .Build()
                 });
                 return true;
             }

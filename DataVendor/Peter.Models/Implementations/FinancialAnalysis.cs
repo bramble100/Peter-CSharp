@@ -5,7 +5,11 @@ namespace Peter.Models.Implementations
 {
     public class FinancialAnalysis : IFinancialAnalysis
     {
-        public FinancialAnalysis(decimal closingPrice, decimal? eps)
+        public FinancialAnalysis()
+        {
+        }
+
+        public FinancialAnalysis(decimal closingPrice, decimal? eps) : this()
         {
             if (eps == null || eps == 0) return;
             PE = Math.Round(closingPrice / (decimal)eps, 1);

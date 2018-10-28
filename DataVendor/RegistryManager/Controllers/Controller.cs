@@ -9,7 +9,7 @@ namespace RegistryManager.Controllers
 
         internal void Update()
         {
-            _logger.Info("*** Update ***");
+            _logger.Info("*** Update Registry ***");
 
             try
             {
