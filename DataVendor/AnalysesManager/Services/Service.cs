@@ -76,7 +76,7 @@ namespace AnalysesManager.Services
             var filteredRegistry = new Registry(
                 _registryRepository
                 .GetAll()
-                .Where(entry => entry.Value?.FinancialReport?.EPS > 0));
+                .Where(RegistryItemIsInteresting));
             _logger.Info($"{filteredRegistry.Count()} registry entry found with positive EPS.");
 
             var groupedMarketData = from data in marketData
@@ -92,6 +92,9 @@ namespace AnalysesManager.Services
             _financialAnalysesCsvFileRepository.AddRange(analyses);
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
+
+        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) => 
+            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
             marketData.Any(d => string.IsNullOrWhiteSpace(d.Isin));

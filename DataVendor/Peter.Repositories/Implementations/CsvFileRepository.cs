@@ -14,34 +14,18 @@ namespace Peter.Repositories.Implementations
     {
         protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        protected readonly string _baseDirectory;
         protected readonly string _fileNameExtension;
         protected readonly string _separator;
         protected readonly CultureInfo _cultureInfo;
 
-        protected string _backupDirectory;
         protected string _fileName;
-        protected string _workingDirectory;
+
+        private string _backupDirectory;
+        private string _baseDirectory;
+        private string _workingDirectory;
 
         private readonly string _dateFormat;
         private readonly IFileSystemFacade _fileSystemFacade;
-
-        /// <summary>
-        /// The directory in which the provider works.
-        /// </summary>
-        protected string WorkingDirectory
-        {
-            get => _workingDirectory;
-            set
-            {
-                if (!Directory.Exists(value))
-                {
-                    _logger.Error($"Working directory ({value}) does not exist.");
-                    throw new RepositoryException($"Working directory ({value}) does not exist.");
-                }
-                _workingDirectory = value;
-            }
-        }
 
         /// <summary>
         /// The directory in which the provider saves backups.
@@ -53,13 +37,55 @@ namespace Peter.Repositories.Implementations
             {
                 try
                 {
-                    Directory.CreateDirectory(value);                    
+                    Directory.CreateDirectory(value);
                     _backupDirectory = value;
                 }
                 catch (Exception ex)
                 {
                     _logger.Error(ex, $"Backup directory ({value}) cannot be created. {ex.Message}");
                     throw new RepositoryException($"Backup directory ({value}) cannot be created. {ex.Message}", ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The root directory in which the provider saves everything.
+        /// </summary>
+        protected string BaseDirectory
+        {
+            get => _baseDirectory;
+            set
+            {
+                try
+                {
+                    Directory.CreateDirectory(value);
+                    _baseDirectory = value;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, $"Base directory ({value}) cannot be created. {ex.Message}");
+                    throw new RepositoryException($"Base directory ({value}) cannot be created. {ex.Message}", ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The directory in which the provider works.
+        /// </summary>
+        protected string WorkingDirectory
+        {
+            get => _workingDirectory;
+            set
+            {
+                try
+                {
+                    Directory.CreateDirectory(value);
+                    _workingDirectory = value;
+                }
+                catch (Exception)
+                {
+                    _logger.Error($"Working directory ({value}) does not exist.");
+                    throw new RepositoryException($"Working directory ({value}) does not exist.");
                 }
             }
         }
@@ -73,25 +99,32 @@ namespace Peter.Repositories.Implementations
 
             var reader = new AppSettingsReader();
 
-            _baseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
-            if (string.IsNullOrWhiteSpace(_baseDirectory) || string.Equals(_baseDirectory.ToLower(), "desktop"))
+
+            BaseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
+            if (string.IsNullOrWhiteSpace(BaseDirectory) || string.Equals(BaseDirectory.ToLower(), "desktop"))
             {
-                _baseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                BaseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
 
-            _workingDirectory = reader.GetValue("WorkingDirectory", typeof(string)).ToString();
-            WorkingDirectory = Path.Combine(_baseDirectory, _workingDirectory);
-
-            _backupDirectory = reader.GetValue("BackupDirectory", typeof(string)).ToString();
-            BackupDirectory = Path.Combine(_workingDirectory, _backupDirectory);
+            WorkingDirectory = Path.Combine(BaseDirectory, reader.GetValue("WorkingDirectory", typeof(string)).ToString());
+            BackupDirectory = Path.Combine(WorkingDirectory, reader.GetValue("BackupDirectory", typeof(string)).ToString());
 
             _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
             _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
             _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
-            _cultureInfo = new CultureInfo("hu-HU");
-        }
+            _cultureInfo = new CultureInfo(reader.GetValue("CultureInfo", typeof(string)).ToString());
 
-        internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
+            _logger.Debug($"Base directory is {BaseDirectory} from config file.");
+            _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
+            _logger.Debug($"Backup directory is {BackupDirectory} from config file.");
+
+            _logger.Debug($"File name for file writing is {_fileName} from config file.");
+            _logger.Debug($"File name extension is {_fileNameExtension} from config file.");
+            _logger.Debug($"Culture info for file writing is {_cultureInfo} from config file.");
+            _logger.Debug($"CSV separator is {_separator} from config file.");
+    }
+
+    internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
         {
             try
             {

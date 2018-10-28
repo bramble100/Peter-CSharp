@@ -22,6 +22,7 @@ namespace Peter.Repositories.Implementations
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
                 new AppSettingsReader().GetValue("WorkingDirectoryAnalyses", typeof(string)).ToString());
+            _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
 
             _entities = new Dictionary<string, IAnalysis>();
         }
