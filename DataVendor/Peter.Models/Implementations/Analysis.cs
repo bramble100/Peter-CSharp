@@ -1,5 +1,4 @@
 ﻿using Peter.Models.Interfaces;
-using System;
 using System.Collections.Generic;
 
 namespace Peter.Models.Implementations
@@ -35,6 +34,6 @@ namespace Peter.Models.Implementations
             return hashCode;
         }
 
-        public override string ToString() => $"{Name} {ClosingPrice} {QtyInBuyingPacket}";
+        public override string ToString() => $"{Name} Closing: {ClosingPrice} {QtyInBuyingPacket}";
     }
 }
