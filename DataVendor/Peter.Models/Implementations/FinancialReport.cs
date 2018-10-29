@@ -45,5 +45,8 @@ namespace Peter.Models.Implementations
             hashCode = hashCode * -1521134295 + NextReportDate.GetHashCode();
             return hashCode;
         }
+
+        public override string ToString() => 
+            $"EPS: {EPS} Months: {MonthsInReport} Next Report: {NextReportDate}";
     }
 }
