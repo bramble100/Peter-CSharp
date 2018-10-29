@@ -79,7 +79,7 @@ namespace AnalysesManager.UnitTests
                 }
             };
 
-            Services.Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
+            Services.Service.RemoveEntriesWithoutUptodateData(testMarketData);
             testMarketData.Should().Equal(expectedMarketData);
         }
 
