@@ -70,10 +70,10 @@ namespace AnalysesManager.Services
             }
 
             _logger.Info("Removing discontinued market data rows.");
-            var latestDate = marketData.Max(d => d.DateTime).Date;
-            RemoveEntriesWithoutUptodateData(marketData, latestDate);
+            RemoveEntriesWithoutUptodateData(marketData);
             _logger.Info($"Having discontinued market data rows removed {marketData.Count} data entries remained.");
 
+            _logger.Info("Filtering registry entries.");
             var filteredRegistry = new Registry(
                 _registryRepository
                 .GetAll()
@@ -100,10 +100,15 @@ namespace AnalysesManager.Services
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
             marketData.Any(d => string.IsNullOrWhiteSpace(d.Isin));
 
-        internal static void RemoveEntriesWithoutUptodateData(
-            List<IMarketDataEntity> marketData,
-            DateTime latestDate) =>
-                marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
+        internal static void RemoveEntriesWithoutUptodateData(List<IMarketDataEntity> marketData)
+        {
+            var latestDate = marketData.Max(d => d.DateTime).Date;
+            marketData.RemoveAll(
+                d => marketData
+                    .Where(d2 => string.Equals(d.Isin, d2.Isin))
+                    .Max(d3 => d3.DateTime)
+                    .Date < latestDate);
+        }
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
@@ -138,6 +143,7 @@ namespace AnalysesManager.Services
                 FinancialAnalysis = new FinancialAnalysisBuilder()
                     .SetClosingPrice(groupedMarketData.FirstOrDefault().ClosingPrice)
                     .SetEPS(stockBaseData.FinancialReport?.EPS)
+                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
                     .Build()
             };
 
@@ -155,7 +161,7 @@ namespace AnalysesManager.Services
             {
                 return TAZ.AboveTAZ;
             }
-            else if (analysis.ClosingPrice < Math.Min(
+            if (analysis.ClosingPrice < Math.Min(
                 analysis.TechnicalAnalysis.FastSMA,
                 analysis.TechnicalAnalysis.SlowSMA))
             {
@@ -171,7 +177,7 @@ namespace AnalysesManager.Services
             {
                 return Trend.Up;
             }
-            else if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
+            if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
             {
                 return Trend.Down;
             }
