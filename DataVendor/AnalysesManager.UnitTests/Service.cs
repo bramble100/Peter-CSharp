@@ -21,7 +21,7 @@ namespace AnalysesManager.UnitTests
                     Isin=string.Empty
                 }
             };
-            Services.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeTrue();
+            Services.Implementations.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeTrue();
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace AnalysesManager.UnitTests
                     Isin="Keep"
                 }
             };
-            Services.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeFalse();
+            Services.Implementations.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeFalse();
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace AnalysesManager.UnitTests
                 }
             };
 
-            Services.Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
+            Services.Implementations.Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
             testMarketData.Should().Equal(expectedMarketData);
         }
 

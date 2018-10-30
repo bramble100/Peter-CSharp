@@ -67,6 +67,9 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.8.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.8.1\lib\net45\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.8.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.8.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
@@ -90,7 +93,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Controller.cs" />
+    <Compile Include="Controllers\Implementations\Controller.cs" />
+    <Compile Include="Controllers\Interfaces\IController.cs" />
     <Compile Include="Services\IsinAdderService.cs" />
     <Compile Include="Models\DataVendorBasicData.cs" />
     <Compile Include="Models\StockExchangesHtmls.cs" />

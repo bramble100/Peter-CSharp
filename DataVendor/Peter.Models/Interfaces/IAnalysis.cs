@@ -1,6 +1,8 @@
-﻿namespace Peter.Models.Interfaces
+﻿using System;
+
+namespace Peter.Models.Interfaces
 {
-    public interface IAnalysis
+    public interface IAnalysis : IEquatable<IAnalysis>
     {
         /// <summary>
         /// Name of the share.
