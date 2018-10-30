@@ -26,28 +26,16 @@ namespace Models.UnitTests
                 .Build());
         }
 
-        [Test]
-        public void WithCorrectInput_ReturnsCorrectResult()
+        [TestCase(48, 3)]
+        [TestCase(24, 6)]
+        [TestCase(16, 9)]
+        [TestCase(12, 12)]
+        public void WithCorrectInput_ReturnsCorrectResult(int expectedPE, int months)
         {
-            Assert.AreEqual(48, new Peter.Models.Builders.FinancialAnalysisBuilder()
+            Assert.AreEqual(expectedPE, new Peter.Models.Builders.FinancialAnalysisBuilder()
                 .SetClosingPrice(60)
                 .SetEPS(5)
-                .SetMonthsInReport(3)
-                .Build().PE);
-            Assert.AreEqual(24, new Peter.Models.Builders.FinancialAnalysisBuilder()
-                .SetClosingPrice(60)
-                .SetEPS(5)
-                .SetMonthsInReport(6)
-                .Build().PE);
-            Assert.AreEqual(16, new Peter.Models.Builders.FinancialAnalysisBuilder()
-                .SetClosingPrice(60)
-                .SetEPS(5)
-                .SetMonthsInReport(9)
-                .Build().PE);
-            Assert.AreEqual(12, new Peter.Models.Builders.FinancialAnalysisBuilder()
-                .SetClosingPrice(60)
-                .SetEPS(5)
-                .SetMonthsInReport(12)
+                .SetMonthsInReport(months)
                 .Build().PE);
         }
     }
