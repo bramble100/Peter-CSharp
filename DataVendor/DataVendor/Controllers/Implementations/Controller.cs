@@ -1,14 +1,15 @@
-﻿using DataVendor.Services;
+﻿using DataVendor.Controllers.Interfaces;
+using DataVendor.Services;
 using NLog;
 using System;
 
-namespace DataVendor.Controllers
+namespace DataVendor.Controllers.Implementations
 {
-    public class Controller
+    public class Controller : IController
     {
         protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        internal void WebToCsv()
+        public void WebToCsv()
         {
             _logger.Info("*** Web To Csv ***");
 
@@ -25,7 +26,7 @@ namespace DataVendor.Controllers
             _logger.Info("*** *** ***");
         }
 
-        internal void AddIsins()
+        public void AddIsins()
         {
             _logger.Info("*** Add Isins ***");
 
