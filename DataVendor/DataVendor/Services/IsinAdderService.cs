@@ -39,6 +39,7 @@ namespace DataVendor.Services
             _logger.Info($"{count} new name(s) are added.");
 
             _isinsCsvFileRepository.SaveChanges(isins);
+            _logger.Info("ISINs saved.");
         }
 
         private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsin isins) => 
