@@ -1,4 +1,6 @@
-using DataVendor.Controllers;
+using Autofac;
+using DataVendor.Controllers.Implementations;
+using DataVendor.Controllers.Interfaces;
 using NLog;
 using System;
 using System.Configuration;
@@ -9,18 +11,23 @@ namespace DataVendor
     class Program
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private IController _controller;
 
         static void Main(string[] args)
         {
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new Controller()).As<IController>();
+            var container = builder.Build();
+
             var reader = new AppSettingsReader();
 
             try
             {
-                if (!args.Any() || string.Equals(args[0].ToLower(), reader.GetValue("FetchNewMarketData", typeof(string))))
+                if (!args.Any() || Equals(args[0].ToLower(), reader.GetValue("FetchNewMarketData", typeof(string))))
                 {
                     new Controller().WebToCsv();
                 }
-                else if (string.Equals(args[0].ToLower(), reader.GetValue("UpdateMarketDataWithISINs", typeof(string))))
+                else if (Equals(args[0].ToLower(), reader.GetValue("UpdateMarketDataWithISINs", typeof(string))))
                 {
                     new Controller().AddIsins();
                 }

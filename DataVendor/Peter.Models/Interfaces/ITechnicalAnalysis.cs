@@ -1,11 +1,12 @@
 ﻿using Peter.Models.Enums;
+using System;
 
 namespace Peter.Models.Interfaces
 {
     /// <summary>
     /// The indicators and numbers calculated from the market data.
     /// </summary>
-    public interface ITechnicalAnalysis
+    public interface ITechnicalAnalysis : IEquatable<ITechnicalAnalysis>
     {
         /// <summary>
         /// Fast Simple Moving Average.
