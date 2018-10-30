@@ -1,12 +1,21 @@
-﻿using AnalysesManager.Services;
+﻿using AnalysesManager.Controllers.Interfaces;
+using AnalysesManager.Services.Implementations;
+using AnalysesManager.Services.Interfaces;
 using NLog;
 using System;
 
-namespace AnalysesManager.Controllers
+namespace AnalysesManager.Controllers.Implementations
 {
-    public class Controller
+    public class Controller : IController
     {
         protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
+        private readonly IService _service;
+
+        public Controller()
+        {
+            _service = new Service();
+        }
 
         public void GenerateAnalyses()
         {
@@ -14,7 +23,7 @@ namespace AnalysesManager.Controllers
 
             try
             {
-                new Service().GenerateAnalyses();
+                _service.GenerateAnalyses();
             }
             catch (Exception ex)
             {
