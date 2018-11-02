@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FinancialAnalysisBuilder.cs" />
     <Compile Include="IsinValidator_IsValidOrEmpty.cs" />
     <Compile Include="IsinValidator_IsValid.cs" />
     <Compile Include="MarketDataEntityValidator.cs" />

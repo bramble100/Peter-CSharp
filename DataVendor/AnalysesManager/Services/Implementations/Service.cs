@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using AnalysesManager.Services.Interfaces;
+using NLog;
 using Peter.Models.Builders;
 using Peter.Models.Enums;
 using Peter.Models.Implementations;
@@ -10,9 +11,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 
-namespace AnalysesManager.Services
+namespace AnalysesManager.Services.Implementations
 {
-    public class Service
+    public class Service : IService
     {
         protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
@@ -70,10 +71,10 @@ namespace AnalysesManager.Services
             }
 
             _logger.Info("Removing discontinued market data rows.");
-            RemoveEntriesWithoutUptodateData(marketData);
+            var latestDate = marketData.Max(d => d.DateTime).Date;
+            RemoveEntriesWithoutUptodateData(marketData, latestDate);
             _logger.Info($"Having discontinued market data rows removed {marketData.Count} data entries remained.");
 
-            _logger.Info("Filtering registry entries.");
             var filteredRegistry = new Registry(
                 _registryRepository
                 .GetAll()
@@ -94,21 +95,16 @@ namespace AnalysesManager.Services
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
 
-        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
-            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
-
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
             marketData.Any(d => string.IsNullOrWhiteSpace(d.Isin));
 
-        internal static void RemoveEntriesWithoutUptodateData(List<IMarketDataEntity> marketData)
-        {
-            var latestDate = marketData.Max(d => d.DateTime).Date;
-            marketData.RemoveAll(
-                d => marketData
-                    .Where(d2 => string.Equals(d.Isin, d2.Isin))
-                    .Max(d3 => d3.DateTime)
-                    .Date < latestDate);
-        }
+        internal static void RemoveEntriesWithoutUptodateData(
+            List<IMarketDataEntity> marketData,
+            DateTime latestDate) =>
+                marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
+
+        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
+            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
@@ -143,7 +139,6 @@ namespace AnalysesManager.Services
                 FinancialAnalysis = new FinancialAnalysisBuilder()
                     .SetClosingPrice(groupedMarketData.FirstOrDefault().ClosingPrice)
                     .SetEPS(stockBaseData.FinancialReport?.EPS)
-                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
                     .Build()
             };
 
@@ -161,7 +156,7 @@ namespace AnalysesManager.Services
             {
                 return TAZ.AboveTAZ;
             }
-            if (analysis.ClosingPrice < Math.Min(
+            else if (analysis.ClosingPrice < Math.Min(
                 analysis.TechnicalAnalysis.FastSMA,
                 analysis.TechnicalAnalysis.SlowSMA))
             {
@@ -177,7 +172,7 @@ namespace AnalysesManager.Services
             {
                 return Trend.Up;
             }
-            if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
+            else if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
             {
                 return Trend.Down;
             }
