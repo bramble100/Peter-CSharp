@@ -137,6 +137,7 @@ namespace AnalysesManager.Services.Implementations
                     .SetSlowSMA(groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
                     .Build(),
                 FinancialAnalysis = new FinancialAnalysisBuilder()
+                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
                     .SetClosingPrice(groupedMarketData.FirstOrDefault().ClosingPrice)
                     .SetEPS(stockBaseData.FinancialReport?.EPS)
                     .Build()
