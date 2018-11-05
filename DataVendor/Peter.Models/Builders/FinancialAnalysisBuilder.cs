@@ -57,7 +57,7 @@ namespace Peter.Models.Builders
                 return null;
             }
 
-            _financialAnalysis.PE = Math.Round(_closingPrice / _eps / _monthsInReport * 12, 2);
+            _financialAnalysis.PE = Math.Round(_closingPrice * _monthsInReport / _eps / 12, 2);
             return _financialAnalysis;
         }
     }
