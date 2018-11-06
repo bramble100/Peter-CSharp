@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using Peter.Models.Implementations;
 
 namespace Models.UnitTests
 {
@@ -26,9 +25,9 @@ namespace Models.UnitTests
                 .Build());
         }
 
-        [TestCase(48, 3)]
-        [TestCase(24, 6)]
-        [TestCase(16, 9)]
+        [TestCase(3, 3)]
+        [TestCase(6, 6)]
+        [TestCase(9, 9)]
         [TestCase(12, 12)]
         public void WithCorrectInput_ReturnsCorrectResult(int expectedPE, int months)
         {
