@@ -12,7 +12,15 @@ namespace Repositories.UnitTests
     [TestFixture]
     public class CsvLineRegistryEntryWithIsin_FormatterForCsv
     {
-        private readonly KeyValuePair<string, IRegistryEntry> _validregistryEntry = new KeyValuePair<string, IRegistryEntry>(
+        private readonly KeyValuePair<string, IRegistryEntry> _validregistryEntry;
+        private readonly CultureInfo _cultureInfo;
+        private readonly string _validResult;
+
+        public CsvLineRegistryEntryWithIsin_FormatterForCsv()
+        {
+            _cultureInfo = CultureInfo.CurrentCulture;
+
+            _validregistryEntry = new KeyValuePair<string, IRegistryEntry>(
             "DE0005408116",
             new RegistryEntry
             {
@@ -22,11 +30,31 @@ namespace Repositories.UnitTests
                 FinancialReport = new FinancialReport(2.08m, 6, DateTime.Now.AddDays(1).Date),
                 Position = Position.NoPosition
             });
-        private readonly string _validResult = 
-            $@"Aareal Bank AG,DE0005408116,2.08,6,{DateTime.Now.AddDays(1).Date.ToString(new CultureInfo("us-EN"))},http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116,http://www.aareal-bank.com/investor-relations/,NoPosition";
+
+            _validResult =
+                $"\"Aareal Bank AG\"" +
+                ";DE0005408116" +
+                $@";http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116" +
+                $@";http://www.aareal-bank.com/investor-relations/" +
+                $";\"{2.08m.ToString(_cultureInfo)}\"" +
+                ";6" +
+                $";{DateTime.Now.AddDays(1).Date.ToString(_cultureInfo)}" +
+                $";NoPosition";
+        }
 
         [Test]
-        public void WithValidInput_ReturnsTrueAndValidResult() => 
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.FormatForCSV(_validregistryEntry, ";", new CultureInfo("hu-HU")).Should().Be(_validResult);
+        public void WithValidInput_ReturnsTrueAndValidResult()
+        {
+            var result = Peter
+                .Repositories
+                .Helpers
+                .CsvLineRegistryEntryWithIsin
+                .FormatForCSV(
+                    _validregistryEntry,
+                    ";",
+                    _cultureInfo);
+
+            result.Should().Be(_validResult);
+        }
     }
 }
