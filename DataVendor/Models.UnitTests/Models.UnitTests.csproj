@@ -52,8 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FinancialAnalysisBuilder.cs" />
-    <Compile Include="IsinValidator_IsValidOrEmpty.cs" />
-    <Compile Include="IsinValidator_IsValid.cs" />
+    <Compile Include="ValidatorTests\IsinValidator_IsValidOrEmpty.cs" />
+    <Compile Include="ValidatorTests\IsinValidator_IsValid.cs" />
     <Compile Include="MarketDataEntityValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
