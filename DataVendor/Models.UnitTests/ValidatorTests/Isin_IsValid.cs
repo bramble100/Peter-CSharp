@@ -5,7 +5,7 @@ using Peter.Models.Validators;
 namespace Models.UnitTests.ValidatorTests
 {
     [TestFixture]
-    public class IsinValidator_IsValid
+    public class Isin_IsValid
     {
         private readonly string _valid = "AB1234567890";
 
