@@ -1,6 +1,5 @@
 ﻿using Peter.Models.Enums;
 using Peter.Models.Interfaces;
-using System;
 
 namespace Peter.Models.Implementations
 {

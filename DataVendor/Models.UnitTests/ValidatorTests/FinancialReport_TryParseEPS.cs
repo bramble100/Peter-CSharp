@@ -7,26 +7,16 @@ namespace Models.UnitTests.ValidatorTests
     [TestFixture]
     public class FinancialReport_TryParseEPS
     {
-        private readonly decimal _validResult = 2000.08m;
-
-        private readonly string _valid = "2000,08";
-
-        private readonly string _empty = string.Empty;
-        private readonly string _invalidChar = "x";
-
-        [Test]
-        public void ReturnsTrue_WhenInputIsValid()
+        [TestCase("2000,08", 2000.08)]
+        public void ReturnsTrue_WhenInputIsValid(string input, decimal expected)
         {
-            FinancialReport.TryParseEPS(_valid, out var result).Should().BeTrue();
-            result.Should().Be(_validResult);
+            FinancialReport.TryParseEPS(input, out var result).Should().BeTrue();
+            result.Should().Be(expected);
         }
 
-        [Test]
-        public void ReturnsFalse_WhenInputIsInValidEmpty() => 
-            FinancialReport.TryParseEPS(_empty, out var result).Should().BeFalse();
-
-        [Test]
-        public void ReturnsFalse_WhenInputIsInValidChar() =>
-            FinancialReport.TryParseEPS(_invalidChar, out var result).Should().BeFalse();
+        [TestCase("")]
+        [TestCase("x")]
+        public void ReturnsFalse_WhenInputIsInvalid(string input) => 
+            FinancialReport.TryParseEPS(input, out var result).Should().BeFalse();
     }
 }

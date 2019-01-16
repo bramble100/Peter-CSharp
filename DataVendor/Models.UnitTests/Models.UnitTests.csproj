@@ -52,6 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FinancialAnalysisBuilder.cs" />
+    <Compile Include="ValidatorTests\FinancialReport_TryParseNextReportDate.cs" />
+    <Compile Include="ValidatorTests\FinancialReport_TryParseMonthsInReport.cs" />
     <Compile Include="ValidatorTests\FinancialReport_TryParseEPS.cs" />
     <Compile Include="ValidatorTests\Isin_IsValidOrEmpty.cs" />
     <Compile Include="ValidatorTests\Isin_IsValid.cs" />
