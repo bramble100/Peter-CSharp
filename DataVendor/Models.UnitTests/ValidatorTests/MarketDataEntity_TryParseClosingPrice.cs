@@ -25,22 +25,23 @@ namespace Models.UnitTests.ValidatorTests
             result.Should().Be(expected);
         }
 
-        [TestCase(null, "hu-HU", 1.8)]
-        [TestCase("", "hu-HU", 1.8)]
-        [TestCase("", "en-US", 1.8)]
-        [TestCase("x", "hu-HU", 1.8)]
-        [TestCase("x", "en-US", 1.8)]
-        [TestCase("1.8", "hu-HU", 1.8)]
+        [TestCase(null, "hu-HU")]
+        [TestCase("", "hu-HU")]
+        [TestCase("", "en-US")]
+        [TestCase("x", "hu-HU")]
+        [TestCase("x", "en-US")]
+        [TestCase("1.8", "hu-HU")]
+        [TestCase("0", "hu-HU")]
+        [TestCase("-4", "hu-HU")]
         public void ReturnsFalse_WhenInputIsInvalid(
             string input, 
-            string cultureInfoString, 
-            decimal expected)
+            string cultureInfoString)
         {
             MarketDataEntity
                 .TryParseClosingPrice(
                     input, 
                     new CultureInfo(cultureInfoString), 
-                    out var result)
+                    out var _)
                 .Should()
                 .BeFalse();
         }

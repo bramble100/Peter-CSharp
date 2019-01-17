@@ -21,6 +21,6 @@ namespace Models.UnitTests.ValidatorTests
         [TestCase("")]
         [TestCase("x")]
         public void ReturnsFalse_WhenInputIsInvalid(string input) =>
-            FinancialReport.TryParseNextReportDate(input, out var result).Should().BeFalse();
+            FinancialReport.TryParseNextReportDate(input, out var _).Should().BeFalse();
     }
 }

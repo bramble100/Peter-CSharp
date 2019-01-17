@@ -18,6 +18,6 @@ namespace Models.UnitTests.ValidatorTests
         [TestCase("")]
         [TestCase("x")]
         public void ReturnsFalse_WhenInputIsInvalid(string input) => 
-            FinancialReport.TryParseEPS(input, out var result).Should().BeFalse();
+            FinancialReport.TryParseEPS(input, out var _).Should().BeFalse();
     }
 }

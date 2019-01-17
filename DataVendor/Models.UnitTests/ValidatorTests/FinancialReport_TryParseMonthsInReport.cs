@@ -25,6 +25,6 @@ namespace Models.UnitTests.ValidatorTests
         [TestCase("4,5")]
         [TestCase("4.5")]
         public void ReturnsFalse_WhenInputIsInvalid(string input) => 
-            FinancialReport.TryParseMonthsInReport(input, out var result).Should().BeFalse();
+            FinancialReport.TryParseMonthsInReport(input, out var _).Should().BeFalse();
     }
 }
