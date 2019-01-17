@@ -14,6 +14,7 @@ namespace Models.UnitTests.ValidatorTests
             result.Should().Be(expected);
         }
 
+        [TestCase(null)]
         [TestCase("")]
         [TestCase("x")]
         public void ReturnsFalse_WhenInputIsInvalid(string input) => 

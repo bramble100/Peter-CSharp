@@ -25,6 +25,7 @@ namespace Models.UnitTests.ValidatorTests
             result.Should().Be(expected);
         }
 
+        [TestCase(null, "hu-HU", 1.8)]
         [TestCase("", "hu-HU", 1.8)]
         [TestCase("", "en-US", 1.8)]
         [TestCase("x", "hu-HU", 1.8)]

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Peter.Models.Validators
 {
-    internal static class NameToIsin
+    public static class NameToIsin
     {
         public static bool TryParse(string[] input, out string name, out string isin)
         {
