@@ -17,12 +17,14 @@ namespace Models.UnitTests.ValidatorTests
             result.Should().Be(expected);
         }
 
-        [TestCase("1")]
-        [TestCase("x")]
+        [TestCase(null)]
+        [TestCase("")]
         [TestCase(" ")]
+        [TestCase("x")]
+        [TestCase("1")]
         [TestCase("4,5")]
         [TestCase("4.5")]
         public void ReturnsFalse_WhenInputIsInvalid(string input) => 
-            FinancialReport.TryParseMonthsInReport(input, out var result).Should().BeFalse();
+            FinancialReport.TryParseMonthsInReport(input, out var _).Should().BeFalse();
     }
 }

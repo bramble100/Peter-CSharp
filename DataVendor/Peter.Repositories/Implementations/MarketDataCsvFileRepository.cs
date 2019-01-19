@@ -48,6 +48,8 @@ namespace Peter.Repositories.Implementations
 
                 _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
+                _logger.Info("Loading market data entities from CSV file ...");
+
                 using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
                 {
                     parser.SetDelimiters(baseInfo.Item1);
@@ -65,6 +67,7 @@ namespace Peter.Repositories.Implementations
                         }
                     }
                 }
+
                 _logger.Info($"{_entities.Count} new market data entities loaded.");
             }
             catch (Exception ex)
@@ -76,6 +79,7 @@ namespace Peter.Repositories.Implementations
 
         public void AddRange(IMarketDataEntities latestData)
         {
+            _logger.Info("Adding market data entities ...");
             _entities.AddRange(latestData);
             _logger.Info($"{latestData.Count} new market data entities added.");
         }

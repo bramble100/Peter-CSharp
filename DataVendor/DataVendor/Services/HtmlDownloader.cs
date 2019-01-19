@@ -10,6 +10,10 @@ namespace DataVendor.Services
 {
     internal static class HtmlDownloader
     {
+        /// <summary>
+        /// Downloads all datavendor pages and returns the contents of html files separately.
+        /// </summary>
+        /// <returns>The contents of html files separately</returns>
         internal static StockExchangesHtmls DownloadAll()
         {
             using (var client = new WebClient())
@@ -19,15 +23,21 @@ namespace DataVendor.Services
                         .Links
                         .Select(link => new KeyValuePair<string, string>(
                             link.Key,
-                            Encoding.UTF8.GetString(Download(link, client)))));
+                            Download(link.Key, link.Value, client))));
             }
         }
 
-        private static byte[] Download(KeyValuePair<string, Uri> link, WebClient client)
+        /// <summary>
+        /// Downloads a html page and returns the content as a string.
+        /// </summary>
+        /// <param name="name">The name of the page.</param>
+        /// <param name="uri">The Uri of the page.</param>
+        /// <param name="client">A Webclient instance.</param>
+        /// <returns>The html content.</returns>
+        private static string Download(string name, Uri uri, WebClient client)
         {
-            var logger = LogManager.GetCurrentClassLogger();
-            logger.Info($"Downloading: {link.Key}");
-            return client.DownloadData(link.Value);
+            LogManager.GetCurrentClassLogger().Info($"Downloading: {name}");
+            return Encoding.UTF8.GetString(client.DownloadData(uri));
         }
     }
 }
