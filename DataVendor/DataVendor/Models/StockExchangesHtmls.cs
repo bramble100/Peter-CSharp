@@ -1,5 +1,4 @@
-﻿using Peter.Models.Implementations;
-using Peter.Models.Interfaces;
+﻿using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,8 +75,7 @@ namespace DataVendor.Models
         }
 
         /// <summary>
-        /// Projects each element of a sequence to an IEnumerable and flattens 
-        /// the resulting sequences into one sequence.
+        /// Projects each element of a sequence to an IEnumerable and flattens the resulting sequences into one sequence.
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
