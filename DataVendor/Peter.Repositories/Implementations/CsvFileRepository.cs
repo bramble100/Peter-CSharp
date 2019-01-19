@@ -126,6 +126,8 @@ namespace Peter.Repositories.Implementations
 
     internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
         {
+            _logger.Info($"Saving changes into {Path.GetFileName(fullPath)} ...");
+
             try
             {
                 List<string> contentWithHeader = AddHeader(header, separator);
@@ -159,6 +161,8 @@ namespace Peter.Repositories.Implementations
 
         protected void CreateBackUp(string workingDir, string backupDir, string fileName)
         {
+            _logger.Info("Creating backup ...");
+
             try
             {
                 _fileSystemFacade.Backup(
