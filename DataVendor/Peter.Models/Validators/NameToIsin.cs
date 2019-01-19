@@ -5,7 +5,10 @@ namespace Peter.Models.Validators
 {
     public static class NameToIsin
     {
-        public static bool TryParse(string[] input, out string name, out string isin)
+        public static bool TryParse(
+            string[] input, 
+            out string name, 
+            out string isin)
         {
             name = string.Empty;
             isin = string.Empty;
@@ -16,7 +19,10 @@ namespace Peter.Models.Validators
             return !string.IsNullOrWhiteSpace(name) && Isin.IsValidOrEmpty(isin);
         }
 
-        internal static bool TryParse(KeyValuePair<string, string> keyValuePair, out string name, out string isin)
+        internal static bool TryParse(
+            KeyValuePair<string, string> keyValuePair, 
+            out string name, 
+            out string isin)
         {
             name = keyValuePair.Key;
             isin = keyValuePair.Value;
