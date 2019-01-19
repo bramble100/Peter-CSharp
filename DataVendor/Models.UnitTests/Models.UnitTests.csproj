@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FinancialAnalysisBuilder.cs" />
+    <Compile Include="ValidatorTests\RegistryEntry_TryParseLink.cs" />
     <Compile Include="ValidatorTests\RegistryEntry_TryParseName.cs" />
     <Compile Include="ValidatorTests\NameToIsin_TryParse.cs" />
     <Compile Include="ValidatorTests\MarketDataEntity_TryParseClosingPrice.cs" />

@@ -7,26 +7,18 @@ namespace Models.UnitTests.ValidatorTests
     [TestFixture]
     public class Isin_IsValidOrEmpty
     {
-        private readonly string _valid = "AB1234567890";
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("\t\n")]
+        [TestCase("AB1234567890")]
+        public void ShouldReturnTrue_WhenInputValid(string input) =>
+            Isin.IsValidOrEmpty(input).Should().BeTrue();
 
-        private readonly string _empty = string.Empty;
-        private readonly string _tooShort = "AB123456789";
-        private readonly string _tooLong = "AB12345678901";
-        private readonly string _invalidChar = "AB1234 67890";
-
-        [Test]
-        public void WithValid_ShouldReturnTrue() => Isin.IsValidOrEmpty(_valid).Should().BeTrue();
-
-        [Test]
-        public void WithNull_ShouldReturnTrue() => Isin.IsValidOrEmpty(_empty).Should().BeTrue();
-
-        [Test]
-        public void WithTooShort_ShouldReturnFalse() => Isin.IsValidOrEmpty(_tooShort).Should().BeFalse();
-
-        [Test]
-        public void WithTooLong_ShouldReturnFalse() => Isin.IsValidOrEmpty(_tooLong).Should().BeFalse();
-
-        [Test]
-        public void WithInvalidChar_ShouldReturnFalse() => Isin.IsValidOrEmpty(_invalidChar).Should().BeFalse();
+        [TestCase("AB123456789")] // too short
+        [TestCase("AB12345678901")] // too long
+        [TestCase("AB1234 67890")] // invalid char
+        [TestCase("1AB23456789")] // invalid first two char
+        public void ShouldReturnFalse_WhenInputInvalid(string input) =>
+            Isin.IsValidOrEmpty(input).Should().BeFalse();
     }
 }
