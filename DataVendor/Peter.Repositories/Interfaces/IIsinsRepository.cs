@@ -8,8 +8,12 @@ namespace Peter.Repositories.Interfaces
         /// Saves the entities into CSV file.
         /// </summary>
         /// <param name="isins"></param>
-        void SaveChanges(INameToIsin isins);
+        void SaveChanges(INameToIsins isins);
 
-        INameToIsin GetAll();
+        /// <summary>
+        /// Gets all the Name-ISIN pairs.
+        /// </summary>
+        /// <returns></returns>
+        INameToIsins GetAll();
     }
 }

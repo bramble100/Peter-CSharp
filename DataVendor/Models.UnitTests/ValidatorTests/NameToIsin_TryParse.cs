@@ -22,13 +22,11 @@ namespace Models.UnitTests.ValidatorTests
         [TestCase("DummyName", "AA123456789")]
         [TestCase("", "AA1234567890")]
         [TestCase(null, "AA1234567890")]
-        public void ReturnsFalse_WhenInputIsInvalid(string name, string isin)
-        {
+        public void ReturnsFalse_WhenInputIsInvalid(string name, string isin) => 
             NameToIsin.TryParse(new string[] { name, isin },
                     out string _,
                     out string _)
                 .Should()
                 .BeFalse();
-        }
     }
 }
