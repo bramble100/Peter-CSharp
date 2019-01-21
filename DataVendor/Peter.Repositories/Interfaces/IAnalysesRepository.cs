@@ -22,7 +22,7 @@ namespace Peter.Repositories.Interfaces
         /// Key: ISIN. 
         /// Value: the analysis.
         /// </summary>
-        Dictionary<string, IAnalysis> GetAll();
+        IDictionary<string, IAnalysis> GetAll();
 
         /// <summary>
         /// Finds the analysis for the stock with the given ISIN.

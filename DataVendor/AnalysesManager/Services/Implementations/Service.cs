@@ -149,7 +149,7 @@ namespace AnalysesManager.Services.Implementations
             return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
         }
 
-        private static TAZ GetTAZ(Analysis analysis)
+        private static TAZ GetTAZ(IAnalysis analysis)
         {
             if (analysis.ClosingPrice > Math.Max(
                 analysis.TechnicalAnalysis.FastSMA,
@@ -167,7 +167,7 @@ namespace AnalysesManager.Services.Implementations
             return TAZ.InTAZ;
         }
 
-        private Trend GetTrend(Analysis analysis)
+        private Trend GetTrend(IAnalysis analysis)
         {
             if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
             {

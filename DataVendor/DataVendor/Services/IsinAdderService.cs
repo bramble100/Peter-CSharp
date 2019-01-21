@@ -42,13 +42,13 @@ namespace DataVendor.Services
             _logger.Info("ISINs saved.");
         }
 
-        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsin isins) => 
+        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsins isins) => 
             entities
                 .Where(e => isins.ContainsKey(e.Name))
                 .ToList()
                 .ForEach(e => e.Isin = isins[e.Name]);
 
-        private int RemoveIsinFromIsins(INameToIsin isins, IMarketDataEntities entities)
+        private int RemoveIsinFromIsins(INameToIsins isins, IMarketDataEntities entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)
@@ -64,7 +64,7 @@ namespace DataVendor.Services
             return deadNames.Count;
         }
 
-        private int AddNewNames(INameToIsin isins, IMarketDataEntities entities)
+        private int AddNewNames(INameToIsins isins, IMarketDataEntities entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)

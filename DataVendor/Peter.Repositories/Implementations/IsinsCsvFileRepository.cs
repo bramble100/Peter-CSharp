@@ -18,7 +18,7 @@ namespace Peter.Repositories.Implementations
     {
         protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly INameToIsin _isins;
+        private readonly INameToIsins _isins;
 
         /// <summary>
         /// Constructor.
@@ -28,11 +28,11 @@ namespace Peter.Repositories.Implementations
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
             _logger.Debug($"Isin filename is {_fileName} from config file.");
 
-            _isins = new NameToIsin();
+            _isins = new NameToIsins();
             Load();
         }
 
-        public INameToIsin GetAll() => _isins;
+        public INameToIsins GetAll() => _isins;
 
         /// <summary>
         /// Loads the CSV file and stores its content.
@@ -70,7 +70,7 @@ namespace Peter.Repositories.Implementations
             }
         }
 
-        public void SaveChanges(INameToIsin isins)
+        public void SaveChanges(INameToIsins isins)
         {
             CreateBackUp(
                 WorkingDirectory,

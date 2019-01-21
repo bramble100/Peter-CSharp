@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Peter.Models.Implementations
 {
-    public class NameToIsin : INameToIsin
+    public class NameToIsins : INameToIsins
     {
         private Dictionary<string, string> _isins;
 
-        public NameToIsin()
+        public NameToIsins()
         {
             _isins = new Dictionary<string, string>();
         }

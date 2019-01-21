@@ -45,7 +45,7 @@ namespace Peter.Repositories.Implementations
 
         public IFinancialAnalysis Find(string isin) => throw new System.NotImplementedException();
 
-        public Dictionary<string, IAnalysis> GetAll() => _entities;
+        public IDictionary<string, IAnalysis> GetAll() => _entities;
 
         public void SaveChanges()
         {
