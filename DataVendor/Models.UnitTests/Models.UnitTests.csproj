@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuilderTests\FinancialAnalysisBuilder.cs" />
     <Compile Include="FinancialAnalysisBuilder.cs" />
     <Compile Include="ValidatorTests\RegistryEntry_TryParseLink.cs" />
     <Compile Include="ValidatorTests\RegistryEntry_TryParseName.cs" />
