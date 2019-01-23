@@ -4,13 +4,10 @@ namespace Peter.Models.Implementations
 {
     public class NameToIsin : INameToIsin
     {
-        private string n;
-        private string empty;
-
-        public NameToIsin(string n, string empty)
+        public NameToIsin(string name, string isin)
         {
-            this.n = n;
-            this.empty = empty;
+            Name = name;
+            Isin = isin;
         }
 
         public string Name { get; set; }
