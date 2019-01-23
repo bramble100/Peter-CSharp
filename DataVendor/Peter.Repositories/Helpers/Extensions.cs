@@ -26,11 +26,11 @@ namespace Peter.Repositories.Helpers
             };
         }
 
-        public static string FormatterForCSV(this KeyValuePair<string, string> kvp, string separator)
+        public static string FormatterForCSV(this INameToIsin nameToIsin, string separator)
         {
             return string.Join(separator,
-                kvp.Key.WrapWithQuotes(),
-                kvp.Value);
+                nameToIsin.Name.WrapWithQuotes(),
+                nameToIsin.Isin);
         }
 
         public static string WrapWithQuotes(this object obj) => $"\"{obj.ToString()}\"";

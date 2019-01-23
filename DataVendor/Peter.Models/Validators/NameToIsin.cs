@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Peter.Models.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Peter.Models.Validators
@@ -20,12 +21,12 @@ namespace Peter.Models.Validators
         }
 
         internal static bool TryParse(
-            KeyValuePair<string, string> keyValuePair, 
+            INameToIsin nameToIsin, 
             out string name, 
             out string isin)
         {
-            name = keyValuePair.Key;
-            isin = keyValuePair.Value;
+            name = nameToIsin.Name;
+            isin = nameToIsin.Isin;
             return !string.IsNullOrWhiteSpace(name) && Isin.IsValidOrEmpty(isin);
         }
     }
