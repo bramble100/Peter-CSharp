@@ -63,11 +63,6 @@ namespace Peter.Models.Implementations
 
         public bool Remove(IMarketDataEntity item) => _entities.Remove(item);
 
-        internal DateTime MaxDateTime()
-        {
-            throw new NotImplementedException();
-        }
-
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<IMarketDataEntity>)_entities).GetEnumerator();
     }
 }
