@@ -2,13 +2,14 @@
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Peter.Models.Builders
 {
     public class FinancialReportBuilder : IBuilder<IFinancialReport>
     {
-        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly static HashSet<int> _validMonths = new HashSet<int>() { 3, 6, 9, 12 };
 
         private readonly CultureInfo _cultureInfo;
 
@@ -39,9 +40,8 @@ namespace Peter.Models.Builders
                 _eps = Convert.ToDecimal(value, _cultureInfo);
                 _EPSset = true;
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
-                _logger.Warn(ex);
             }
 
             return this;
@@ -54,11 +54,10 @@ namespace Peter.Models.Builders
             try
             {
                 _monthsInReport = Convert.ToInt32(value);
-                _monthsInReportSet = true;
+                _monthsInReportSet = _validMonths.Contains(_monthsInReport);
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
-                _logger.Warn(ex);
             }
 
             return this;
@@ -73,9 +72,8 @@ namespace Peter.Models.Builders
                 _nextReportDate = Convert.ToDateTime(value, _cultureInfo);
                 _nextReportDateSet = true;
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
-                _logger.Warn(ex);
             }
 
             return this;
