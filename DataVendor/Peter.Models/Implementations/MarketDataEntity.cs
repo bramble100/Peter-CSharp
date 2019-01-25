@@ -22,9 +22,7 @@ namespace Peter.Models.Implementations
 
         public override bool Equals(object obj) => Equals(obj as IMarketDataEntity);
 
-        public bool Equals(IMarketDataEntity other)
-        {
-            return other != null &&
+        public bool Equals(IMarketDataEntity other) => other != null &&
                    ClosingPrice == other.ClosingPrice &&
                    DateTime == other.DateTime &&
                    Isin == other.Isin &&
@@ -32,7 +30,6 @@ namespace Peter.Models.Implementations
                    Volumen == other.Volumen &&
                    PreviousDayClosingPrice == other.PreviousDayClosingPrice &&
                    StockExchange == other.StockExchange;
-        }
 
         public override int GetHashCode()
         {

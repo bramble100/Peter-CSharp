@@ -12,16 +12,9 @@ namespace Peter.Models.Implementations
 
         public override bool Equals(object obj) => Equals(obj as FinancialAnalysis);
 
-        public bool Equals(IFinancialAnalysis other)
-        {
-            return other != null &&
-                   PE == other.PE;
-        }
+        public bool Equals(IFinancialAnalysis other) => other != null && PE == other.PE;
 
-        public override int GetHashCode()
-        {
-            return 380272302 + PE.GetHashCode();
-        }
+        public override int GetHashCode() => 380272302 + PE.GetHashCode();
 
         public override string ToString() => $"PE: {PE}";
     }

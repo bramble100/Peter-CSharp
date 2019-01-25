@@ -1,12 +1,15 @@
 ﻿using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Peter.Models.Builders
 {
     public class FinancialReportBuilder : IBuilder<IFinancialReport>
     {
+        private readonly static HashSet<int> _validMonths = new HashSet<int>() { 3, 6, 9, 12 };
+
         private readonly CultureInfo _cultureInfo;
 
         private bool _EPSset;
@@ -29,6 +32,8 @@ namespace Peter.Models.Builders
 
         public FinancialReportBuilder SetEPS(string value)
         {
+            if (string.IsNullOrWhiteSpace(value)) return this;
+
             try
             {
                 _eps = Convert.ToDecimal(value, _cultureInfo);
@@ -37,24 +42,30 @@ namespace Peter.Models.Builders
             catch (FormatException)
             {
             }
+
             return this;
         }
 
         public FinancialReportBuilder SetMonthsInReport(string value)
         {
+            if (string.IsNullOrWhiteSpace(value)) return this;
+
             try
             {
                 _monthsInReport = Convert.ToInt32(value);
-                _monthsInReportSet = true;
+                _monthsInReportSet = _validMonths.Contains(_monthsInReport);
             }
             catch (FormatException)
             {
             }
+
             return this;
         }
 
         public FinancialReportBuilder SetNextReportDate(string value)
         {
+            if (string.IsNullOrWhiteSpace(value)) return this;
+
             try
             {
                 _nextReportDate = Convert.ToDateTime(value, _cultureInfo);
@@ -63,14 +74,13 @@ namespace Peter.Models.Builders
             catch (FormatException)
             {
             }
+
             return this;
         }
 
-        public IFinancialReport Build()
-        {
-            return _EPSset && _monthsInReportSet && _nextReportDateSet 
-                ? new FinancialReport(_eps, _monthsInReport, _nextReportDate) 
+        public IFinancialReport Build() => 
+            _EPSset && _monthsInReportSet && _nextReportDateSet
+                ? new FinancialReport(_eps, _monthsInReport, _nextReportDate)
                 : null;
-        }
     }
 }

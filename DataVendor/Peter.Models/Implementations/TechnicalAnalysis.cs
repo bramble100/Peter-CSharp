@@ -12,14 +12,11 @@ namespace Peter.Models.Implementations
 
         public override bool Equals(object obj) => Equals(obj as TechnicalAnalysis);
 
-        public bool Equals(ITechnicalAnalysis other)
-        {
-            return other != null &&
+        public bool Equals(ITechnicalAnalysis other) => other != null &&
                    FastSMA == other.FastSMA &&
                    SlowSMA == other.SlowSMA &&
                    TAZ == other.TAZ &&
                    Trend == other.Trend;
-        }
 
         public override int GetHashCode()
         {
