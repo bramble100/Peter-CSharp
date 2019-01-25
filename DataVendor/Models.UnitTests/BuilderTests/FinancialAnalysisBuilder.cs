@@ -26,6 +26,8 @@ namespace Models.UnitTests.BuilderTests
         [TestCase(24, 0, 3)] // zero eps
         [TestCase(24, 4, 0)] // invalid months
         [TestCase(24, 4, 2)] // invalid months
+        [TestCase(24, null, 2)] // no eps
+        [TestCase(24, 4, null)] // no months
         public void ShouldReturnNull_WhenInputInvalid(
             decimal price,
             decimal eps,
