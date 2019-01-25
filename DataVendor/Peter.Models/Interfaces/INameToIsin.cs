@@ -1,24 +1,17 @@
-﻿using System.Collections.Generic;
-
-namespace Peter.Models.Interfaces
+﻿namespace Peter.Models.Interfaces
 {
     /// <summary>
-    /// Collection to contain all the ISINs by the company name. Key: Company name; Value: ISIN
+    /// A key-value pair to contain the ISIN by the company name. Key: Company name; Value: ISIN
     /// </summary>
-    public interface INameToIsins : IEnumerable<KeyValuePair<string, string>>
+    public interface INameToIsin
     {
         /// <summary>
-        /// Indexer to return the ISIN by the company name.
+        /// Company name.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        string this[string name] { get; }
-
-        int Count { get; }
-
-        void Add(KeyValuePair<string, string> keyValuePair);
-        void Add(string[] input);
-        bool ContainsKey(string name);
-        void Remove(KeyValuePair<string, string> dn);
+        string Name { get; set; }
+        /// <summary>
+        /// ISIN.
+        /// </summary>
+        string Isin { get; set; }
     }
 }

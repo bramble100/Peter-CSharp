@@ -27,13 +27,10 @@ namespace Peter.Models.Implementations
         public int MonthsInReport { get; private set; }
         public DateTime NextReportDate { get; private set; } = DateTime.Now.Date;
 
-        public bool Equals(IFinancialReport other)
-        {
-            return other != null &&
+        public bool Equals(IFinancialReport other) => other != null &&
                    EPS == other.EPS &&
                    MonthsInReport == other.MonthsInReport &&
                    NextReportDate == other.NextReportDate;
-        }
 
         public override bool Equals(object obj) => Equals(obj as FinancialReport);
 

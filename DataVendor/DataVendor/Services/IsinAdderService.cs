@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
@@ -42,7 +43,7 @@ namespace DataVendor.Services
             _logger.Info("ISINs saved.");
         }
 
-        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsins isins) => 
+        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsins isins) =>
             entities
                 .Where(e => isins.ContainsKey(e.Name))
                 .ToList()
@@ -55,11 +56,10 @@ namespace DataVendor.Services
                 .Distinct();
 
             var deadNames = isins
-                .Where(i => !namesInEntities.Contains(i.Key))
+                .Where(i => !namesInEntities.Contains(i.Name))
                 .ToList();
 
-            deadNames                
-                .ForEach(dn=> isins.Remove(dn));
+            deadNames.ForEach(dn => isins.Remove(dn));
 
             return deadNames.Count;
         }
@@ -74,8 +74,7 @@ namespace DataVendor.Services
                 .Where(e => !isins.ContainsKey(e))
                 .ToList();
 
-            newNames
-                .ForEach(n => isins.Add(new KeyValuePair<string, string>(n, string.Empty)));
+            newNames.ForEach(n => isins.Add(new NameToIsin(n, string.Empty)));
 
             return newNames.Count;
         }
