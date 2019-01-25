@@ -9,7 +9,6 @@ namespace Peter.Models.Builders
     {
         private static HashSet<int> ValidMonthsInReportValues = new HashSet<int>() { 3, 6, 9, 12 };
 
-        private readonly IFinancialAnalysis _financialAnalysis;
         private bool _closingPriceSet;
         private bool _EPSset;
         private bool _monthsInReportSet;
@@ -20,13 +19,16 @@ namespace Peter.Models.Builders
 
         public FinancialAnalysisBuilder()
         {
-            _financialAnalysis = new FinancialAnalysis();
         }
 
         public FinancialAnalysisBuilder SetClosingPrice(decimal value)
         {
-            _closingPrice = value > 0 ? value : throw new ArgumentOutOfRangeException("Closing price must be positive.");
-            _closingPriceSet = true;
+            if(value > 0)
+            {
+                _closingPrice = value;
+                _closingPriceSet = true;
+            }
+
             return this;
         }
 
@@ -57,8 +59,10 @@ namespace Peter.Models.Builders
                 return null;
             }
 
-            _financialAnalysis.PE = Math.Round(_closingPrice * _monthsInReport / _eps / 12, 2);
-            return _financialAnalysis;
+            return new FinancialAnalysis()
+            {
+                PE = Math.Round(_closingPrice * _monthsInReport / _eps / 12, 2)
+            };
         }
     }
 }
