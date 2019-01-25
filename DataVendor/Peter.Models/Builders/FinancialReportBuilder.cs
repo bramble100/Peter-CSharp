@@ -1,5 +1,4 @@
-﻿using NLog;
-using Peter.Models.Implementations;
+﻿using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
