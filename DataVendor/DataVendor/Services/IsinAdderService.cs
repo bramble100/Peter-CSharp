@@ -22,6 +22,12 @@ namespace DataVendor.Services
             _isinsCsvFileRepository = new IsinsCsvFileRepository();
         }
 
+        public IsinAdderService(IMarketDataRepository marketDataCsvFileRepository, IIsinsRepository isinsRepository) : this()
+        {
+            _marketDataCsvFileRepository = marketDataCsvFileRepository;
+            _isinsCsvFileRepository = isinsRepository;
+        }
+
         public void AddIsinsToEntities()
         {
             var entities = _marketDataCsvFileRepository.GetAll();

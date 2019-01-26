@@ -16,6 +16,11 @@ namespace DataVendor.Services
             _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
         }
 
+        public WebService(IMarketDataRepository marketDataRepository) : this()
+        {
+            _marketDataCsvFileRepository = marketDataRepository;
+        }
+
         public IMarketDataEntities DownloadFromWeb()
         {
             return HtmlDownloader
