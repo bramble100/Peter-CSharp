@@ -54,7 +54,8 @@
     <Compile Include="Controllers\Controller.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Service.cs" />
+    <Compile Include="Services\IRegistryService.cs" />
+    <Compile Include="Services\RegistryService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

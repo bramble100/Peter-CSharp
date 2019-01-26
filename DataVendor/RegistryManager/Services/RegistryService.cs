@@ -7,18 +7,24 @@ using Peter.Repositories.Interfaces;
 
 namespace RegistryManager.Services
 {
-    public class Service
+    public class RegistryService : IRegistryService
     {
-        private readonly IRegistryRepository _registryRepository;
         private readonly IMarketDataRepository _marketDataRepository;
+        private readonly IRegistryRepository _registryRepository;
 
-        public Service()
+        public RegistryService()
         {
-            _registryRepository = new RegistryCsvFileRepository();
             _marketDataRepository = new MarketDataCsvFileRepository();
+            _registryRepository = new RegistryCsvFileRepository();
         }
 
-        internal void Update()
+        public RegistryService(IMarketDataRepository marketDataRepository, IRegistryRepository registryRepository)
+        {
+            _marketDataRepository = marketDataRepository;
+            _registryRepository = registryRepository;
+        }
+
+        public void Update()
         {
             var marketDataEntries = _marketDataRepository.GetAll();
 

@@ -5,7 +5,19 @@ namespace RegistryManager.Controllers
 {
     public class Controller
     {
-        protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
+        private readonly IRegistryService _registryService;
+
+        public Controller()
+        {
+            _registryService = new RegistryService();
+        }
+
+        public Controller(IRegistryService registryService) : this()
+        {
+            _registryService = registryService;
+        }
 
         internal void Update()
         {
@@ -13,7 +25,7 @@ namespace RegistryManager.Controllers
 
             try
             {
-                new Service().Update();
+                _registryService.Update();
             }
             catch (System.Exception ex)
             {
