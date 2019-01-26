@@ -17,6 +17,11 @@ namespace AnalysesManager.Controllers.Implementations
             _service = new Service();
         }
 
+        public Controller(IService service) : this()
+        {
+            _service = service;
+        }
+
         public void GenerateAnalyses()
         {
             _logger.Info("*** Generate Analyses ***");
