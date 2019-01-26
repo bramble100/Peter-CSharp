@@ -90,8 +90,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Implementations\Controller.cs" />
-    <Compile Include="Controllers\Interfaces\IController.cs" />
+    <Compile Include="Controllers\Controller.cs" />
+    <Compile Include="Controllers\IController.cs" />
     <Compile Include="Services\IIsinAdderService.cs" />
     <Compile Include="Services\IsinAdderService.cs" />
     <Compile Include="Models\DataVendorBasicData.cs" />
