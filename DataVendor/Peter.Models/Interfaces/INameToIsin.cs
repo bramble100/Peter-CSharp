@@ -3,7 +3,7 @@
     /// <summary>
     /// A key-value pair to contain the ISIN by the company name. Key: Company name; Value: ISIN
     /// </summary>
-    public interface INameToIsin
+    public interface xxxINameToIsin
     {
         /// <summary>
         /// Company name.

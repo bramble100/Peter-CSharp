@@ -30,7 +30,7 @@ namespace Peter.Models.Implementations
             }
         }
 
-        public void Add(INameToIsin keyValuePair)
+        public void Add(KeyValuePair<string, string> keyValuePair)
         {
             if (Validators.NameToIsin.TryParse(keyValuePair, out var name, out var isin))
             {
@@ -56,10 +56,10 @@ namespace Peter.Models.Implementations
 
         public bool ContainsKey(string name) => _isins.ContainsKey(name);
 
-        public IEnumerator<INameToIsin> GetEnumerator() => ((IEnumerable<INameToIsin>)_isins).GetEnumerator();
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => ((IEnumerable<KeyValuePair<string, string>>)_isins).GetEnumerator();
 
-        public void Remove(INameToIsin nameToIsin) => _isins.Remove(nameToIsin.Name);
+        public void Remove(KeyValuePair<string, string> nameToIsin) => _isins.Remove(nameToIsin.Key);
 
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<INameToIsin>)_isins).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<string, string>>)_isins).GetEnumerator();
     }
 }

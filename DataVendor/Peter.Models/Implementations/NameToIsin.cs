@@ -2,9 +2,9 @@
 
 namespace Peter.Models.Implementations
 {
-    public class NameToIsin : INameToIsin
+    public class xxxNameToIsin : xxxINameToIsin
     {
-        public NameToIsin(string name, string isin)
+        public xxxNameToIsin(string name, string isin)
         {
             Name = name;
             Isin = isin;
