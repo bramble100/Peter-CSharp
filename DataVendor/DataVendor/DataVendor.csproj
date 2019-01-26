@@ -102,6 +102,7 @@
     <Compile Include="Services\HtmlDownloader.cs" />
     <Compile Include="Services\HtmlProcessor.cs" />
     <Compile Include="Services\HtmlRowProcessor.cs" />
+    <Compile Include="Services\IWebService.cs" />
     <Compile Include="Services\WebService.cs" />
   </ItemGroup>
   <ItemGroup>
