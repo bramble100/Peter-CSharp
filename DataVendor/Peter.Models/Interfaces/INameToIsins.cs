@@ -5,7 +5,7 @@ namespace Peter.Models.Interfaces
     /// <summary>
     /// Collection to contain all the ISINs by the company name. Key: Company name; Value: ISIN
     /// </summary>
-    public interface INameToIsins : IEnumerable<INameToIsin>
+    public interface INameToIsins : IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
         /// Indexer to return the ISIN by the company name.
@@ -16,9 +16,9 @@ namespace Peter.Models.Interfaces
 
         int Count { get; }
 
-        void Add(INameToIsin keyValuePair);
+        void Add(KeyValuePair<string, string> keyValuePair);
         void Add(string[] input);
         bool ContainsKey(string name);
-        void Remove(INameToIsin dn);
+        void Remove(KeyValuePair<string, string> dn);
     }
 }

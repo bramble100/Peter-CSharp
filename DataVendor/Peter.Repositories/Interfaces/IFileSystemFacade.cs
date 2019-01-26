@@ -1,6 +1,6 @@
 ﻿namespace Peter.Repositories.Interfaces
 {
-    interface IFileSystemFacade
+    public interface IFileSystemFacade
     {
         /// <summary>
         /// Backs up a file (into another folder and/or under another name).

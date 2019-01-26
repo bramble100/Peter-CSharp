@@ -122,9 +122,18 @@ namespace Peter.Repositories.Implementations
             _logger.Debug($"File name extension is {_fileNameExtension} from config file.");
             _logger.Debug($"Culture info for file writing is {_cultureInfo} from config file.");
             _logger.Debug($"CSV separator is {_separator} from config file.");
-    }
+        }
 
-    internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="fileSystemFacade"></param>
+        public CsvFileRepository(IFileSystemFacade fileSystemFacade) : base()
+        {
+            _fileSystemFacade = fileSystemFacade;
+        }
+
+        internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
         {
             _logger.Info($"Saving changes into {Path.GetFileName(fullPath)} ...");
 
