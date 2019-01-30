@@ -10,17 +10,18 @@ namespace DataVendor.Controllers.Implementations
         protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private IIsinAdderService _isinAdderService;
-        private WebService _webService;
-
-        public IIsinAdderService IsinAdderService
-        {
-            set => _isinAdderService = value;
-        }
+        private IWebService _webService;
 
         public Controller()
         {
             _isinAdderService = new IsinAdderService();
             _webService = new WebService();
+        }
+
+        public Controller(IIsinAdderService isinAdderService, IWebService webService) : this()
+        {
+            _isinAdderService = isinAdderService;
+            _webService = webService;
         }
 
         public void WebToCsv()

@@ -51,13 +51,22 @@ namespace AnalysesManager.Services.Implementations
                 {
                     throw new BusinessException("Buying packet and moving average subset sizes must be positive numbers.");
                 }
-
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
                 throw new BusinessException($"Error when initializing {GetType().Name}.", ex);
             }
+        }
+
+        public Service(
+            IAnalysesRepository analysesRepository,
+            IMarketDataRepository marketDataRepository,
+            IRegistryRepository registryRepository) : this()
+        {
+            _financialAnalysesCsvFileRepository = analysesRepository;
+            _marketDataRepository = marketDataRepository;
+            _registryRepository = registryRepository;
         }
 
         public void GenerateAnalyses()

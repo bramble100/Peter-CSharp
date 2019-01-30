@@ -1,9 +1,7 @@
 ﻿using NLog;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +18,12 @@ namespace DataVendor.Services
         {
             _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
             _isinsCsvFileRepository = new IsinsCsvFileRepository();
+        }
+
+        public IsinAdderService(IMarketDataRepository marketDataCsvFileRepository, IIsinsRepository isinsRepository) : this()
+        {
+            _marketDataCsvFileRepository = marketDataCsvFileRepository;
+            _isinsCsvFileRepository = isinsRepository;
         }
 
         public void AddIsinsToEntities()
@@ -53,8 +57,7 @@ namespace DataVendor.Services
         {
             var namesInEntities = entities
                 .Select(e => e.Name)
-                .Distinct()
-                .ToList();
+                .Distinct();
 
             var deadNames = isins
                 .Where(i => !namesInEntities.Contains(i.Key))
