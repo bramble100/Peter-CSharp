@@ -6,6 +6,8 @@ using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
@@ -18,7 +20,7 @@ namespace Peter.Repositories.Implementations
     {
         protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly INameToIsins _isins;
+        private Dictionary<string, string> _isins;
 
         /// <summary>
         /// Constructor.
@@ -28,17 +30,35 @@ namespace Peter.Repositories.Implementations
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
             _logger.Debug($"Isin filename is {_fileName} from config file.");
 
-            _isins = new NameToIsins();
+            _isins = new Dictionary<string, string>();
             Load();
         }
 
-        public INameToIsins GetAll() => _isins;
+        public void Add(string name) => _isins.Add(name, string.Empty);
 
-        /// <summary>
-        /// Loads the CSV file and stores its content.
-        /// </summary>
-        /// <returns></returns>
-        public void Load()
+        public bool ContainsName(string name) => _isins.ContainsKey(name);
+
+        public string GetIsinByCompanyName(string name) => _isins[name];
+
+        public ImmutableHashSet<string> GetNames() => _isins.Keys.ToImmutableHashSet();
+
+        public void Remove(string name) => _isins.Remove(name);
+
+        public void SaveChanges()
+        {
+            CreateBackUp(
+                WorkingDirectory,
+                BackupDirectory,
+                _fileName);
+            SaveChanges(
+                CsvLineIsin.Header,
+                // TODO use CsvLineIsin for CSV formatting
+                _isins.Select(i => i.FormatterForCSV(_separator)),
+                Path.Combine(WorkingDirectory, _fileName),
+                _separator);
+        }
+
+        private void Load()
         {
             try
             {
@@ -58,7 +78,10 @@ namespace Peter.Repositories.Implementations
 
                     while (!parser.EndOfData)
                     {
-                        _isins.Add(parser.ReadFields());
+                        if (CsvLineIsin.TryParseFromCsv(parser.ReadFields(), out var result))
+                        {
+                            _isins.Add(result.Key, result.Value);
+                        }
                     }
                 }
                 _logger.Info($"{_isins.Count} new ISIN entries loaded.");
@@ -68,20 +91,6 @@ namespace Peter.Repositories.Implementations
                 _logger.Error($"Error when loading entities in {GetType().Name}.");
                 throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
             }
-        }
-
-        public void SaveChanges(INameToIsins isins)
-        {
-            CreateBackUp(
-                WorkingDirectory,
-                BackupDirectory,
-                _fileName);
-            SaveChanges(
-                CsvLineIsin.Header,
-                // TODO use CsvLineIsin for CSV formatting
-                isins.Select(i => i.FormatterForCSV(_separator)),
-                Path.Combine(WorkingDirectory, _fileName),
-                _separator);
         }
     }
 }
