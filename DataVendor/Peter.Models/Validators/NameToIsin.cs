@@ -21,12 +21,12 @@ namespace Peter.Models.Validators
         }
 
         internal static bool TryParse(
-            INameToIsin nameToIsin, 
+            KeyValuePair<string, string> nameToIsin, 
             out string name, 
             out string isin)
         {
-            name = nameToIsin.Name;
-            isin = nameToIsin.Isin;
+            name = nameToIsin.Key;
+            isin = nameToIsin.Value;
             return !string.IsNullOrWhiteSpace(name) && Isin.IsValidOrEmpty(isin);
         }
     }

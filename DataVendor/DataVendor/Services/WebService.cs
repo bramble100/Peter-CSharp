@@ -1,11 +1,11 @@
-﻿using Peter.Repositories.Implementations;
-using Peter.Models.Interfaces;
+﻿using Peter.Models.Interfaces;
+using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using NLog;
 
 namespace DataVendor.Services
 {
-    public class WebService
+    public class WebService : IWebService
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
@@ -16,14 +16,19 @@ namespace DataVendor.Services
             _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
         }
 
-        internal IMarketDataEntities DownloadFromWeb()
+        public WebService(IMarketDataRepository marketDataRepository) : this()
+        {
+            _marketDataCsvFileRepository = marketDataRepository;
+        }
+
+        public IMarketDataEntities DownloadFromWeb()
         {
             return HtmlDownloader
                 .DownloadAll()
                 .GetMarketDataEntities();
         }
 
-        internal void Update(IMarketDataEntities latestData)
+        public void Update(IMarketDataEntities latestData)
         {
             _marketDataCsvFileRepository.AddRange(latestData);
 

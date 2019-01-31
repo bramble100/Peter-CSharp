@@ -9,14 +9,28 @@ namespace DataVendor.Controllers.Implementations
     {
         protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
+        private IIsinAdderService _isinAdderService;
+        private IWebService _webService;
+
+        public Controller()
+        {
+            _isinAdderService = new IsinAdderService();
+            _webService = new WebService();
+        }
+
+        public Controller(IIsinAdderService isinAdderService, IWebService webService) : this()
+        {
+            _isinAdderService = isinAdderService;
+            _webService = webService;
+        }
+
         public void WebToCsv()
         {
             _logger.Info("*** Web To Csv ***");
 
             try
             {
-                var webService = new WebService();
-                webService.Update(webService.DownloadFromWeb());
+                _webService.Update(_webService.DownloadFromWeb());
             }
             catch (Exception ex)
             {
@@ -32,7 +46,7 @@ namespace DataVendor.Controllers.Implementations
 
             try
             {
-                new IsinAdderService().AddIsinsToEntities();
+                _isinAdderService.AddIsinsToEntities();
             }
             catch (Exception ex)
             {
