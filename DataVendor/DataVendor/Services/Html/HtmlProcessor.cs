@@ -1,16 +1,14 @@
 ﻿using DataVendor.Models;
 using HtmlAgilityPack;
 using NLog;
-using NLog.Fluent;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 // http://html-agility-pack.net/from-string
 
-namespace DataVendor.Services
+namespace DataVendor.Services.Html
 {
     internal static class HtmlProcessor
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace DataVendor.Services
+namespace DataVendor.Services.Html
 {
     internal static class HtmlDownloader
     {
