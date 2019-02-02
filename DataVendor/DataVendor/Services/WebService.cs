@@ -2,6 +2,7 @@
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using NLog;
+using DataVendor.Services.Html;
 
 namespace DataVendor.Services
 {

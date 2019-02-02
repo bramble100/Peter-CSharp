@@ -2,7 +2,6 @@
 using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace DataVendor.Services
@@ -11,74 +10,73 @@ namespace DataVendor.Services
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IMarketDataRepository _marketDataCsvFileRepository;
         private readonly IIsinsRepository _isinsCsvFileRepository;
+        private readonly IMarketDataRepository _marketDataCsvFileRepository;
 
         public IsinAdderService()
         {
-            _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
             _isinsCsvFileRepository = new IsinsCsvFileRepository();
+            _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
         }
 
-        public IsinAdderService(IMarketDataRepository marketDataCsvFileRepository, IIsinsRepository isinsRepository) : this()
+        public IsinAdderService(
+            IIsinsRepository isinsRepository,
+            IMarketDataRepository marketDataCsvFileRepository) : this()
         {
-            _marketDataCsvFileRepository = marketDataCsvFileRepository;
             _isinsCsvFileRepository = isinsRepository;
+            _marketDataCsvFileRepository = marketDataCsvFileRepository;
         }
 
         public void AddIsinsToEntities()
         {
             var entities = _marketDataCsvFileRepository.GetAll();
 
-            var isins = _isinsCsvFileRepository.GetAll();
-
-            AddIsinToEntities(entities, isins);
+            AddIsinToEntities(entities);
 
             _marketDataCsvFileRepository.SaveChanges();
             _logger.Info("Market data saved.");
 
-            var removeCount = RemoveIsinFromIsins(isins, entities);
+            var removeCount = RemoveIsinFromIsins(entities);
             _logger.Info($"{removeCount} ISIN(s) are removed.");
 
-            var addCount = AddNewNames(isins, entities);
+            var addCount = AddNewNames(entities);
             _logger.Info($"{addCount} new name(s) are added.");
 
-            _isinsCsvFileRepository.SaveChanges(isins);
+            //_isinsCsvFileRepository.SaveChanges(isins);
+            _isinsCsvFileRepository.SaveChanges();
             _logger.Info("ISINs saved.");
         }
 
-        private static void AddIsinToEntities(IMarketDataEntities entities, INameToIsins isins) =>
+        private void AddIsinToEntities(IMarketDataEntities entities) =>
             entities
-                .Where(e => isins.ContainsKey(e.Name))
+                .Where(e => _isinsCsvFileRepository.ContainsName(e.Name))
                 .ToList()
-                .ForEach(e => e.Isin = isins[e.Name]);
+                .ForEach(e => e.Isin = _isinsCsvFileRepository.GetIsinByCompanyName(e.Name));
 
-        private static int RemoveIsinFromIsins(INameToIsins isins, IMarketDataEntities entities)
+        private int RemoveIsinFromIsins(IMarketDataEntities entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)
                 .Distinct();
 
-            var deadNames = isins
-                .Where(i => !namesInEntities.Contains(i.Key))
-                .ToList();
+            var deadNames = _isinsCsvFileRepository.GetNames().Except(namesInEntities);
 
-            deadNames.ForEach(dn => isins.Remove(dn));
+            deadNames.ToList().ForEach(name => _isinsCsvFileRepository.Remove(name));
 
             return deadNames.Count;
         }
 
-        private int AddNewNames(INameToIsins isins, IMarketDataEntities entities)
+        private int AddNewNames(IMarketDataEntities entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)
                 .Distinct();
 
             var newNames = namesInEntities
-                .Where(e => !isins.ContainsKey(e))
+                .Where(e => !_isinsCsvFileRepository.ContainsName(e))
                 .ToList();
 
-            newNames.ForEach(n => isins.Add(new KeyValuePair<string, string>(n, string.Empty)));
+            newNames.ForEach(n => _isinsCsvFileRepository.Add(n));
 
             return newNames.Count;
         }
