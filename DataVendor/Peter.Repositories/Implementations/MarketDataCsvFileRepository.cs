@@ -6,6 +6,7 @@ using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
@@ -35,6 +36,8 @@ namespace Peter.Repositories.Implementations
             _entities = new MarketDataEntities();
             Load();
         }
+
+        public IEnumerable<string> Isins => _entities.Isins;
 
         public void Load()
         {

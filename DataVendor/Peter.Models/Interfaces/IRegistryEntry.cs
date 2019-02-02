@@ -9,6 +9,10 @@ namespace Peter.Models.Interfaces
     public interface IRegistryEntry: IEquatable<IRegistryEntry>
     {
         /// <summary>
+        /// International Securities Identification Number (unique ID).
+        /// </summary>
+        string Isin { get; set; }
+        /// <summary>
         /// Name of the share.
         /// </summary>
         string Name { get; set; }
