@@ -18,14 +18,27 @@ namespace Peter.Repositories.Implementations
 {
     public class IsinsCsvFileRepository : CsvFileRepository, IIsinsRepository
     {
-        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private Dictionary<string, string> _isins;
+        private readonly Dictionary<string, string> _isins;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public IsinsCsvFileRepository() : base()
+        {
+            _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
+            _logger.Debug($"Isin filename is {_fileName} from config file.");
+
+            _isins = new Dictionary<string, string>();
+            Load();
+        }
+
+        /// <summary>
+        /// Constructor for DI.
+        /// </summary>
+        /// <param name="fileSystemFacade"></param>
+        public IsinsCsvFileRepository(IFileSystemFacade fileSystemFacade) : base(fileSystemFacade)
         {
             _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
             _logger.Debug($"Isin filename is {_fileName} from config file.");
