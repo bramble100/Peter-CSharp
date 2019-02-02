@@ -14,73 +14,67 @@ namespace Repositories.UnitTests
     {
         private readonly CultureInfo cultureInfo = new CultureInfo("hu-HU");
 
-        private readonly string[] _empty = new string[] { };
-        private readonly string[] _tooShort = new string[]
-        {
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty
-        };
-        private readonly string[] _tooLong = new string[]
-        {
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty
-        };
-        private readonly string[] _validLine = new string[]
-        {
-            "Aareal Bank AG",
-            "DE0005408116",
-            "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
-            "http://www.aareal-bank.com/investor-relations/",
-            "2,08",
-            "6",
-            DateTime.Now.AddDays(1).Date.ToString(),
-            string.Empty
-        };
-
-        private readonly KeyValuePair<string, IRegistryEntry> _validResult = new KeyValuePair<string, IRegistryEntry>(
-            "DE0005408116",
-            new RegistryEntry()
-            {
-                Name = "Aareal Bank AG",
-                OwnInvestorLink = "http://www.aareal-bank.com/investor-relations/",
-                StockExchangeLink = "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
-                FinancialReport = new FinancialReport(2.08m, 6, DateTime.Now.AddDays(1).Date),
-                Position = Position.NoPosition
-            });
-
-        [Test]
-        public void WithEmptyArray_ReturnsFalse() =>
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(_empty, cultureInfo, out _)
-            .Should().BeFalse();
-
-        [Test]
-        public void WithTooShortArray_ReturnsFalse() =>
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(_tooShort, cultureInfo, out _)
-            .Should().BeFalse();
-
-        [Test]
-        public void WithTooLongArray_ReturnsFalse() =>
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(_tooLong, cultureInfo, out _)
+        [TestCaseSource(nameof(TestCaseSource))]
+        public void WithInvalidArray_ReturnsFalse(string[] inputStrings) =>
+            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(inputStrings, cultureInfo, out _)
             .Should().BeFalse();
 
         [Test]
         public void WithValidInput_ReturnsTrueAndValidResult()
         {
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(_validLine, cultureInfo, out var result)
+            var validLine = new string[]
+            {
+                "Aareal Bank AG",
+                "DE0005408116",
+                "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
+                "http://www.aareal-bank.com/investor-relations/",
+                "2,08",
+                "6",
+                DateTime.Now.AddDays(1).Date.ToString(),
+                string.Empty
+            };
+
+            var validResult = new KeyValuePair<string, IRegistryEntry>(
+                "DE0005408116",
+                new RegistryEntry()
+                {
+                    Name = "Aareal Bank AG",
+                    OwnInvestorLink = "http://www.aareal-bank.com/investor-relations/",
+                    StockExchangeLink = "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
+                    FinancialReport = new FinancialReport(2.08m, 6, DateTime.Now.AddDays(1).Date),
+                    Position = Position.NoPosition
+                });
+
+            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(validLine, cultureInfo, out var result)
                 .Should().BeTrue();
-            result.Should().Be(_validResult);
+            result.Should().Be(validResult);
+        }
+
+        private static IEnumerable<IEnumerable<string>> TestCaseSource()
+        {
+            yield return new string[] { }; // empty
+            yield return new string[] // too short
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            };
+            yield return new string[] // too long
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            };
         }
     }
 }
