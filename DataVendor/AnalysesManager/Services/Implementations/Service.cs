@@ -2,7 +2,6 @@
 using NLog;
 using Peter.Models.Builders;
 using Peter.Models.Enums;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
@@ -84,14 +83,7 @@ namespace AnalysesManager.Services.Implementations
             RemoveEntriesWithoutUptodateData(marketData, latestDate);
             _logger.Info($"Having discontinued market data rows removed {marketData.Count} data entries remained.");
 
-            var filteredRegistry = new Registry(
-                _registryRepository
-                .GetAll()
-                .Where(RegistryItemIsInteresting));
-            _logger.Info($"{filteredRegistry.Count()} registry entry found with positive EPS.");
-
             var groupedMarketData = from data in marketData
-                                    where filteredRegistry.ContainsKey(data.Isin)
                                     group data by data.Isin into dataByIsin
                                     select dataByIsin
                                         .OrderByDescending(d => d.DateTime)
@@ -104,6 +96,45 @@ namespace AnalysesManager.Services.Implementations
             _financialAnalysesCsvFileRepository.SaveChanges();
         }
 
+        [Obsolete]
+        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
+            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
+
+        private bool RegistryItemIsInteresting(IRegistryEntry entry) =>
+            entry.FinancialReport?.EPS >= 0 || entry.Position != Position.NoPosition;
+
+        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketData)
+        {
+            if (marketData == null)
+            {
+                throw new ArgumentNullException(nameof(marketData));
+            }
+
+            var isin = marketData.First().Isin;
+
+            var stockBaseData = _registryRepository.GetById(isin);
+
+            var analysis = new AnalysisBuilder()
+                .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
+                .SetName(stockBaseData.Name)
+                .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / marketData.FirstOrDefault().ClosingPrice))
+                .SetFinancialAnalysis(new FinancialAnalysisBuilder()
+                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
+                    .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
+                    .SetEPS(stockBaseData.FinancialReport?.EPS)
+                    .Build())
+                .SetTechnicalAnalysis(new TechnicalAnalysisBuilder()
+                    .SetFastSMA(marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
+                    .SetSlowSMA(marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
+                    .Build())
+                .Build();
+                
+            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
+            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
+
+            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
+        }
+
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
             marketData.Any(d => string.IsNullOrWhiteSpace(d.Isin));
 
@@ -112,50 +143,11 @@ namespace AnalysesManager.Services.Implementations
             DateTime latestDate) =>
                 marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
 
-        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
-            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
-
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
             return entry.Value?.FinancialReport != null &&
                 entry.Value.FinancialReport.EPS != 0 &&
                 entry.Value.FinancialReport.MonthsInReport != 0;
-        }
-
-        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
-        {
-            if (groupedMarketData == null)
-            {
-                throw new ArgumentNullException(nameof(groupedMarketData));
-            }
-            var isin = groupedMarketData.First().Isin;
-
-            // TODO add registry repository GetByIsin()
-            var stockBaseData = _registryRepository
-                .GetAll()
-                .First(e => string.Equals(e.Key, isin))
-                .Value;
-
-            var analysis = new Analysis
-            {
-                Name = stockBaseData.Name,
-                ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
-                QtyInBuyingPacket = (int)Math.Floor(_buyingPacketInEuro / groupedMarketData.FirstOrDefault().ClosingPrice),
-                TechnicalAnalysis = new TechnicalAnalysisBuilder()
-                    .SetFastSMA(groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
-                    .SetSlowSMA(groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
-                    .Build(),
-                FinancialAnalysis = new FinancialAnalysisBuilder()
-                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
-                    .SetClosingPrice(groupedMarketData.FirstOrDefault().ClosingPrice)
-                    .SetEPS(stockBaseData.FinancialReport?.EPS)
-                    .Build()
-            };
-
-            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
-            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
-
-            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
         }
 
         private static TAZ GetTAZ(IAnalysis analysis)
@@ -176,7 +168,7 @@ namespace AnalysesManager.Services.Implementations
             return TAZ.InTAZ;
         }
 
-        private Trend GetTrend(IAnalysis analysis)
+        private static Trend GetTrend(IAnalysis analysis)
         {
             if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
             {

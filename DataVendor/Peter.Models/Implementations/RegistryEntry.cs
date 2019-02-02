@@ -19,7 +19,7 @@ namespace Peter.Models.Implementations
         {
         }
 
-        public RegistryEntry(string name) : this()
+        public RegistryEntry(string name, RegistryEntry registryEntry) : this()
         {
             Name = name;
         }

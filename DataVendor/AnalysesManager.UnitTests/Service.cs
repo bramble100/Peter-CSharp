@@ -86,27 +86,28 @@ namespace AnalysesManager.UnitTests
         [Test]
         public void GetRegistryEntriesWithoutFinancialReport_WithMixedRegistry_ReturnsCorrectData()
         {
-            var testRegistry = new Registry
+            var testRegistry = new List<RegistryEntry>
             {
-                new KeyValuePair<string, IRegistryEntry>("Keep",new RegistryEntry
+                new RegistryEntry("Keep",new RegistryEntry
                 {
                     FinancialReport = new FinancialReport(0.1m, 3, DateTime.Now.AddDays(1).Date)
                 }),
-                new KeyValuePair<string, IRegistryEntry>("Throw",new RegistryEntry
+                new RegistryEntry("Throw",new RegistryEntry
                 {
                     FinancialReport = new FinancialReport()
                 }),
             };
 
-            var expectedResult = new Registry
+            var expectedResult = new List<RegistryEntry>
             {
-                new KeyValuePair<string, IRegistryEntry>("Keep",new RegistryEntry
+                new RegistryEntry("Keep",new RegistryEntry
                 {
                     FinancialReport = new FinancialReport(0.1m, 3, DateTime.Now.AddDays(1).Date)
                 }),
             };
 
-            //Services.Service.GetInterestingRegistryEntries(testRegistry).Should().Equal(expectedResult);
+            // TODO investigate
+            //Services.Implementations.Service.GetInterestingRegistryEntries(testRegistry).Should().Equal(expectedResult);
         }
     }
 }
