@@ -7,10 +7,11 @@ using Peter.Repositories.Interfaces;
 namespace Repositories.IntegrationTests
 {
     [TestFixture]
+    [Ignore("Configuration settings must be outsorced.")]
     public class IsinsCsvFileRepositoryTests
     {
         [Test]
-        public void ContainsName()
+        public void ContainsNqame()
         {
             var mock = new Mock<IFileSystemFacade>();
             mock
