@@ -88,6 +88,8 @@ namespace AnalysesManager.Services.Implementations
 
             _financialAnalysesCsvFileRepository.AddRange(analyses);
             _financialAnalysesCsvFileRepository.SaveChanges();
+
+            _logger.Info("*** *** ***");
         }
 
         [Obsolete]

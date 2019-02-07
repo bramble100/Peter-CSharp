@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Infrastructure;
+using NLog;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using RegistryManager.Controllers;
@@ -9,6 +10,8 @@ namespace RegistryManager
 {
     class Program
     {
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
@@ -24,9 +27,15 @@ namespace RegistryManager
 
             using (var scope = container.BeginLifetimeScope())
             {
+                _logger.Info("*** RegistryManager ***");
+
                 var controller = scope.Resolve<IController>();
                 controller.Update();
             }
+
+            _logger.Info("*** *** ***");
+
+            LogManager.Shutdown();
         }
     }
 }

@@ -37,8 +37,6 @@ namespace Peter.Repositories.Implementations
             _logger.Debug($"Market data filename is {_fileName} from config file.");
 
             _entities = new List<IRegistryEntry>();
-
-            Load();
         }
 
         public void AddRange(IEnumerable<IRegistryEntry> entries)
@@ -46,16 +44,28 @@ namespace Peter.Repositories.Implementations
             if (entries is null)
                 throw new ArgumentNullException(nameof(entries));
 
+            if (!_fileContentLoaded) Load();
+
             foreach (var entry in entries)
             {
                 _entities.Add(entry);
             }
         }
 
-        public IRegistryEntry GetById(string isin) => _entities.Where(e => e.Isin.Equals(isin)).SingleOrDefault();
+        public IRegistryEntry GetById(string isin)
+        {
+            if (!_fileContentLoaded) Load();
+
+            return _entities.Where(e => e.Isin.Equals(isin)).SingleOrDefault();
+        }
 
         public void RemoveRange(IEnumerable<string> isins)
         {
+            if (isins is null)
+                throw new ArgumentNullException(nameof(isins));
+
+            if (!_fileContentLoaded) Load();
+
             foreach (var isin in isins)
             {
                 _entities.Remove(_entities.SingleOrDefault(e => Equals(e.Isin, isin)));

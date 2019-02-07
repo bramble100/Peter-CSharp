@@ -17,6 +17,8 @@ namespace DataVendor
 
         static void Main(string[] args)
         {
+            _logger.Info("*** DataVendor ***");
+
             var builder = new ContainerBuilder();
             builder.RegisterType<Config>().As<IConfig>();
             builder.RegisterType<Controller>().As<IController>();
@@ -48,6 +50,8 @@ namespace DataVendor
                     _logger.Error(ex);
                 }
             }
+
+            _logger.Info("*** *** ***");
 
             LogManager.Shutdown();
         }
