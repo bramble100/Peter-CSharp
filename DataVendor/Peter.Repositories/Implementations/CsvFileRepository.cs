@@ -114,12 +114,18 @@ namespace Peter.Repositories.Implementations
 
         protected Tuple<string, CultureInfo> GetCsvSeparatorAndCultureInfo(string header)
         {
+            if (header is null)
+                throw new ArgumentNullException(nameof(header));
+            if (string.IsNullOrWhiteSpace(header))
+                throw new ArgumentException(nameof(header));
+
             if (header.Contains(","))
                 return new Tuple<string, CultureInfo>(",", new CultureInfo("us-EN"));
             else if (header.Contains(";"))
                 return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
             else if (header.Contains("\t"))
                 return new Tuple<string, CultureInfo>("\t", new CultureInfo("hu-HU"));
+
             throw new ArgumentOutOfRangeException(nameof(header), "Separator and CultureInfo cannot be determined.");
         }
 
