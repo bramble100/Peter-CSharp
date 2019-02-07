@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
+using System.Text;
 
 namespace Repositories.IntegrationTests
 {
@@ -20,6 +21,9 @@ namespace Repositories.IntegrationTests
                 .Setup(facade => facade.Load("mock"))
                 .Returns("Name;ISIN\n\"1+1 DRILLISCH AG O.N.\"; DE0005545503");
 
+            mockFileSystem
+                .Setup(facade => facade.ReadLines("mock", Encoding.UTF8))
+                .Returns(new string[] { "Name;ISIN", "1+1 DRILLISCH AG O.N.\"; DE0005545503" });
 
             var builder = new ContainerBuilder();
             builder.RegisterInstance(mockFileSystem.Object).As<IFileSystemFacade>();
