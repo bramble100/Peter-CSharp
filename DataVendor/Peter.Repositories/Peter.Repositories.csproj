@@ -73,6 +73,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{373D71A0-34B5-42AA-9F6D-961051ADFF5F}</Project>
+      <Name>Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
       <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
       <Name>Peter.Models</Name>

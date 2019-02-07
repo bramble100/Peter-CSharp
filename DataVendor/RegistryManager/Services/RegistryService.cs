@@ -11,12 +11,6 @@ namespace RegistryManager.Services
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
 
-        public RegistryService()
-        {
-            _marketDataRepository = new MarketDataCsvFileRepository();
-            _registryRepository = new RegistryCsvFileRepository();
-        }
-
         public RegistryService(
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository)

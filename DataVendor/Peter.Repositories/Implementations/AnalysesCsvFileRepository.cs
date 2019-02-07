@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Infrastructure;
 using NLog;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Helpers;
@@ -17,11 +17,14 @@ namespace Peter.Repositories.Implementations
 
         private Dictionary<string, IAnalysis> _entities;
 
-        public AnalysesCsvFileRepository() : base()
+        public AnalysesCsvFileRepository(
+            IConfig config, 
+            IFileSystemFacade fileSystemFacade) 
+            : base(config, fileSystemFacade)
         {
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
-                new AppSettingsReader().GetValue("WorkingDirectoryAnalyses", typeof(string)).ToString());
+                _config.GetValue<string>("WorkingDirectoryAnalyses"));
             _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
 
             _entities = new Dictionary<string, IAnalysis>();
@@ -49,10 +52,9 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            var reader = new AppSettingsReader();
-            _fileName = $"{reader.GetValue("AnalysesFileName", typeof(string)).ToString()}" +
-                $" {DateTime.Now.ToString(reader.GetValue("DateFormatForFileName", typeof(string)).ToString())}" +
-                $".{reader.GetValue("CsvFileNameExtension", typeof(string)).ToString()}";
+            _fileName = $"{_config.GetValue<string>("AnalysesFileName")}" +
+                $" {DateTime.Now.ToString(_config.GetValue<string>("DateFormatForFileName"))}" +
+                $".{_config.GetValue<string>("CsvFileNameExtension")}";
 
             SaveChanges(
                 CsvLineAnalysis.Header,

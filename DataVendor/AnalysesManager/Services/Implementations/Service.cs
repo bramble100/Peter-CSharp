@@ -1,9 +1,9 @@
 ﻿using AnalysesManager.Services.Interfaces;
+using Infrastructure;
 using NLog;
 using Peter.Models.Builders;
 using Peter.Models.Enums;
 using Peter.Models.Interfaces;
-using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,24 +19,28 @@ namespace AnalysesManager.Services.Implementations
         private readonly IAnalysesRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
+        private readonly IConfig _config;
 
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
         private readonly int _buyingPacketInEuro;
 
-        public Service()
+        public Service(
+            IAnalysesRepository analysesRepository,
+            IMarketDataRepository marketDataRepository,
+            IRegistryRepository registryRepository,
+            IConfig config)
         {
             try
             {
-                _financialAnalysesCsvFileRepository = new AnalysesCsvFileRepository();
-                _marketDataRepository = new MarketDataCsvFileRepository();
-                _registryRepository = new RegistryCsvFileRepository();
+                _financialAnalysesCsvFileRepository = analysesRepository;
+                _marketDataRepository = marketDataRepository;
+                _registryRepository = registryRepository;
+                _config = config;
 
-                var reader = new AppSettingsReader();
-
-                _buyingPacketInEuro = (int)reader.GetValue("BuyingPacketInEuro", typeof(int));
-                _fastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
-                _slowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
+                _buyingPacketInEuro = _config.GetValue<int>("BuyingPacketInEuro");
+                _fastMovingAverage = _config.GetValue<int>("FastMovingAverage");
+                _slowMovingAverage = _config.GetValue<int>("SlowMovingAverage");
 
                 _logger.Debug($"Buying Packet is {_buyingPacketInEuro} EUR from config file.");
                 _logger.Debug($"Fast Moving Average subset size is {_fastMovingAverage} from config file.");
@@ -56,16 +60,6 @@ namespace AnalysesManager.Services.Implementations
                 _logger.Error(ex);
                 throw new BusinessException($"Error when initializing {GetType().Name}.", ex);
             }
-        }
-
-        public Service(
-            IAnalysesRepository analysesRepository,
-            IMarketDataRepository marketDataRepository,
-            IRegistryRepository registryRepository) : this()
-        {
-            _financialAnalysesCsvFileRepository = analysesRepository;
-            _marketDataRepository = marketDataRepository;
-            _registryRepository = registryRepository;
         }
 
         public void GenerateAnalyses()

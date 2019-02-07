@@ -3,23 +3,18 @@ using RegistryManager.Services;
 
 namespace RegistryManager.Controllers
 {
-    public class Controller
+    public class Controller : IController
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IRegistryService _registryService;
 
-        public Controller()
-        {
-            _registryService = new RegistryService();
-        }
-
-        public Controller(IRegistryService registryService) : this()
+        public Controller(IRegistryService registryService)
         {
             _registryService = registryService;
         }
 
-        internal void Update()
+        public void Update()
         {
             _logger.Info("*** Update Registry ***");
 

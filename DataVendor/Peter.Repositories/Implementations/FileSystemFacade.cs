@@ -1,35 +1,86 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using NLog;
+using Peter.Repositories.Exceptions;
 using Peter.Repositories.Interfaces;
 
 namespace Peter.Repositories.Implementations
 {
-    internal class FileSystemFacade : IFileSystemFacade
+    public class FileSystemFacade : IFileSystemFacade
     {
-        public void Backup(string fullPath, string backupFullPath)
+        protected readonly Logger _logger;
+
+        public FileSystemFacade()
         {
-            var backupDir = Path.GetDirectoryName(backupFullPath);
-
-            if (!Directory.Exists(backupDir))
-            {
-                Directory.CreateDirectory(backupDir);
-            }
-
-            File.Move(fullPath, backupFullPath);
+            _logger = LogManager.GetCurrentClassLogger();
         }
 
-        public string Load(string fullPath) => File.ReadAllText(fullPath, Encoding.UTF8);
+        public void Backup(string fullPath, string backupFullPath)
+        {
+            try
+            {
+                var dirName = Path.GetDirectoryName(backupFullPath);
+
+                if (!Directory.Exists(dirName))
+                {
+                    Directory.CreateDirectory(dirName);
+                }
+
+                File.Move(fullPath, backupFullPath);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Backup directory cannot be created. {ex.Message}");
+                throw new RepositoryException($"Backup directory cannot be created. {ex.Message}", ex);
+            }
+        }
+
+        public string Load(string fullPath)
+        {
+            try
+            {
+                return File.ReadAllText(fullPath, Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"File cannot be loaded. {ex.Message}");
+                throw new RepositoryException($"File cannot be loaded. {ex.Message}", ex);
+            }
+        }
+
+        public IEnumerable<string> ReadLines(string fullPath, Encoding encoding)
+        {
+            try
+            {
+                return File.ReadLines(fullPath, encoding);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"File content cannot be read. {ex.Message}");
+                throw new RepositoryException($"File content cannot be read. {ex.Message}", ex);
+            }
+        }
 
         public void Save(string fullPath, string content)
         {
-            var dir = Path.GetDirectoryName(fullPath);
-
-            if (!Directory.Exists(dir))
+            try
             {
-                Directory.CreateDirectory(dir);
-            }
+                var dirName = Path.GetDirectoryName(fullPath);
 
-            File.WriteAllText(fullPath, content, Encoding.UTF8);
+                if (!Directory.Exists(dirName))
+                {
+                    Directory.CreateDirectory(dirName);
+                }
+
+                File.WriteAllText(fullPath, content, Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"File cannot be saved. {ex.Message}");
+                throw new RepositoryException($"File cannot be saved. {ex.Message}", ex);
+            }
         }
     }
 }
