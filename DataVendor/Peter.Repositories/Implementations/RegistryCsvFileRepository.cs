@@ -7,7 +7,6 @@ using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -66,10 +65,9 @@ namespace Peter.Repositories.Implementations
 
             if (!_fileContentLoaded) Load();
 
-            foreach (var isin in isins)
-            {
-                _entities.Remove(_entities.SingleOrDefault(e => Equals(e.Isin, isin)));
-            }
+            isins
+                .ToList()
+                .ForEach(isin => _entities.Remove(_entities.SingleOrDefault(e => Equals(e.Isin, isin))));
 
             _logger.Info($"{isins.Count()} registry item removed.");
         }
