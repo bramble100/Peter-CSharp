@@ -1,9 +1,12 @@
-﻿using Peter.Models.Interfaces;
+﻿using System.Collections.Generic;
+using Peter.Models.Interfaces;
 
 namespace Peter.Repositories.Interfaces
 {
     public interface IMarketDataRepository
     {
+        IEnumerable<string> Isins { get; }
+
         /// <summary>
         /// Adds new market data to the existing data.
         /// </summary>

@@ -1,14 +1,12 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using Infrastructure;
+using Microsoft.VisualBasic.FileIO;
 using NLog;
-using Peter.Models.Implementations;
-using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -23,42 +21,59 @@ namespace Peter.Repositories.Implementations
         private readonly Dictionary<string, string> _isins;
 
         /// <summary>
-        /// Constructor.
-        /// </summary>
-        public IsinsCsvFileRepository() : base()
-        {
-            _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
-            _logger.Debug($"Isin filename is {_fileName} from config file.");
-
-            _isins = new Dictionary<string, string>();
-            Load();
-        }
-
-        /// <summary>
         /// Constructor for DI.
         /// </summary>
         /// <param name="fileSystemFacade"></param>
-        public IsinsCsvFileRepository(IFileSystemFacade fileSystemFacade) : base(fileSystemFacade)
+        public IsinsCsvFileRepository(
+            IConfig config,
+            IFileSystemFacade fileSystemFacade) 
+            : base(config, fileSystemFacade)
         {
-            _fileName = new AppSettingsReader().GetValue("IsinFileName", typeof(string)).ToString();
+            _fileName = _config.GetValue<string>("IsinFileName");
             _logger.Debug($"Isin filename is {_fileName} from config file.");
 
             _isins = new Dictionary<string, string>();
-            Load();
         }
 
-        public void Add(string name) => _isins.Add(name, string.Empty);
+        public void Add(string name)
+        {
+            if (!_fileContentLoaded) Load();
 
-        public bool ContainsName(string name) => _isins.ContainsKey(name);
+            _isins.Add(name, string.Empty);
+        }
 
-        public string GetIsinByCompanyName(string name) => _isins[name];
+        public bool ContainsName(string name)
+        {
+            if (!_fileContentLoaded) Load();
 
-        public ImmutableHashSet<string> GetNames() => _isins.Keys.ToImmutableHashSet();
+            return _isins.ContainsKey(name);
+        }
 
-        public void Remove(string name) => _isins.Remove(name);
+        public string GetIsinByCompanyName(string name)
+        {
+            if (!_fileContentLoaded) Load();
+
+            return _isins[name];
+        }
+
+        public ImmutableHashSet<string> GetNames()
+        {
+            if (!_fileContentLoaded) Load();
+
+            return _isins.Keys.ToImmutableHashSet();
+        }
+
+        public void Remove(string name)
+        {
+            if (!_fileContentLoaded) Load();
+
+            _isins.Remove(name);
+        }
 
         public void SaveChanges()
         {
+            if (!_fileContentLoaded) return;
+
             CreateBackUp(
                 WorkingDirectory,
                 BackupDirectory,
@@ -79,7 +94,7 @@ namespace Peter.Repositories.Implementations
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
                 baseInfo = GetCsvSeparatorAndCultureInfo(
-                    File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
+                    _fileSystemFacade.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
 
                 _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
@@ -97,6 +112,7 @@ namespace Peter.Repositories.Implementations
                         }
                     }
                 }
+                _fileContentLoaded = true;
                 _logger.Info($"{_isins.Count} new ISIN entries loaded.");
             }
             catch (Exception ex)

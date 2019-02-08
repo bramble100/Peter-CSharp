@@ -12,13 +12,9 @@ namespace DataVendor.Controllers.Implementations
         private IIsinAdderService _isinAdderService;
         private IWebService _webService;
 
-        public Controller()
-        {
-            _isinAdderService = new IsinAdderService();
-            _webService = new WebService();
-        }
-
-        public Controller(IIsinAdderService isinAdderService, IWebService webService) : this()
+        public Controller(
+            IIsinAdderService isinAdderService, 
+            IWebService webService)
         {
             _isinAdderService = isinAdderService;
             _webService = webService;

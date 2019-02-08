@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using Peter.Models.Enums;
 using Peter.Models.Implementations;
-using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -34,16 +33,15 @@ namespace Repositories.UnitTests
                 string.Empty
             };
 
-            var validResult = new KeyValuePair<string, IRegistryEntry>(
-                "DE0005408116",
-                new RegistryEntry()
+            var validResult = new RegistryEntry()
                 {
+                    Isin = "DE0005408116",
                     Name = "Aareal Bank AG",
                     OwnInvestorLink = "http://www.aareal-bank.com/investor-relations/",
                     StockExchangeLink = "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
                     FinancialReport = new FinancialReport(2.08m, 6, DateTime.Now.AddDays(1).Date),
                     Position = Position.NoPosition
-                });
+                };
 
             Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(validLine, cultureInfo, out var result)
                 .Should().BeTrue();

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A72490E7-1652-4E9C-BBBF-61A7705C00C3}</ProjectGuid>
+    <ProjectGuid>{373D71A0-34B5-42AA-9F6D-961051ADFF5F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Peter.Repositories</RootNamespace>
-    <AssemblyName>Peter.Repositories</AssemblyName>
+    <RootNamespace>Infrastructure</RootNamespace>
+    <AssemblyName>Infrastructure</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,14 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -53,34 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\CsvLineIsin.cs" />
-    <Compile Include="Helpers\CsvLineAnalysis.cs" />
-    <Compile Include="Helpers\CsvLineMarketData.cs" />
-    <Compile Include="Helpers\CsvLineRegistryEntryWithIsin.cs" />
-    <Compile Include="Helpers\Extensions.cs" />
-    <Compile Include="Implementations\CsvFileRepository.cs" />
-    <Compile Include="Implementations\AnalysesCsvFileRepository.cs" />
-    <Compile Include="Implementations\FileSystemFacade.cs" />
-    <Compile Include="Implementations\RegistryCsvFileRepository.cs" />
-    <Compile Include="Exceptions\RepositoryException.cs" />
-    <Compile Include="Interfaces\IAnalysesRepository.cs" />
-    <Compile Include="Interfaces\IFileSystemFacade.cs" />
-    <Compile Include="Interfaces\IMarketDataRepository.cs" />
-    <Compile Include="Interfaces\IRegistryRepository.cs" />
-    <Compile Include="Interfaces\IIsinsRepository.cs" />
-    <Compile Include="Implementations\IsinsCsvFileRepository.cs" />
-    <Compile Include="Implementations\MarketDataCsvFileRepository.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="IConfig.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
-      <Project>{373D71A0-34B5-42AA-9F6D-961051ADFF5F}</Project>
-      <Name>Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
-      <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
-      <Name>Peter.Models</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

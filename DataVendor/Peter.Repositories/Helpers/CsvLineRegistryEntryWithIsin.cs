@@ -2,7 +2,6 @@
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace Peter.Repositories.Helpers
@@ -24,18 +23,18 @@ namespace Peter.Repositories.Helpers
         public static bool TryParseFromCsv(
             string[] input, 
             CultureInfo cultureInfo, 
-            out KeyValuePair<string, IRegistryEntry> result)
+            out IRegistryEntry result)
         {
-            if (input.Length != 8)
-            {
-                result = new KeyValuePair<string, IRegistryEntry>();
-                return false;
-            }
+            result = new RegistryEntry();
+
+            if (input.Length != 8) return false;
+
             try
             {
-                result = new KeyValuePair<string, IRegistryEntry>(input[1], new RegistryEntry
+                result = new RegistryEntry()
                 {
                     Name = input[0],
+                    Isin = input[1],
                     StockExchangeLink = input[2],
                     OwnInvestorLink = input[3],
                     FinancialReport = new FinancialReportBuilder()
@@ -43,27 +42,26 @@ namespace Peter.Repositories.Helpers
                         .SetMonthsInReport(input[5])
                         .SetNextReportDate(input[6])
                         .Build()
-                });
+                };
                 return true;
             }
             catch (Exception)
             {
-                result = new KeyValuePair<string, IRegistryEntry>();
                 return false;
             }
         }
 
-        public static string FormatForCSV(KeyValuePair<string, IRegistryEntry> e, string separator, CultureInfo cultureInfo) => 
+        public static string FormatForCSV(IRegistryEntry e, string separator, CultureInfo cultureInfo) => 
             string.Join(separator, new string[]
             {
-                e.Value.Name.WrapWithQuotes(),
-                e.Key,
-                e.Value.StockExchangeLink?.ToString(),
-                e.Value.OwnInvestorLink?.ToString(),
-                e.Value.FinancialReport?.EPS.ToString(cultureInfo).WrapWithQuotes(),
-                e.Value.FinancialReport?.MonthsInReport.ToString(),
-                e.Value.FinancialReport?.NextReportDate.ToString(cultureInfo),
-                e.Value.Position.ToString()
+                e.Name.WrapWithQuotes(),
+                e.Isin,
+                e.StockExchangeLink?.ToString(),
+                e.OwnInvestorLink?.ToString(),
+                e.FinancialReport?.EPS.ToString(cultureInfo).WrapWithQuotes(),
+                e.FinancialReport?.MonthsInReport.ToString(),
+                e.FinancialReport?.NextReportDate.ToString(cultureInfo),
+                e.Position.ToString()
             });
     }
 }

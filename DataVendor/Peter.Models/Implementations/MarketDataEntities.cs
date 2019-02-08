@@ -27,6 +27,8 @@ namespace Peter.Models.Implementations
 
         public bool IsReadOnly => ((ICollection<IMarketDataEntity>)_entities).IsReadOnly;
 
+        public IEnumerable<string> Isins => _entities.Where(e => !string.IsNullOrWhiteSpace(e.Isin)).Select(e => e.Isin).Distinct();
+
         public void Add(IMarketDataEntity entity)
         {
             var actualOnThatDay = _entities

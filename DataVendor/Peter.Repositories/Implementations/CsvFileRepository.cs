@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using Infrastructure;
+using Microsoft.VisualBasic.FileIO;
 using NLog;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 
@@ -12,107 +12,58 @@ namespace Peter.Repositories.Implementations
 {
     public abstract class CsvFileRepository
     {
-        protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        protected readonly Logger _logger;
 
         protected readonly string _fileNameExtension;
         protected readonly string _separator;
         protected readonly CultureInfo _cultureInfo;
+        protected readonly IConfig _config;
+        protected readonly IFileSystemFacade _fileSystemFacade;
 
         protected string _fileName;
-
-        private string _backupDirectory;
-        private string _baseDirectory;
-        private string _workingDirectory;
+        protected bool _fileContentLoaded;
 
         private readonly string _dateFormat;
-        private readonly IFileSystemFacade _fileSystemFacade;
 
         /// <summary>
         /// The directory in which the provider saves backups.
         /// </summary>
-        protected string BackupDirectory
-        {
-            get => _backupDirectory;
-            set
-            {
-                try
-                {
-                    Directory.CreateDirectory(value);
-                    _backupDirectory = value;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, $"Backup directory ({value}) cannot be created. {ex.Message}");
-                    throw new RepositoryException($"Backup directory ({value}) cannot be created. {ex.Message}", ex);
-                }
-            }
-        }
+        protected string BackupDirectory { get; set; }
 
         /// <summary>
         /// The root directory in which the provider saves everything.
         /// </summary>
-        protected string BaseDirectory
-        {
-            get => _baseDirectory;
-            set
-            {
-                try
-                {
-                    Directory.CreateDirectory(value);
-                    _baseDirectory = value;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, $"Base directory ({value}) cannot be created. {ex.Message}");
-                    throw new RepositoryException($"Base directory ({value}) cannot be created. {ex.Message}", ex);
-                }
-            }
-        }
+        protected string BaseDirectory { get; set; }
 
         /// <summary>
         /// The directory in which the provider works.
         /// </summary>
-        protected string WorkingDirectory
-        {
-            get => _workingDirectory;
-            set
-            {
-                try
-                {
-                    Directory.CreateDirectory(value);
-                    _workingDirectory = value;
-                }
-                catch (Exception)
-                {
-                    _logger.Error($"Working directory ({value}) does not exist.");
-                    throw new RepositoryException($"Working directory ({value}) does not exist.");
-                }
-            }
-        }
+        protected string WorkingDirectory { get; set; }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public CsvFileRepository()
+        public CsvFileRepository(
+            IConfig config, 
+            IFileSystemFacade fileSystemFacade)
         {
-            _fileSystemFacade = new FileSystemFacade();
+            _config = config;
+            _fileSystemFacade = fileSystemFacade;
+            _logger = LogManager.GetCurrentClassLogger();
 
-            var reader = new AppSettingsReader();
-
-
-            BaseDirectory = reader.GetValue("WorkingDirectoryBase", typeof(string)).ToString();
+            BaseDirectory = _config.GetValue<string>("WorkingDirectoryBase");
             if (string.IsNullOrWhiteSpace(BaseDirectory) || string.Equals(BaseDirectory.ToLower(), "desktop"))
             {
                 BaseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
 
-            WorkingDirectory = Path.Combine(BaseDirectory, reader.GetValue("WorkingDirectory", typeof(string)).ToString());
-            BackupDirectory = Path.Combine(WorkingDirectory, reader.GetValue("BackupDirectory", typeof(string)).ToString());
+            WorkingDirectory = Path.Combine(BaseDirectory, _config.GetValue<string>("WorkingDirectory"));
+            BackupDirectory = Path.Combine(WorkingDirectory, _config.GetValue<string>("BackupDirectory"));
 
-            _separator = reader.GetValue("CsvSeparator", typeof(string)).ToString();
-            _dateFormat = reader.GetValue("DateFormatForFileName", typeof(string)).ToString();
-            _fileNameExtension = reader.GetValue("CsvFileNameExtension", typeof(string)).ToString();
-            _cultureInfo = new CultureInfo(reader.GetValue("CultureInfo", typeof(string)).ToString());
+            _separator = _config.GetValue<string>("CsvSeparator");
+            _dateFormat = _config.GetValue<string>("DateFormatForFileName");
+            _fileNameExtension = _config.GetValue<string>("CsvFileNameExtension");
+            _cultureInfo = new CultureInfo(_config.GetValue<string>("CultureInfo"));
 
             _logger.Debug($"Base directory is {BaseDirectory} from config file.");
             _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
@@ -128,12 +79,16 @@ namespace Peter.Repositories.Implementations
         /// Constructor.
         /// </summary>
         /// <param name="fileSystemFacade"></param>
-        public CsvFileRepository(IFileSystemFacade fileSystemFacade) : base()
-        {
-            _fileSystemFacade = fileSystemFacade;
-        }
+        //public CsvFileRepository(IFileSystemFacade fileSystemFacade) : base()
+        //{
+        //    _fileSystemFacade = fileSystemFacade;
+        //}
 
-        internal void SaveChanges(string[] header, IEnumerable<string> content, string fullPath, string separator)
+        internal void SaveChanges(
+            string[] header, 
+            IEnumerable<string> content, 
+            string fullPath, 
+            string separator)
         {
             _logger.Info($"Saving changes into {Path.GetFileName(fullPath)} ...");
 
@@ -159,12 +114,18 @@ namespace Peter.Repositories.Implementations
 
         protected Tuple<string, CultureInfo> GetCsvSeparatorAndCultureInfo(string header)
         {
+            if (header is null)
+                throw new ArgumentNullException(nameof(header));
+            if (string.IsNullOrWhiteSpace(header))
+                throw new ArgumentException(nameof(header));
+
             if (header.Contains(","))
                 return new Tuple<string, CultureInfo>(",", new CultureInfo("us-EN"));
             else if (header.Contains(";"))
                 return new Tuple<string, CultureInfo>(";", new CultureInfo("hu-HU"));
             else if (header.Contains("\t"))
                 return new Tuple<string, CultureInfo>("\t", new CultureInfo("hu-HU"));
+
             throw new ArgumentOutOfRangeException(nameof(header), "Separator and CultureInfo cannot be determined.");
         }
 

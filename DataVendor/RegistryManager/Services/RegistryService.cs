@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
@@ -12,13 +11,9 @@ namespace RegistryManager.Services
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
 
-        public RegistryService()
-        {
-            _marketDataRepository = new MarketDataCsvFileRepository();
-            _registryRepository = new RegistryCsvFileRepository();
-        }
-
-        public RegistryService(IMarketDataRepository marketDataRepository, IRegistryRepository registryRepository)
+        public RegistryService(
+            IMarketDataRepository marketDataRepository,
+            IRegistryRepository registryRepository)
         {
             _marketDataRepository = marketDataRepository;
             _registryRepository = registryRepository;
@@ -26,38 +21,22 @@ namespace RegistryManager.Services
 
         public void Update()
         {
-            var marketDataEntries = _marketDataRepository.GetAll();
-
-            _registryRepository.AddRange(GetNewRegistryEntries(marketDataEntries));
-            _registryRepository.RemoveRange(GetOutdatedRegistryEntries(marketDataEntries));
+            RemoveOutDatedEntries();
+            AddNewEntries();
 
             _registryRepository.SaveChanges();
         }
 
-        private IEnumerable<KeyValuePair<string, IRegistryEntry>> GetNewRegistryEntries(IMarketDataEntities marketDataEntries)
-        {
-            var isinsFromMarketData = marketDataEntries.Where(e => !string.IsNullOrWhiteSpace(e.Isin)).Select(e => e.Isin).ToHashSet();
-            var isinsFromRegistry = _registryRepository.Isins.ToHashSet();
-            var newIsins = isinsFromMarketData.Except(isinsFromRegistry);
+        private void RemoveOutDatedEntries() =>
+            _registryRepository.RemoveRange(_registryRepository.Isins.Except(_marketDataRepository.Isins));
 
-            return newIsins
-                .Select(isin => new KeyValuePair<string, IRegistryEntry>(
-                    isin,
-                    new RegistryEntry(
-                        marketDataEntries
-                        .First(d => string.Equals(isin, d.Isin))
-                        .Name)));
-        }
+        private void AddNewEntries() => 
+            _registryRepository.AddRange(GetNewRegistryEntries());
 
-        private IEnumerable<string> GetOutdatedRegistryEntries(IMarketDataEntities marketDataEntries)
-        {
-            var isinsFromMarketData = marketDataEntries
-                .Where(e => !string.IsNullOrWhiteSpace(e.Isin))
-                .Select(e => e.Isin)
-                .ToHashSet();
-            var isinsFromRegistry = _registryRepository.Isins.ToHashSet();
-
-            return isinsFromRegistry.Except(isinsFromMarketData);
-        }
+        private IEnumerable<IRegistryEntry> GetNewRegistryEntries() => 
+            _marketDataRepository
+                .Isins
+                .Except(_registryRepository.Isins)
+                .Select(isin => _registryRepository.GetById(isin));
     }
 }

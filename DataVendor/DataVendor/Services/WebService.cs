@@ -1,5 +1,4 @@
 ﻿using Peter.Models.Interfaces;
-using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using NLog;
 using DataVendor.Services.Html;
@@ -12,12 +11,7 @@ namespace DataVendor.Services
 
         private readonly IMarketDataRepository _marketDataCsvFileRepository;
 
-        public WebService()
-        {
-            _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
-        }
-
-        public WebService(IMarketDataRepository marketDataRepository) : this()
+        public WebService(IMarketDataRepository marketDataRepository)
         {
             _marketDataCsvFileRepository = marketDataRepository;
         }

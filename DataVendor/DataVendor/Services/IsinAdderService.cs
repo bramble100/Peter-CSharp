@@ -1,6 +1,5 @@
 ﻿using NLog;
 using Peter.Models.Interfaces;
-using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using System.Linq;
 
@@ -13,15 +12,9 @@ namespace DataVendor.Services
         private readonly IIsinsRepository _isinsCsvFileRepository;
         private readonly IMarketDataRepository _marketDataCsvFileRepository;
 
-        public IsinAdderService()
-        {
-            _isinsCsvFileRepository = new IsinsCsvFileRepository();
-            _marketDataCsvFileRepository = new MarketDataCsvFileRepository();
-        }
-
         public IsinAdderService(
             IIsinsRepository isinsRepository,
-            IMarketDataRepository marketDataCsvFileRepository) : this()
+            IMarketDataRepository marketDataCsvFileRepository)
         {
             _isinsCsvFileRepository = isinsRepository;
             _marketDataCsvFileRepository = marketDataCsvFileRepository;
@@ -42,7 +35,6 @@ namespace DataVendor.Services
             var addCount = AddNewNames(entities);
             _logger.Info($"{addCount} new name(s) are added.");
 
-            //_isinsCsvFileRepository.SaveChanges(isins);
             _isinsCsvFileRepository.SaveChanges();
             _logger.Info("ISINs saved.");
         }

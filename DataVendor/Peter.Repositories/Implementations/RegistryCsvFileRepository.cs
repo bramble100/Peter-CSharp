@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using Infrastructure;
+using Microsoft.VisualBasic.FileIO;
 using NLog;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,24 +18,73 @@ namespace Peter.Repositories.Implementations
     {
         protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IRegistry _entities;
+        private readonly ICollection<IRegistryEntry> _entities;
 
-        public IEnumerable<string> Isins => _entities.Select(e => e.Key);
+        public IEnumerable<string> Isins => _entities.Select(e => e.Isin);
 
-        public RegistryCsvFileRepository() : base()
+        public RegistryCsvFileRepository(
+            IConfig config, 
+            IFileSystemFacade fileSystemFacade) 
+            : base(config, fileSystemFacade)
         {
-            var reader = new AppSettingsReader();
-
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
-                reader.GetValue("WorkingDirectoryRegistry", typeof(string)).ToString());
+                _config.GetValue<string>("WorkingDirectoryRegistry"));
             _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
 
-            _fileName = reader.GetValue("RegistryFileName", typeof(string)).ToString();
+            _fileName = _config.GetValue<string>("RegistryFileName");
             _logger.Debug($"Market data filename is {_fileName} from config file.");
 
-            _entities = new Registry();
-            Load();
+            _entities = new List<IRegistryEntry>();
+        }
+
+        public void AddRange(IEnumerable<IRegistryEntry> entries)
+        {
+            if (entries is null)
+                throw new ArgumentNullException(nameof(entries));
+
+            if (!_fileContentLoaded) Load();
+
+            foreach (var entry in entries)
+            {
+                _entities.Add(entry);
+            }
+        }
+
+        public IRegistryEntry GetById(string isin)
+        {
+            if (!_fileContentLoaded) Load();
+
+            return _entities.Where(e => e.Isin.Equals(isin)).SingleOrDefault();
+        }
+
+        public void RemoveRange(IEnumerable<string> isins)
+        {
+            if (isins is null)
+                throw new ArgumentNullException(nameof(isins));
+
+            if (!_fileContentLoaded) Load();
+
+            isins
+                .ToList()
+                .ForEach(isin => _entities.Remove(_entities.SingleOrDefault(e => Equals(e.Isin, isin))));
+
+            _logger.Info($"{isins.Count()} registry item removed.");
+        }
+
+        public void SaveChanges()
+        {
+            if (!_fileContentLoaded) return;
+
+            CreateBackUp(
+                WorkingDirectory, 
+                BackupDirectory, 
+                _fileName);
+            SaveChanges(
+                CsvLineRegistryEntryWithIsin.Header,
+                _entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, _separator, new CultureInfo("hu-HU"))),
+                Path.Combine(WorkingDirectory, _fileName),
+                _separator);
         }
 
         private void Load()
@@ -47,7 +95,7 @@ namespace Peter.Repositories.Implementations
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
                 baseInfo = GetCsvSeparatorAndCultureInfo(
-                    File.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
+                    _fileSystemFacade.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
 
                 _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
 
@@ -60,11 +108,12 @@ namespace Peter.Repositories.Implementations
                         if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
                             parser.ReadFields(),
                             baseInfo.Item2,
-                            out KeyValuePair<string, IRegistryEntry> result))
+                            out IRegistryEntry result))
                             _entities.Add(result);
                     }
                 }
 
+                _fileContentLoaded = true;
                 _logger.Info($"{_entities.Count} new registry item loaded.");
             }
             catch (Exception ex)
@@ -73,32 +122,5 @@ namespace Peter.Repositories.Implementations
                 throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
             }
         }
-
-        public void SaveChanges()
-        {
-            CreateBackUp(
-                WorkingDirectory, 
-                BackupDirectory, 
-                _fileName);
-            SaveChanges(
-                CsvLineRegistryEntryWithIsin.Header,
-                _entities.Select(e => CsvLineRegistryEntryWithIsin.FormatForCSV(e, _separator, new CultureInfo("hu-HU"))),
-                Path.Combine(WorkingDirectory, _fileName),
-                _separator);
-        }
-
-        public void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries)
-        {
-            newEntries.ToList().ForEach(e => _entities.Add(e));
-            _logger.Info($"{newEntries.Count()} new registry item added.");
-        }
-
-        public void RemoveRange(IEnumerable<string> isins)
-        {
-            isins.ToList().ForEach(e => _entities.Remove(e));
-            _logger.Info($"{isins.Count()} registry item removed.");
-        }
-
-        public IRegistry GetAll() => new Registry(_entities.Select(e => e));
     }
 }
