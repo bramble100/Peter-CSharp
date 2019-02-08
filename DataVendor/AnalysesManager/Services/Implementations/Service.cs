@@ -7,7 +7,6 @@ using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 
 namespace AnalysesManager.Services.Implementations
@@ -102,27 +101,31 @@ namespace AnalysesManager.Services.Implementations
         private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketData)
         {
             if (marketData == null)
-            {
                 throw new ArgumentNullException(nameof(marketData));
-            }
 
-            var isin = marketData.First().Isin;
+            var isin = marketData.First()?.Isin;
+            if (string.IsNullOrEmpty(isin))
+                throw new ServiceException("No ISIN found for market data set.");
 
             var stockBaseData = _registryRepository.GetById(isin);
+            if (stockBaseData is null)
+                throw new ServiceException($"No registry entry found for {isin}");
 
+            var financialAnalysis = new FinancialAnalysisBuilder()
+                    .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
+                    .SetEPS(stockBaseData.FinancialReport?.EPS)
+                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
+                    .Build();
+            var technicalAnalysis = new TechnicalAnalysisBuilder()
+                    .SetFastSMA(marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
+                    .SetSlowSMA(marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
+                    .Build();
             var analysis = new AnalysisBuilder()
                 .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
                 .SetName(stockBaseData.Name)
                 .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / marketData.FirstOrDefault().ClosingPrice))
-                .SetFinancialAnalysis(new FinancialAnalysisBuilder()
-                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
-                    .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
-                    .SetEPS(stockBaseData.FinancialReport?.EPS)
-                    .Build())
-                .SetTechnicalAnalysis(new TechnicalAnalysisBuilder()
-                    .SetFastSMA(marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
-                    .SetSlowSMA(marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
-                    .Build())
+                .SetFinancialAnalysis(financialAnalysis)
+                .SetTechnicalAnalysis(technicalAnalysis)
                 .Build();
                 
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
