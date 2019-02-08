@@ -22,7 +22,7 @@ namespace Infrastructure
                 { "RegistryFileName", "registry.csv" },
                 { "SlowMovingAverage", 21},
                 { "UpdateMarketDataWithISINs", "addisins" },
-                { "WorkingDirectory", "StockExchangeTest" },
+                { "WorkingDirectory", "StockExchange" },
                 { "WorkingDirectoryAnalyses", "Analyses" },
                 { "WorkingDirectoryBase", "Desktop" },
                 { "WorkingDirectoryRawDownloads", "RawDownload" },
