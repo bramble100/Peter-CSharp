@@ -20,18 +20,18 @@ namespace Peter.Repositories.Interfaces
         string Load(string fullPath);
 
         /// <summary>
-        /// Saves the content into a text file.
-        /// </summary>
-        /// <param name="fullPath"></param>
-        /// <param name="content"></param>
-        void Save(string fullPath, string content);
-
-        /// <summary>
         /// Read the lines of a file that has a specified encoding.
         /// </summary>
         /// <param name="fullPath"></param>
         /// <param name="uTF8"></param>
         /// <returns></returns>
         IEnumerable<string> ReadLines(string fullPath, Encoding uTF8);
+
+        /// <summary>
+        /// Saves the content into a text file.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="content"></param>
+        void Save(string fullPath, string content);
     }
 }
