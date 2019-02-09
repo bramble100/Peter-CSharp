@@ -4,10 +4,14 @@ using System;
 namespace Peter.Models.Interfaces
 {
     /// <summary>
-    /// Class to hold all the basic stock data for one paper.
+    /// Basic stock data for one paper.
     /// </summary>
     public interface IRegistryEntry: IEquatable<IRegistryEntry>
     {
+        /// <summary>
+        /// International Securities Identification Number (unique ID).
+        /// </summary>
+        string Isin { get; set; }
         /// <summary>
         /// Name of the share.
         /// </summary>

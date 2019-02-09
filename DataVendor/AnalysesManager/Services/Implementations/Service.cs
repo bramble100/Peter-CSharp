@@ -1,14 +1,12 @@
 ﻿using AnalysesManager.Services.Interfaces;
+using Infrastructure;
 using NLog;
 using Peter.Models.Builders;
 using Peter.Models.Enums;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
-using Peter.Repositories.Implementations;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 
 namespace AnalysesManager.Services.Implementations
@@ -20,24 +18,28 @@ namespace AnalysesManager.Services.Implementations
         private readonly IAnalysesRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
+        private readonly IConfig _config;
 
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
         private readonly int _buyingPacketInEuro;
 
-        public Service()
+        public Service(
+            IAnalysesRepository analysesRepository,
+            IMarketDataRepository marketDataRepository,
+            IRegistryRepository registryRepository,
+            IConfig config)
         {
             try
             {
-                _financialAnalysesCsvFileRepository = new AnalysesCsvFileRepository();
-                _marketDataRepository = new MarketDataCsvFileRepository();
-                _registryRepository = new RegistryCsvFileRepository();
+                _financialAnalysesCsvFileRepository = analysesRepository;
+                _marketDataRepository = marketDataRepository;
+                _registryRepository = registryRepository;
+                _config = config;
 
-                var reader = new AppSettingsReader();
-
-                _buyingPacketInEuro = (int)reader.GetValue("BuyingPacketInEuro", typeof(int));
-                _fastMovingAverage = (int)reader.GetValue("FastMovingAverage", typeof(int));
-                _slowMovingAverage = (int)reader.GetValue("SlowMovingAverage", typeof(int));
+                _buyingPacketInEuro = _config.GetValue<int>("BuyingPacketInEuro");
+                _fastMovingAverage = _config.GetValue<int>("FastMovingAverage");
+                _slowMovingAverage = _config.GetValue<int>("SlowMovingAverage");
 
                 _logger.Debug($"Buying Packet is {_buyingPacketInEuro} EUR from config file.");
                 _logger.Debug($"Fast Moving Average subset size is {_fastMovingAverage} from config file.");
@@ -59,16 +61,6 @@ namespace AnalysesManager.Services.Implementations
             }
         }
 
-        public Service(
-            IAnalysesRepository analysesRepository,
-            IMarketDataRepository marketDataRepository,
-            IRegistryRepository registryRepository) : this()
-        {
-            _financialAnalysesCsvFileRepository = analysesRepository;
-            _marketDataRepository = marketDataRepository;
-            _registryRepository = registryRepository;
-        }
-
         public void GenerateAnalyses()
         {
             _logger.Info("Start generating analyses.");
@@ -84,14 +76,7 @@ namespace AnalysesManager.Services.Implementations
             RemoveEntriesWithoutUptodateData(marketData, latestDate);
             _logger.Info($"Having discontinued market data rows removed {marketData.Count} data entries remained.");
 
-            var filteredRegistry = new Registry(
-                _registryRepository
-                .GetAll()
-                .Where(RegistryItemIsInteresting));
-            _logger.Info($"{filteredRegistry.Count()} registry entry found with positive EPS.");
-
             var groupedMarketData = from data in marketData
-                                    where filteredRegistry.ContainsKey(data.Isin)
                                     group data by data.Isin into dataByIsin
                                     select dataByIsin
                                         .OrderByDescending(d => d.DateTime)
@@ -102,60 +87,67 @@ namespace AnalysesManager.Services.Implementations
 
             _financialAnalysesCsvFileRepository.AddRange(analyses);
             _financialAnalysesCsvFileRepository.SaveChanges();
+
+            _logger.Info("*** *** ***");
+        }
+
+        [Obsolete]
+        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
+            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
+
+        private bool RegistryItemIsInteresting(IRegistryEntry entry) =>
+            entry.FinancialReport?.EPS >= 0 || entry.Position != Position.NoPosition;
+
+        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketData)
+        {
+            if (marketData == null)
+                throw new ArgumentNullException(nameof(marketData));
+
+            var isin = marketData.First()?.Isin;
+            if (string.IsNullOrEmpty(isin))
+                throw new ServiceException("No ISIN found for market data set.");
+
+            var stockBaseData = _registryRepository.GetById(isin);
+            if (stockBaseData is null)
+                throw new ServiceException($"No registry entry found for {isin}");
+
+            var financialAnalysis = new FinancialAnalysisBuilder()
+                    .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
+                    .SetEPS(stockBaseData.FinancialReport?.EPS)
+                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
+                    .Build();
+            var technicalAnalysis = new TechnicalAnalysisBuilder()
+                    .SetFastSMA(marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
+                    .SetSlowSMA(marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
+                    .Build();
+            var analysis = new AnalysisBuilder()
+                .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
+                .SetName(stockBaseData.Name)
+                .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / marketData.FirstOrDefault().ClosingPrice))
+                .SetFinancialAnalysis(financialAnalysis)
+                .SetTechnicalAnalysis(technicalAnalysis)
+                .Build();
+                
+            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
+            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
+
+            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
         }
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
             marketData.Any(d => string.IsNullOrWhiteSpace(d.Isin));
 
+        // TODO investigate
         internal static void RemoveEntriesWithoutUptodateData(
             List<IMarketDataEntity> marketData,
             DateTime latestDate) =>
                 marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
-
-        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
-            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
             return entry.Value?.FinancialReport != null &&
                 entry.Value.FinancialReport.EPS != 0 &&
                 entry.Value.FinancialReport.MonthsInReport != 0;
-        }
-
-        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> groupedMarketData)
-        {
-            if (groupedMarketData == null)
-            {
-                throw new ArgumentNullException(nameof(groupedMarketData));
-            }
-            var isin = groupedMarketData.First().Isin;
-
-            // TODO add registry repository GetByIsin()
-            var stockBaseData = _registryRepository
-                .GetAll()
-                .First(e => string.Equals(e.Key, isin))
-                .Value;
-
-            var analysis = new Analysis
-            {
-                Name = stockBaseData.Name,
-                ClosingPrice = groupedMarketData.FirstOrDefault().ClosingPrice,
-                QtyInBuyingPacket = (int)Math.Floor(_buyingPacketInEuro / groupedMarketData.FirstOrDefault().ClosingPrice),
-                TechnicalAnalysis = new TechnicalAnalysisBuilder()
-                    .SetFastSMA(groupedMarketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
-                    .SetSlowSMA(groupedMarketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
-                    .Build(),
-                FinancialAnalysis = new FinancialAnalysisBuilder()
-                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
-                    .SetClosingPrice(groupedMarketData.FirstOrDefault().ClosingPrice)
-                    .SetEPS(stockBaseData.FinancialReport?.EPS)
-                    .Build()
-            };
-
-            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
-            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
-
-            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
         }
 
         private static TAZ GetTAZ(IAnalysis analysis)
@@ -176,7 +168,7 @@ namespace AnalysesManager.Services.Implementations
             return TAZ.InTAZ;
         }
 
-        private Trend GetTrend(IAnalysis analysis)
+        private static Trend GetTrend(IAnalysis analysis)
         {
             if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
             {

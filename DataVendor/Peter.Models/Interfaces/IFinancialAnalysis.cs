@@ -3,7 +3,7 @@
 namespace Peter.Models.Interfaces
 {
     /// <summary>
-    /// The indicators and numbers calculated from the market data.
+    /// Indicators calculated from the fundamental numbers and market data.
     /// </summary>
     public interface IFinancialAnalysis : IEquatable<IFinancialAnalysis>
     {

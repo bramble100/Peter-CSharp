@@ -6,28 +6,26 @@ namespace Peter.Repositories.Interfaces
     public interface IRegistryRepository
     {
         /// <summary>
-        /// Add many registry entries.
-        /// </summary>
-        /// <param name="newEntries"></param>
-        void AddRange(IEnumerable<KeyValuePair<string, IRegistryEntry>> newEntries);
-
-        /// <summary>
-        /// Gets all the entities.
-        /// </summary>
-        /// <returns></returns>
-        IRegistry GetAll();
-
-        /// <summary>
         /// Collection of ISINs.
         /// </summary>
         IEnumerable<string> Isins { get; }
 
         /// <summary>
+        /// Adds many registry entries.
+        /// </summary>
+        /// <param name="enumerable"></param>
+        void AddRange(IEnumerable<IRegistryEntry> enumerable);
+        /// <summary>
+        /// Gets one entry by ISIN.
+        /// </summary>
+        /// <param name="isin"></param>
+        /// <returns></returns>
+        IRegistryEntry GetById(string isin);
+        /// <summary>
         /// Remove many registry entries.
         /// </summary>
         /// <param name="isins"></param>
         void RemoveRange(IEnumerable<string> isins);
-
         /// <summary>
         /// Saves the changes.
         /// </summary>

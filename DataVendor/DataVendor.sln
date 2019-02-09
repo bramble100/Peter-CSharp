@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysesManager", "Analyses
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysesManager.UnitTests", "AnalysesManager.UnitTests\AnalysesManager.UnitTests.csproj", "{A6EEB019-2B1D-4715-9157-92E9383E9DA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.IntegrationTests", "Repositories.IntegrationTests\Repositories.IntegrationTests.csproj", "{5A09A423-2F9E-4659-9590-DEAF02A301E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{373D71A0-34B5-42AA-9F6D-961051ADFF5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{A6EEB019-2B1D-4715-9157-92E9383E9DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6EEB019-2B1D-4715-9157-92E9383E9DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6EEB019-2B1D-4715-9157-92E9383E9DA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A09A423-2F9E-4659-9590-DEAF02A301E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A09A423-2F9E-4659-9590-DEAF02A301E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A09A423-2F9E-4659-9590-DEAF02A301E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A09A423-2F9E-4659-9590-DEAF02A301E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{373D71A0-34B5-42AA-9F6D-961051ADFF5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{373D71A0-34B5-42AA-9F6D-961051ADFF5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{373D71A0-34B5-42AA-9F6D-961051ADFF5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{373D71A0-34B5-42AA-9F6D-961051ADFF5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

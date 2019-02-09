@@ -2,7 +2,7 @@
 using System;
 using System.Globalization;
 
-namespace DataVendor.Services
+namespace DataVendor.Services.Html
 {
     internal static class HtmlRowProcessor
     {

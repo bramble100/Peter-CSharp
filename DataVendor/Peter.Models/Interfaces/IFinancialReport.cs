@@ -2,6 +2,9 @@
 
 namespace Peter.Models.Interfaces
 {
+    /// <summary>
+    /// Quarterly reports related data and metadata.
+    /// </summary>
     public interface IFinancialReport : IEquatable<IFinancialReport>
     {
         /// <summary>

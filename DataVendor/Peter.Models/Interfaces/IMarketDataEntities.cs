@@ -9,6 +9,12 @@ namespace Peter.Models.Interfaces
     public interface IMarketDataEntities : ICollection<IMarketDataEntity>
     {
         /// <summary>
+        /// Returns all the ISINs in the collection.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> Isins { get; }
+
+        /// <summary>
         /// Adds the market data informations to the collection.
         /// </summary>
         /// <param name="entities"></param>

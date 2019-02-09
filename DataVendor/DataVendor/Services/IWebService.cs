@@ -5,15 +5,15 @@ namespace DataVendor.Services
     public interface IWebService
     {
         /// <summary>
+        /// Returns all market data downloaded from datavendor.
+        /// </summary>
+        /// <returns></returns>
+        IMarketDataEntities DownloadFromWeb();
+
+        /// <summary>
         /// Updates underlying repository with the given data.
         /// </summary>
         /// <param name="p"></param>
         void Update(IMarketDataEntities latestData);
-
-        /// <summary>
-        /// Returns all market data that was downloaded from datavendor's pages.
-        /// </summary>
-        /// <returns></returns>
-        IMarketDataEntities DownloadFromWeb();
     }
 }

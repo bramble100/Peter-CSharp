@@ -12,12 +12,7 @@ namespace AnalysesManager.Controllers.Implementations
 
         private readonly IService _service;
 
-        public Controller()
-        {
-            _service = new Service();
-        }
-
-        public Controller(IService service) : this()
+        public Controller(IService service)
         {
             _service = service;
         }

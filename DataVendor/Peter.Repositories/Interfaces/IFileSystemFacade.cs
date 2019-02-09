@@ -1,4 +1,7 @@
-﻿namespace Peter.Repositories.Interfaces
+﻿using System.Collections.Generic;
+using System.Text;
+
+namespace Peter.Repositories.Interfaces
 {
     public interface IFileSystemFacade
     {
@@ -22,5 +25,13 @@
         /// <param name="fullPath"></param>
         /// <param name="content"></param>
         void Save(string fullPath, string content);
+
+        /// <summary>
+        /// Read the lines of a file that has a specified encoding.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="uTF8"></param>
+        /// <returns></returns>
+        IEnumerable<string> ReadLines(string fullPath, Encoding uTF8);
     }
 }

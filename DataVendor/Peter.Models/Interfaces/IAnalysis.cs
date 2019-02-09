@@ -2,6 +2,9 @@
 
 namespace Peter.Models.Interfaces
 {
+    /// <summary>
+    /// All-in analysis containing some basic data with financial and technical analyses.
+    /// </summary>
     public interface IAnalysis : IEquatable<IAnalysis>
     {
         /// <summary>
@@ -17,11 +20,11 @@ namespace Peter.Models.Interfaces
         /// </summary>
         int QtyInBuyingPacket { get; set; }
         /// <summary>
-        /// All the metrics based on technical analysis.
+        /// Indicators based on technical analysis.
         /// </summary>
         ITechnicalAnalysis TechnicalAnalysis { get; set; }
         /// <summary>
-        /// All the metrics based on financial analysis.
+        /// Indicators based on financial analysis.
         /// </summary>
         IFinancialAnalysis FinancialAnalysis { get; set; }
     }
