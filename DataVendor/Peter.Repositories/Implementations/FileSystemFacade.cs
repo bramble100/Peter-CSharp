@@ -52,6 +52,8 @@ namespace Peter.Repositories.Implementations
             }
         }
 
+        public StreamReader Open(string fullPath) => File.OpenText(fullPath);
+
         public IEnumerable<string> ReadLines(string fullPath, Encoding encoding)
         {
             try

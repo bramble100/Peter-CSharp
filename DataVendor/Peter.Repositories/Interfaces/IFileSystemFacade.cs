@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Peter.Repositories.Interfaces
@@ -25,6 +26,12 @@ namespace Peter.Repositories.Interfaces
         /// <param name="fullPath"></param>
         /// <returns></returns>
         string Load(string fullPath);
+        /// <summary>
+        /// Opens an existing UTF-8 encoded text file for reading.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns></returns>
+        StreamReader Open(string fullPath);
         /// <summary>
         /// Read the lines of a file that has a specified encoding.
         /// </summary>
