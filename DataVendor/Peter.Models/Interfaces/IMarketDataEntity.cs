@@ -3,7 +3,7 @@
 namespace Peter.Models.Interfaces
 {
     /// <summary>
-    /// Stores the data of an entity downloaded from the data vendor page.
+    /// Data downloaded from the data vendor page.
     /// </summary>
     public interface IMarketDataEntity : IComparable<IMarketDataEntity>, IEquatable<IMarketDataEntity>
     {
