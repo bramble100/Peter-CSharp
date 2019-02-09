@@ -3,6 +3,9 @@ using System.Text;
 
 namespace Peter.Repositories.Interfaces
 {
+    /// <summary>
+    /// Provides access to the file system.
+    /// </summary>
     public interface IFileSystemFacade
     {
         /// <summary>
