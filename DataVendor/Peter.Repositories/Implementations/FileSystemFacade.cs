@@ -17,6 +17,8 @@ namespace Peter.Repositories.Implementations
             _logger = LogManager.GetCurrentClassLogger();
         }
 
+        public string DesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
         public void Backup(string fullPath, string backupFullPath)
         {
             try
