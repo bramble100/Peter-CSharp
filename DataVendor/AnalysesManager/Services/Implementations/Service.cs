@@ -137,6 +137,7 @@ namespace AnalysesManager.Services.Implementations
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
             marketData.Any(d => string.IsNullOrWhiteSpace(d.Isin));
 
+        // TODO investigate
         internal static void RemoveEntriesWithoutUptodateData(
             List<IMarketDataEntity> marketData,
             DateTime latestDate) =>

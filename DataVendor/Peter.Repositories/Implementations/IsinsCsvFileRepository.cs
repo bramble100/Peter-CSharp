@@ -18,6 +18,7 @@ namespace Peter.Repositories.Implementations
     {
         private new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
+        // TODO change to separate class (so that it can be persisted)
         private readonly Dictionary<string, string> _isins;
 
         /// <summary>
