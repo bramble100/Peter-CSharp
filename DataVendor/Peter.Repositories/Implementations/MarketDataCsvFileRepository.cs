@@ -8,10 +8,8 @@ using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
@@ -88,30 +86,30 @@ namespace Peter.Repositories.Implementations
         {
             try
             {
-                Tuple<string, CultureInfo> baseInfo;
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
-                baseInfo = GetCsvSeparatorAndCultureInfo(
-                    _fileSystemFacade.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
-
-                _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
-
-                _logger.Info("Loading market data entities from CSV file ...");
-
-                using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
+                using(var reader = _fileSystemFacade.Open(fullPath))
                 {
-                    parser.SetDelimiters(baseInfo.Item1);
+                    var baseInfo = GetCsvSeparatorAndCultureInfo(reader.ReadLine());
+                    _separator = baseInfo.Item1;
+                    _cultureInfo = baseInfo.Item2;
 
-                    RemoveHeader(parser);
+                    _logger.Debug($"{_fileName}: separator: \"{_separator}\" culture: \"{_cultureInfo}\".");
+                    _logger.Info("Loading market data entities from CSV file ...");
 
-                    while (!parser.EndOfData)
+                    using (var parser = new TextFieldParser(reader))
                     {
-                        if (CsvLineMarketData.TryParseFromCsv(
-                            parser.ReadFields(),
-                            baseInfo.Item2,
-                            out IMarketDataEntity result))
+                        parser.SetDelimiters(_separator);
+
+                        while (!parser.EndOfData)
                         {
-                            _entities.Add(result);
+                            if (CsvLineMarketData.TryParseFromCsv(
+                                parser.ReadFields(),
+                                _cultureInfo,
+                                out IMarketDataEntity result))
+                            {
+                                _entities.Add(result);
+                            }
                         }
                     }
                 }
