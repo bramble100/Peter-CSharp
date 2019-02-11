@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -25,6 +26,7 @@ namespace Peter.Repositories.Interfaces
         /// </summary>
         /// <param name="fullPath"></param>
         /// <returns></returns>
+        [Obsolete]
         string Load(string fullPath);
         /// <summary>
         /// Opens an existing UTF-8 encoded text file for reading.
@@ -38,6 +40,7 @@ namespace Peter.Repositories.Interfaces
         /// <param name="fullPath"></param>
         /// <param name="uTF8"></param>
         /// <returns></returns>
+        [Obsolete]
         IEnumerable<string> ReadLines(string fullPath, Encoding uTF8);
         /// <summary>
         /// Saves the content into a text file.
