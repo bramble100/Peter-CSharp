@@ -1,5 +1,4 @@
 ﻿using Infrastructure;
-using Microsoft.VisualBasic.FileIO;
 using NLog;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Interfaces;
