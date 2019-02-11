@@ -54,6 +54,8 @@ namespace Peter.Repositories.Implementations
             _logger.Info("Adding market data entities ...");
             _entities.AddRange(latestData);
             _logger.Info($"{latestData.Count} new market data entities added.");
+
+            _fileContentSaved = false;
         }
 
         public IMarketDataEntities GetAll()
@@ -65,7 +67,7 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            if (!_fileContentLoaded) return;
+            if (!_fileContentLoaded || _fileContentSaved) return;
 
             CreateBackUp(
                 WorkingDirectory,
@@ -114,6 +116,8 @@ namespace Peter.Repositories.Implementations
                 }
 
                 _fileContentLoaded = true;
+                _fileContentSaved = true;
+            
                 _logger.Info($"{_entities.Count} new market data entities loaded.");
             }
             catch (Exception ex)
