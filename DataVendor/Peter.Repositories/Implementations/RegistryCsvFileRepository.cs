@@ -49,6 +49,8 @@ namespace Peter.Repositories.Implementations
             {
                 _entities.Add(entry);
             }
+
+            _fileContentSaved = false;
         }
 
         public IRegistryEntry GetById(string isin)
@@ -74,7 +76,7 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            if (!_fileContentLoaded) return;
+            if (!_fileContentLoaded || _fileContentSaved) return;
 
             CreateBackUp(
                 WorkingDirectory, 
@@ -114,6 +116,8 @@ namespace Peter.Repositories.Implementations
                 }
 
                 _fileContentLoaded = true;
+                _fileContentSaved = true;
+
                 _logger.Info($"{_entities.Count} new registry item loaded.");
             }
             catch (Exception ex)

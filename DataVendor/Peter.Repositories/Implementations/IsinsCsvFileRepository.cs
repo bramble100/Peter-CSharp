@@ -41,6 +41,7 @@ namespace Peter.Repositories.Implementations
             if (!_fileContentLoaded) Load();
 
             _isins.Add(name, string.Empty);
+            _fileContentSaved = false;
         }
 
         public bool ContainsName(string name)
@@ -69,11 +70,12 @@ namespace Peter.Repositories.Implementations
             if (!_fileContentLoaded) Load();
 
             _isins.Remove(name);
+            _fileContentSaved = false;
         }
 
         public void SaveChanges()
         {
-            if (!_fileContentLoaded) return;
+            if (!_fileContentLoaded || _fileContentSaved) return;
 
             CreateBackUp(
                 WorkingDirectory,
@@ -114,6 +116,8 @@ namespace Peter.Repositories.Implementations
                     }
                 }
                 _fileContentLoaded = true;
+                _fileContentSaved = true;
+
                 _logger.Info($"{_isins.Count} new ISIN entries loaded.");
             }
             catch (Exception ex)

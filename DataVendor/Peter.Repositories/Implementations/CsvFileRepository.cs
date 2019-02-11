@@ -22,6 +22,7 @@ namespace Peter.Repositories.Implementations
 
         protected string _fileName;
         protected bool _fileContentLoaded;
+        protected bool _fileContentSaved;
 
         private readonly string _dateFormat;
 

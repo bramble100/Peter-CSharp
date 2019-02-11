@@ -33,6 +33,7 @@ namespace Peter.Repositories.Implementations
         public void Add(KeyValuePair<string, IAnalysis> analysis)
         {
             _entities.Add(analysis.Key, analysis.Value);
+            _fileContentSaved = false;
         }
 
         public void AddRange(IEnumerable<KeyValuePair<string, IAnalysis>> analyses)
@@ -43,6 +44,7 @@ namespace Peter.Repositories.Implementations
             }
 
             analyses.ToList().ForEach(Add);
+            _fileContentSaved = false;
             _logger.Info($"{analyses.Count()} new analyses added.");
         }
 
@@ -52,6 +54,8 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
+            if (!_fileContentLoaded || _fileContentSaved) return;
+
             _fileName = $"{_config.GetValue<string>("AnalysesFileName")}" +
                 $" {DateTime.Now.ToString(_config.GetValue<string>("DateFormatForFileName"))}" +
                 $".{_config.GetValue<string>("CsvFileNameExtension")}";

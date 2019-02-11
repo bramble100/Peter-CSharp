@@ -22,8 +22,8 @@ namespace Peter.Repositories.Implementations
         private readonly IMarketDataEntities _entities;
 
         public MarketDataCsvFileRepository(
-            IConfig config, 
-            IFileSystemFacade fileSystemFacade) 
+            IConfig config,
+            IFileSystemFacade fileSystemFacade)
             : base(config, fileSystemFacade)
         {
             WorkingDirectory = Path.Combine(
@@ -54,6 +54,8 @@ namespace Peter.Repositories.Implementations
             _logger.Info("Adding market data entities ...");
             _entities.AddRange(latestData);
             _logger.Info($"{latestData.Count} new market data entities added.");
+
+            _fileContentSaved = false;
         }
 
         public IMarketDataEntities GetAll()
@@ -65,6 +67,7 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
+            // TODO watch _fileContentSaved
             if (!_fileContentLoaded) return;
 
             CreateBackUp(
@@ -114,6 +117,8 @@ namespace Peter.Repositories.Implementations
                 }
 
                 _fileContentLoaded = true;
+                _fileContentSaved = true;
+
                 _logger.Info($"{_entities.Count} new market data entities loaded.");
             }
             catch (Exception ex)
