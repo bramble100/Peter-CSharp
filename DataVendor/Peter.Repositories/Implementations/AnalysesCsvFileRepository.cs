@@ -54,7 +54,7 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            if (!_fileContentLoaded || _fileContentSaved) return;
+            if (_fileContentSaved) return;
 
             _fileName = $"{_config.GetValue<string>("AnalysesFileName")}" +
                 $" {DateTime.Now.ToString(_config.GetValue<string>("DateFormatForFileName"))}" +
