@@ -7,10 +7,8 @@ using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
@@ -41,6 +39,7 @@ namespace Peter.Repositories.Implementations
             if (!_fileContentLoaded) Load();
 
             _isins.Add(name, string.Empty);
+            _fileContentSaved = false;
         }
 
         public bool ContainsName(string name)
@@ -69,11 +68,12 @@ namespace Peter.Repositories.Implementations
             if (!_fileContentLoaded) Load();
 
             _isins.Remove(name);
+            _fileContentSaved = false;
         }
 
         public void SaveChanges()
         {
-            if (!_fileContentLoaded) return;
+            if (!_fileContentLoaded || _fileContentSaved) return;
 
             CreateBackUp(
                 WorkingDirectory,
@@ -91,29 +91,34 @@ namespace Peter.Repositories.Implementations
         {
             try
             {
-                Tuple<string, CultureInfo> baseInfo;
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
-                baseInfo = GetCsvSeparatorAndCultureInfo(
-                    _fileSystemFacade.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
-
-                _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
-
-                using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
+                using (var reader = _fileSystemFacade.Open(fullPath))
                 {
-                    parser.SetDelimiters(baseInfo.Item1);
+                    var baseInfo = GetCsvSeparatorAndCultureInfo(reader.ReadLine());
+                    _separator = baseInfo.Item1;
+                    _cultureInfo = baseInfo.Item2;
 
-                    RemoveHeader(parser);
+                    _logger.Debug($"{_fileName}: separator: \"{_separator}\" culture: \"{_cultureInfo}\".");
+                    _logger.Info("Loading ISINs from CSV file ...");
 
-                    while (!parser.EndOfData)
+                    using (var parser = new TextFieldParser(reader))
                     {
-                        if (CsvLineIsin.TryParseFromCsv(parser.ReadFields(), out var result))
+                        parser.SetDelimiters(_separator);
+
+                        while (!parser.EndOfData)
                         {
-                            _isins.Add(result.Key, result.Value);
+                            if (CsvLineIsin.TryParseFromCsv(parser.ReadFields(), out var result))
+                            {
+                                _isins.Add(result.Key, result.Value);
+                            }
                         }
                     }
                 }
+
                 _fileContentLoaded = true;
+                _fileContentSaved = true;
+
                 _logger.Info($"{_isins.Count} new ISIN entries loaded.");
             }
             catch (Exception ex)

@@ -17,6 +17,8 @@ namespace Peter.Repositories.Implementations
             _logger = LogManager.GetCurrentClassLogger();
         }
 
+        public string DesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
         public void Backup(string fullPath, string backupFullPath)
         {
             try
@@ -49,6 +51,8 @@ namespace Peter.Repositories.Implementations
                 throw new RepositoryException($"File cannot be loaded. {ex.Message}", ex);
             }
         }
+
+        public StreamReader Open(string fullPath) => File.OpenText(fullPath);
 
         public IEnumerable<string> ReadLines(string fullPath, Encoding encoding)
         {

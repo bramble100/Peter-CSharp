@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Peter.Repositories.Implementations
 {
@@ -49,6 +48,8 @@ namespace Peter.Repositories.Implementations
             {
                 _entities.Add(entry);
             }
+
+            _fileContentSaved = false;
         }
 
         public IRegistryEntry GetById(string isin)
@@ -74,7 +75,7 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            if (!_fileContentLoaded) return;
+            if (!_fileContentLoaded || _fileContentSaved) return;
 
             CreateBackUp(
                 WorkingDirectory, 
@@ -91,29 +92,34 @@ namespace Peter.Repositories.Implementations
         {
             try
             {
-                Tuple<string, CultureInfo> baseInfo;
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
-                baseInfo = GetCsvSeparatorAndCultureInfo(
-                    _fileSystemFacade.ReadLines(fullPath, Encoding.UTF8).FirstOrDefault());
-
-                _logger.Debug($"{_fileName}: separator: \"{baseInfo.Item1}\" culture: \"{baseInfo.Item2.ToString()}\".");
-
-                using (var parser = new TextFieldParser(fullPath, Encoding.UTF8))
+                using(var reader = _fileSystemFacade.Open(fullPath))
                 {
-                    parser.SetDelimiters(baseInfo.Item1);
-                    RemoveHeader(parser);
-                    while (!parser.EndOfData)
+                    var baseInfo = GetCsvSeparatorAndCultureInfo(reader.ReadLine());
+                    _separator = baseInfo.Item1;
+                    _cultureInfo = baseInfo.Item2;
+                    _logger.Debug($"{_fileName}: separator: \"{_separator}\" culture: \"{_cultureInfo}\".");
+                    _logger.Info("Loading registry entries from CSV file ...");
+
+                    using (var parser = new TextFieldParser(reader))
                     {
-                        if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
-                            parser.ReadFields(),
-                            baseInfo.Item2,
-                            out IRegistryEntry result))
-                            _entities.Add(result);
+                        parser.SetDelimiters(_separator);
+
+                        while (!parser.EndOfData)
+                        {
+                            if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
+                                parser.ReadFields(),
+                                _cultureInfo,
+                                out IRegistryEntry result))
+                                _entities.Add(result);
+                        }
                     }
                 }
 
                 _fileContentLoaded = true;
+                _fileContentSaved = true;
+
                 _logger.Info($"{_entities.Count} new registry item loaded.");
             }
             catch (Exception ex)

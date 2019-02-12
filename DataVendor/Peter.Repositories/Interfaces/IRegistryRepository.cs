@@ -3,6 +3,9 @@ using Peter.Models.Interfaces;
 
 namespace Peter.Repositories.Interfaces
 {
+    /// <summary>
+    /// Repository with registry entries.
+    /// </summary>
     public interface IRegistryRepository
     {
         /// <summary>

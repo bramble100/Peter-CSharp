@@ -1,7 +1,7 @@
 ﻿namespace Infrastructure
 {
     /// <summary>
-    /// Holds the configuration settings.
+    /// Provides configuration settings.
     /// </summary>
     public interface IConfig
     {
