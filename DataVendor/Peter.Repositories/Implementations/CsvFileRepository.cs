@@ -1,5 +1,4 @@
 ﻿using Infrastructure;
-using Microsoft.VisualBasic.FileIO;
 using NLog;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Interfaces;
@@ -15,14 +14,14 @@ namespace Peter.Repositories.Implementations
         protected readonly Logger _logger;
 
         protected readonly string _fileNameExtension;
-        protected readonly string _separator;
-        protected readonly CultureInfo _cultureInfo;
         protected readonly IConfig _config;
         protected readonly IFileSystemFacade _fileSystemFacade;
-
+        
+        protected CultureInfo _cultureInfo;
         protected string _fileName;
         protected bool _fileContentLoaded;
         protected bool _fileContentSaved;
+        protected string _separator;
 
         private readonly string _dateFormat;
 
@@ -45,7 +44,7 @@ namespace Peter.Repositories.Implementations
         /// Constructor.
         /// </summary>
         public CsvFileRepository(
-            IConfig config, 
+            IConfig config,
             IFileSystemFacade fileSystemFacade)
         {
             _config = config;
@@ -76,19 +75,10 @@ namespace Peter.Repositories.Implementations
             _logger.Debug($"CSV separator is {_separator} from config file.");
         }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="fileSystemFacade"></param>
-        //public CsvFileRepository(IFileSystemFacade fileSystemFacade) : base()
-        //{
-        //    _fileSystemFacade = fileSystemFacade;
-        //}
-
         internal void SaveChanges(
-            string[] header, 
-            IEnumerable<string> content, 
-            string fullPath, 
+            string[] header,
+            IEnumerable<string> content,
+            string fullPath,
             string separator)
         {
             _logger.Info($"Saving changes into {Path.GetFileName(fullPath)} ...");
@@ -110,8 +100,6 @@ namespace Peter.Repositories.Implementations
         }
 
         protected static List<string> AddHeader(string[] header, string separator) => new List<string> { string.Join(separator, header) };
-
-        protected static void RemoveHeader(TextFieldParser parser) => parser.ReadLine();
 
         protected Tuple<string, CultureInfo> GetCsvSeparatorAndCultureInfo(string header)
         {
