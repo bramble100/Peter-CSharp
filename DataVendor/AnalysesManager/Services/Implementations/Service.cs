@@ -13,7 +13,7 @@ namespace AnalysesManager.Services.Implementations
 {
     public class Service : IService
     {
-        protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IAnalysesRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
