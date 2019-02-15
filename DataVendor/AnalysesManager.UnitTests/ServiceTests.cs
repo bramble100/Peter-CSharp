@@ -27,18 +27,29 @@ namespace AnalysesManager.UnitTests
             Assert.Throws<ArgumentNullException>(() => Service.GetTAZ(analysis));
         }
 
-        [TestCase(0, 0, 0)]
+        [TestCase(0, 1, 1)]
+        [TestCase(-1, 1, 1)]
+        [TestCase(1, 0, 1)]
+        [TestCase(1, -1, 1)]
+        [TestCase(1, 1, 0)]
+        [TestCase(1, 1, -1)]
         public void GetTaz_ThrowsArgumentException(decimal closingPrice, decimal fastSMA, decimal slowSMA)
         {
             var analysis = new AnalysisBuilder()
-                .SetClosingPrice(closingPrice)
+                .SetClosingPrice(1)
                 .SetFinancialAnalysis(null)
                 .SetName("test")
                 .SetQtyInBuyingPacket(1)
                 .SetTechnicalAnalysis(new TechnicalAnalysisBuilder()
+                    .SetFastSMA(1)
+                    .SetSlowSMA(1)
                     .Build())
                 .Build();
-            Assert.Throws<ArgumentNullException>(() => Service.GetTAZ(analysis));
+            analysis.ClosingPrice = closingPrice;
+            analysis.TechnicalAnalysis.FastSMA = fastSMA;
+            analysis.TechnicalAnalysis.SlowSMA = slowSMA;
+
+            Assert.Throws<ArgumentException>(() => Service.GetTAZ(analysis));
         }
 
         [Test]
