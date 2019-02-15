@@ -152,6 +152,8 @@ namespace AnalysesManager.Services.Implementations
 
         internal static TAZ GetTAZ(IAnalysis analysis)
         {
+            if (analysis is null) throw new ArgumentNullException(nameof(analysis));
+
             if (analysis.ClosingPrice > Math.Max(
                 analysis.TechnicalAnalysis.FastSMA,
                 analysis.TechnicalAnalysis.SlowSMA))
