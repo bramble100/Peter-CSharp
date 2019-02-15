@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using AnalysesManager.Services.Implementations;
+using FluentAssertions;
 using NUnit.Framework;
+using Peter.Models.Builders;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
@@ -8,11 +10,22 @@ using System.Collections.Generic;
 namespace AnalysesManager.UnitTests
 {
     [TestFixture]
-    public class Service
+    public class ServiceTests
     {
         [Test]
-        public void GetTaz_ThrowsArgumentNullException() =>
-            Assert.Throws<ArgumentNullException>(() => AnalysesManager.Services.Implementations.Service.GetTAZ(null));
+        public void GetTaz_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Service.GetTAZ(null));
+
+            var analysis = new AnalysisBuilder()
+                .SetClosingPrice(1)
+                .SetFinancialAnalysis(null)
+                .SetName("test")
+                .SetQtyInBuyingPacket(1)
+                .SetTechnicalAnalysis(null)
+                .Build();
+            Assert.Throws<ArgumentNullException>(() => Service.GetTAZ(analysis));
+        }
 
         [Test]
         public void ContainsDataWithoutIsin_WithDataWithoutIsin_ReturnsTrue()
@@ -25,7 +38,7 @@ namespace AnalysesManager.UnitTests
                     Isin=string.Empty
                 }
             };
-            Services.Implementations.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeTrue();
+            Service.ContainsDataWithoutIsin(inputMarketData).Should().BeTrue();
         }
 
         [Test]
@@ -39,7 +52,7 @@ namespace AnalysesManager.UnitTests
                     Isin="Keep"
                 }
             };
-            Services.Implementations.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeFalse();
+            Service.ContainsDataWithoutIsin(inputMarketData).Should().BeFalse();
         }
 
         [Test]
@@ -83,7 +96,7 @@ namespace AnalysesManager.UnitTests
                 }
             };
 
-            Services.Implementations.Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
+            Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
             testMarketData.Should().Equal(expectedMarketData);
         }
 
