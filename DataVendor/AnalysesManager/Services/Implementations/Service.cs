@@ -131,7 +131,7 @@ namespace AnalysesManager.Services.Implementations
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
             analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
 
-            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
+            return new KeyValuePair<string, IAnalysis>(isin, analysis);
         }
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
@@ -150,7 +150,7 @@ namespace AnalysesManager.Services.Implementations
                 entry.Value.FinancialReport.MonthsInReport != 0;
         }
 
-        private static TAZ GetTAZ(IAnalysis analysis)
+        internal static TAZ GetTAZ(IAnalysis analysis)
         {
             if (analysis.ClosingPrice > Math.Max(
                 analysis.TechnicalAnalysis.FastSMA,
