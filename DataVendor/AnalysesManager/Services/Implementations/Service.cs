@@ -127,11 +127,11 @@ namespace AnalysesManager.Services.Implementations
                 .SetFinancialAnalysis(financialAnalysis)
                 .SetTechnicalAnalysis(technicalAnalysis)
                 .Build();
-                
+
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
             analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
 
-            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
+            return new KeyValuePair<string, IAnalysis>(isin, analysis);
         }
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
@@ -150,17 +150,28 @@ namespace AnalysesManager.Services.Implementations
                 entry.Value.FinancialReport.MonthsInReport != 0;
         }
 
-        private static TAZ GetTAZ(IAnalysis analysis)
+        internal static TAZ GetTAZ(IAnalysis analysis)
         {
-            if (analysis.ClosingPrice > Math.Max(
-                analysis.TechnicalAnalysis.FastSMA,
-                analysis.TechnicalAnalysis.SlowSMA))
+            if (analysis is null) throw new ArgumentNullException(nameof(analysis));
+            var technicalAnalysis = analysis.TechnicalAnalysis;
+            if (technicalAnalysis is null) throw new ArgumentNullException(nameof(technicalAnalysis));
+
+            var closingPrice = analysis.ClosingPrice;
+            var fastSMA = technicalAnalysis.FastSMA;
+            var slowSMA = technicalAnalysis.SlowSMA;
+
+            if (closingPrice <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(closingPrice));
+            if (fastSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
+            if (slowSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
+
+            if (closingPrice > Math.Max(fastSMA,slowSMA))
             {
                 return TAZ.AboveTAZ;
             }
-            else if (analysis.ClosingPrice < Math.Min(
-                analysis.TechnicalAnalysis.FastSMA,
-                analysis.TechnicalAnalysis.SlowSMA))
+            if (closingPrice < Math.Min(fastSMA,slowSMA))
             {
                 return TAZ.BelowTAZ;
             }
