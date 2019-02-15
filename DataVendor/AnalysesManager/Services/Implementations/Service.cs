@@ -153,16 +153,18 @@ namespace AnalysesManager.Services.Implementations
         internal static TAZ GetTAZ(IAnalysis analysis)
         {
             if (analysis is null) throw new ArgumentNullException(nameof(analysis));
-
+            var technicalAnalysis = analysis.TechnicalAnalysis;
+            if (technicalAnalysis is null) throw new ArgumentNullException(nameof(technicalAnalysis));
+            
             if (analysis.ClosingPrice > Math.Max(
-                analysis.TechnicalAnalysis.FastSMA,
-                analysis.TechnicalAnalysis.SlowSMA))
+                technicalAnalysis.FastSMA,
+                technicalAnalysis.SlowSMA))
             {
                 return TAZ.AboveTAZ;
             }
             else if (analysis.ClosingPrice < Math.Min(
-                analysis.TechnicalAnalysis.FastSMA,
-                analysis.TechnicalAnalysis.SlowSMA))
+                technicalAnalysis.FastSMA,
+                technicalAnalysis.SlowSMA))
             {
                 return TAZ.BelowTAZ;
             }
