@@ -11,6 +11,10 @@ namespace AnalysesManager.UnitTests
     public class Service
     {
         [Test]
+        public void GetTaz_ThrowsArgumentNullException() =>
+            Assert.Throws<ArgumentNullException>(() => AnalysesManager.Services.Implementations.Service.GetTAZ(null));
+
+        [Test]
         public void ContainsDataWithoutIsin_WithDataWithoutIsin_ReturnsTrue()
         {
             var inputMarketData = new List<IMarketDataEntity>
