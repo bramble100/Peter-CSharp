@@ -127,7 +127,7 @@ namespace AnalysesManager.Services.Implementations
                 .SetFinancialAnalysis(financialAnalysis)
                 .SetTechnicalAnalysis(technicalAnalysis)
                 .Build();
-                
+
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
             analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
 
@@ -155,16 +155,23 @@ namespace AnalysesManager.Services.Implementations
             if (analysis is null) throw new ArgumentNullException(nameof(analysis));
             var technicalAnalysis = analysis.TechnicalAnalysis;
             if (technicalAnalysis is null) throw new ArgumentNullException(nameof(technicalAnalysis));
-            
-            if (analysis.ClosingPrice > Math.Max(
-                technicalAnalysis.FastSMA,
-                technicalAnalysis.SlowSMA))
+
+            var closingPrice = analysis.ClosingPrice;
+            var fastSMA = technicalAnalysis.FastSMA;
+            var slowSMA = technicalAnalysis.SlowSMA;
+
+            if (closingPrice <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(closingPrice));
+            if (fastSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
+            if (slowSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
+
+            if (closingPrice > Math.Max(fastSMA,slowSMA))
             {
                 return TAZ.AboveTAZ;
             }
-            else if (analysis.ClosingPrice < Math.Min(
-                technicalAnalysis.FastSMA,
-                technicalAnalysis.SlowSMA))
+            if (closingPrice < Math.Min(fastSMA,slowSMA))
             {
                 return TAZ.BelowTAZ;
             }
