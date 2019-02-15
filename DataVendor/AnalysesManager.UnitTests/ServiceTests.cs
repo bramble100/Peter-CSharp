@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Peter.Models.Builders;
+using Peter.Models.Enums;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
@@ -50,6 +51,36 @@ namespace AnalysesManager.UnitTests
             analysis.TechnicalAnalysis.SlowSMA = slowSMA;
 
             Assert.Throws<ArgumentException>(() => Service.GetTAZ(analysis));
+        }
+
+        [TestCase(3.1, 2.1, 1.1, TAZ.AboveTAZ)]
+        [TestCase(3.1, 1.1, 2.1, TAZ.AboveTAZ)]
+        [TestCase(0.1, 2.1, 1.1, TAZ.BelowTAZ)]
+        [TestCase(0.1, 1.1, 2.1, TAZ.BelowTAZ)]
+        [TestCase(1.6, 2.1, 1.1, TAZ.InTAZ)]
+        [TestCase(1.6, 1.1, 2.1, TAZ.InTAZ)]
+        [TestCase(2.1, 2.1, 1.1, TAZ.InTAZ)]
+        [TestCase(1.1, 2.1, 1.1, TAZ.InTAZ)]
+        [TestCase(2.1, 1.1, 2.1, TAZ.InTAZ)]
+        [TestCase(1.1, 1.1, 2.1, TAZ.InTAZ)]
+        public void GetTaz_ReturnsCorrectResult(
+            decimal closingPrice,
+            decimal fastSMA,
+            decimal slowSMA,
+            TAZ expectedResult)
+        {
+            var analysis = new AnalysisBuilder()
+                .SetClosingPrice(closingPrice)
+                .SetFinancialAnalysis(null)
+                .SetName("test")
+                .SetQtyInBuyingPacket(1)
+                .SetTechnicalAnalysis(new TechnicalAnalysisBuilder()
+                    .SetFastSMA(fastSMA)
+                    .SetSlowSMA(slowSMA)
+                    .Build())
+                .Build();
+
+            Assert.AreEqual(expectedResult, Service.GetTAZ(analysis));
         }
 
         [Test]
