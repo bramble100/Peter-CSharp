@@ -27,6 +27,20 @@ namespace AnalysesManager.UnitTests
             Assert.Throws<ArgumentNullException>(() => Service.GetTAZ(analysis));
         }
 
+        [TestCase(0, 0, 0)]
+        public void GetTaz_ThrowsArgumentException(decimal closingPrice, decimal fastSMA, decimal slowSMA)
+        {
+            var analysis = new AnalysisBuilder()
+                .SetClosingPrice(closingPrice)
+                .SetFinancialAnalysis(null)
+                .SetName("test")
+                .SetQtyInBuyingPacket(1)
+                .SetTechnicalAnalysis(new TechnicalAnalysisBuilder()
+                    .Build())
+                .Build();
+            Assert.Throws<ArgumentNullException>(() => Service.GetTAZ(analysis));
+        }
+
         [Test]
         public void ContainsDataWithoutIsin_WithDataWithoutIsin_ReturnsTrue()
         {
