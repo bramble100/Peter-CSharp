@@ -129,7 +129,7 @@ namespace AnalysesManager.Services.Implementations
                 .Build();
 
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
-            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
+            analysis.TechnicalAnalysis.Trend = GetTrend(analysis?.TechnicalAnalysis);
 
             return new KeyValuePair<string, IAnalysis>(isin, analysis);
         }
@@ -179,13 +179,13 @@ namespace AnalysesManager.Services.Implementations
             return TAZ.InTAZ;
         }
 
-        internal static Trend GetTrend(IAnalysis analysis)
+        internal static Trend GetTrend(ITechnicalAnalysis analysis)
         {
-            if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
+            if (analysis.FastSMA > analysis.SlowSMA)
             {
                 return Trend.Up;
             }
-            else if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
+            else if (analysis.FastSMA < analysis.SlowSMA)
             {
                 return Trend.Down;
             }
