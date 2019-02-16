@@ -182,6 +182,14 @@ namespace AnalysesManager.Services.Implementations
             if (analysis is null)
                 throw new ArgumentNullException(nameof(analysis));
 
+            var fastSMA = analysis.FastSMA;
+            var slowSMA = analysis.SlowSMA;
+
+            if (fastSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
+            if (slowSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
+
             if (analysis.FastSMA > analysis.SlowSMA)
                 return Trend.Up;
             if (analysis.FastSMA < analysis.SlowSMA)
