@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AnalysesManager")]
+[assembly: AssemblyTitle("AnalysesManager.IntegrationTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AnalysesManager")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyProduct("AnalysesManager.IntegrationTests")]
+[assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,11 +19,8 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-[assembly: InternalsVisibleTo("AnalysesManager.UnitTests")]
-[assembly: InternalsVisibleTo("AnalysesManager.IntegrationTests")]
-
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a2535ede-cd01-4ecb-b445-4d6e9f3621e3")]
+[assembly: Guid("70f02ed2-56f0-46cb-86cd-5d2e699f6e5a")]
 
 // Version information for an assembly consists of the following four values:
 //
