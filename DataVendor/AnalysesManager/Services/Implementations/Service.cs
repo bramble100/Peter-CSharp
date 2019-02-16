@@ -179,7 +179,7 @@ namespace AnalysesManager.Services.Implementations
             return TAZ.InTAZ;
         }
 
-        private static Trend GetTrend(IAnalysis analysis)
+        internal static Trend GetTrend(IAnalysis analysis)
         {
             if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
             {
