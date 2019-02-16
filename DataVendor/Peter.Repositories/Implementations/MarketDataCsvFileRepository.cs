@@ -20,16 +20,16 @@ namespace Peter.Repositories.Implementations
         private readonly IMarketDataEntities _entities;
 
         public MarketDataCsvFileRepository(
-            IConfig config,
+            IConfigReader config,
             IFileSystemFacade fileSystemFacade)
             : base(config, fileSystemFacade)
         {
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
-                _config.GetValue<string>("WorkingDirectoryRawDownloads"));
+                _configReader.Settings.WorkingDirectoryRawDownloads);
             _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
 
-            _fileName = _config.GetValue<string>("MarketDataFileName");
+            _fileName = _configReader.Settings.MarketDataFileName;
             _logger.Debug($"Market data filename is {_fileName} from config file.");
 
             _entities = new MarketDataEntities();

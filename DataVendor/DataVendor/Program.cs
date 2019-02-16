@@ -20,7 +20,7 @@ namespace DataVendor
             _logger.Info("*** DataVendor ***");
 
             var builder = new ContainerBuilder();
-            builder.RegisterType<Config>().As<IConfig>();
+            builder.RegisterType<ConfigReader>().As<IConfigReader>();
             builder.RegisterType<Controller>().As<IController>();
             builder.RegisterType<IsinAdderService>().As<IIsinAdderService>();
             builder.RegisterType<WebService>().As<IWebService>();
@@ -31,16 +31,16 @@ namespace DataVendor
             var container = builder.Build();
             using(var scope = container.BeginLifetimeScope())
             {
-                var config = scope.Resolve<IConfig>();
+                var _configReader = scope.Resolve<IConfigReader>();
                 var controller = scope.Resolve<IController>();
 
                 try
                 {
-                    if (!args.Any() || Equals(args[0].ToLower(), config.GetValue<string>("FetchNewMarketData")))
+                    if (!args.Any() || Equals(args[0].ToLower(), _configReader.Settings.FetchNewMarketData))
                     {
                         controller.WebToCsv();
                     }
-                    else if (Equals(args[0].ToLower(), config.GetValue<string>("UpdateMarketDataWithISINs")))
+                    else if (Equals(args[0].ToLower(), _configReader.Settings.UpdateMarketDataWithISINs))
                     {
                         controller.AddIsins();
                     }

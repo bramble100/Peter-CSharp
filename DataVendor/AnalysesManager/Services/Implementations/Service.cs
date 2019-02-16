@@ -18,7 +18,7 @@ namespace AnalysesManager.Services.Implementations
         private readonly IAnalysesRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
-        private readonly IConfig _config;
+        private readonly IConfigReader _configReader;
 
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
@@ -28,18 +28,18 @@ namespace AnalysesManager.Services.Implementations
             IAnalysesRepository analysesRepository,
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository,
-            IConfig config)
+            IConfigReader config)
         {
             try
             {
                 _financialAnalysesCsvFileRepository = analysesRepository;
                 _marketDataRepository = marketDataRepository;
                 _registryRepository = registryRepository;
-                _config = config;
+                _configReader = config;
 
-                _buyingPacketInEuro = _config.GetValue<int>("BuyingPacketInEuro");
-                _fastMovingAverage = _config.GetValue<int>("FastMovingAverage");
-                _slowMovingAverage = _config.GetValue<int>("SlowMovingAverage");
+                _buyingPacketInEuro = _configReader.Settings.BuyingPacketInEuro;
+                _fastMovingAverage = _configReader.Settings.FastMovingAverage;
+                _slowMovingAverage = _configReader.Settings.SlowMovingAverage;
 
                 _logger.Debug($"Buying Packet is {_buyingPacketInEuro} EUR from config file.");
                 _logger.Debug($"Fast Moving Average subset size is {_fastMovingAverage} from config file.");

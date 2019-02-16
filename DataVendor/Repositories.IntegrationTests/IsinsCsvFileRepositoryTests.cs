@@ -27,7 +27,7 @@ namespace Repositories.IntegrationTests
 
             var builder = new ContainerBuilder();
             builder.RegisterInstance(mockFileSystem.Object).As<IFileSystemFacade>();
-            builder.RegisterType<Config>().As<IConfig>();
+            builder.RegisterType<ConfigReader>().As<IConfigReader>();
             builder.RegisterType<IsinsCsvFileRepository>().As<IIsinsRepository>();
             var container = builder.Build();
 

@@ -15,7 +15,7 @@ namespace RegistryManager
         static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<Config>().As<IConfig>();
+            builder.RegisterType<ConfigReader>().As<IConfigReader>();
             builder.RegisterType<Controller>().As<IController>();
             builder.RegisterType<RegistryService>().As<IRegistryService>();
             builder.RegisterType<IsinsCsvFileRepository>().As<IIsinsRepository>();

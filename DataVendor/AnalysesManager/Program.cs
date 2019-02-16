@@ -17,7 +17,7 @@ namespace AnalysesManager
         static void Main(string[] args)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<Config>().As<IConfig>();
+            builder.RegisterType<ConfigReader>().As<IConfigReader>();
             builder.RegisterType<Controller>().As<IController>();
             builder.RegisterType<Service>().As<IService>();
             builder.RegisterType<AnalysesCsvFileRepository>().As<IAnalysesRepository>();
