@@ -9,7 +9,7 @@ namespace AnalysesManager.UnitTests
     public class ServiceTests_GetTaz
     {
         [Test]
-        public void GetTaz_ThrowsArgumentNullException()
+        public void ThrowsArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() => Service.GetTAZ(null));
 
@@ -29,7 +29,7 @@ namespace AnalysesManager.UnitTests
         [TestCase(1, -1, 1)]
         [TestCase(1, 1, 0)]
         [TestCase(1, 1, -1)]
-        public void GetTaz_ThrowsArgumentException(decimal closingPrice, decimal fastSMA, decimal slowSMA)
+        public void ThrowsArgumentException(decimal closingPrice, decimal fastSMA, decimal slowSMA)
         {
             var analysis = new AnalysisBuilder()
                 .SetClosingPrice(1)
@@ -58,7 +58,7 @@ namespace AnalysesManager.UnitTests
         [TestCase(1.1, 2.1, 1.1, TAZ.InTAZ)]
         [TestCase(2.1, 1.1, 2.1, TAZ.InTAZ)]
         [TestCase(1.1, 1.1, 2.1, TAZ.InTAZ)]
-        public void GetTaz_ReturnsCorrectResult(
+        public void ReturnsCorrectResult(
             decimal closingPrice,
             decimal fastSMA,
             decimal slowSMA,

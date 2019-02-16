@@ -129,7 +129,7 @@ namespace AnalysesManager.Services.Implementations
                 .Build();
 
             analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
-            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
+            analysis.TechnicalAnalysis.Trend = GetTrend(analysis?.TechnicalAnalysis);
 
             return new KeyValuePair<string, IAnalysis>(isin, analysis);
         }
@@ -152,9 +152,11 @@ namespace AnalysesManager.Services.Implementations
 
         internal static TAZ GetTAZ(IAnalysis analysis)
         {
-            if (analysis is null) throw new ArgumentNullException(nameof(analysis));
+            if (analysis is null)
+                throw new ArgumentNullException(nameof(analysis));
             var technicalAnalysis = analysis.TechnicalAnalysis;
-            if (technicalAnalysis is null) throw new ArgumentNullException(nameof(technicalAnalysis));
+            if (technicalAnalysis is null)
+                throw new ArgumentNullException(nameof(technicalAnalysis));
 
             var closingPrice = analysis.ClosingPrice;
             var fastSMA = technicalAnalysis.FastSMA;
@@ -168,27 +170,30 @@ namespace AnalysesManager.Services.Implementations
                 throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
 
             if (closingPrice > Math.Max(fastSMA,slowSMA))
-            {
                 return TAZ.AboveTAZ;
-            }
             if (closingPrice < Math.Min(fastSMA,slowSMA))
-            {
                 return TAZ.BelowTAZ;
-            }
 
             return TAZ.InTAZ;
         }
 
-        private static Trend GetTrend(IAnalysis analysis)
+        internal static Trend GetTrend(ITechnicalAnalysis analysis)
         {
-            if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
-            {
+            if (analysis is null)
+                throw new ArgumentNullException(nameof(analysis));
+
+            var fastSMA = analysis.FastSMA;
+            var slowSMA = analysis.SlowSMA;
+
+            if (fastSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
+            if (slowSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
+
+            if (analysis.FastSMA > analysis.SlowSMA)
                 return Trend.Up;
-            }
-            else if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
-            {
+            if (analysis.FastSMA < analysis.SlowSMA)
                 return Trend.Down;
-            }
 
             return Trend.Undefined;
         }
