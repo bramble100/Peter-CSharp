@@ -16,13 +16,13 @@ namespace Peter.Repositories.Interfaces
         /// <summary>
         /// Adds new market data to the existing data.
         /// </summary>
-        /// <param name="latestData"></param>
-        void AddRange(IMarketDataEntities latestData);
+        /// <param name="entities"></param>
+        void AddRange(IEnumerable<IMarketDataEntity> entities);
         /// <summary>
         /// Gets all the stored entities.
         /// </summary>
         /// <returns></returns>
-        IMarketDataEntities GetAll();
+        IEnumerable<IMarketDataEntity> GetAll();
         /// <summary>
         /// Saves the content of the repository.
         /// </summary>

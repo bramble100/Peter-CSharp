@@ -8,8 +8,6 @@ namespace Peter.Models.Builders
         private bool _nameIsSet;
         private bool _closingPriceSet;
         private bool _qtyInBuyingPacketIsSet;
-        private bool _financialAnalysisIsSet;
-        private bool _technicalAnalysisIsSet;
 
         private string _name;
         private decimal _closingPrice;
@@ -55,7 +53,6 @@ namespace Peter.Models.Builders
             if (value != null)
             {
                 _financialAnalysis = value;
-                _financialAnalysisIsSet = true;
             }
 
             return this;
@@ -66,7 +63,6 @@ namespace Peter.Models.Builders
             if (value != null)
             {
                 _technicalAnalysis = value;
-                _technicalAnalysisIsSet = true;
             }
 
             return this;

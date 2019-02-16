@@ -1,4 +1,5 @@
 ﻿using Peter.Models.Interfaces;
+using System.Collections.Generic;
 
 namespace DataVendor.Services
 {
@@ -8,12 +9,12 @@ namespace DataVendor.Services
         /// Returns all market data downloaded from datavendor.
         /// </summary>
         /// <returns></returns>
-        IMarketDataEntities DownloadFromWeb();
+        IEnumerable<IMarketDataEntity> DownloadFromWeb();
 
         /// <summary>
         /// Updates underlying repository with the given data.
         /// </summary>
         /// <param name="p"></param>
-        void Update(IMarketDataEntities latestData);
+        void Update(IEnumerable<IMarketDataEntity> latestData);
     }
 }
