@@ -8,7 +8,7 @@ namespace Infrastructure
 {
     public class FileSystemFacade : IFileSystemFacade
     {
-        protected readonly Logger _logger;
+        private readonly Logger _logger;
 
         public FileSystemFacade()
         {
