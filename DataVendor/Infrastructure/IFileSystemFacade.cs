@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Peter.Repositories.Interfaces
+namespace Infrastructure
 {
     /// <summary>
     /// Provides access to the file system.
