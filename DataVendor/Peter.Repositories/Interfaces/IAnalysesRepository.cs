@@ -24,7 +24,7 @@ namespace Peter.Repositories.Interfaces
         /// </summary>
         /// <param name="isin"></param>
         /// <returns></returns>
-        IFinancialAnalysis Find(string isin);
+        IAnalysis Find(string isin);
         /// <summary>
         /// Returns a copy of the entities.
         /// Key: ISIN. 

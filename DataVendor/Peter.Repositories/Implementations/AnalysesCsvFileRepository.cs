@@ -48,7 +48,7 @@ namespace Peter.Repositories.Implementations
             _logger.Info($"{analyses.Count()} new analyses added.");
         }
 
-        public IFinancialAnalysis Find(string isin) => throw new System.NotImplementedException();
+        public IAnalysis Find(string isin) => throw new System.NotImplementedException();
 
         public IDictionary<string, IAnalysis> GetAll() => _entities;
 
