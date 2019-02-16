@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="ServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceTests_GetTaz.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
