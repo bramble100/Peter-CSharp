@@ -15,13 +15,13 @@ namespace DataVendor.Services.Html
     {
 
         internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls) =>
-            new IEnumerable<IMarketDataEntity>(
+            new HashSet<IMarketDataEntity>(
                 stockExchangesHtmls.SelectMany(keyValuePair =>
                     GetTable(keyValuePair.Value)
                         .GetRows()
                         .GetMarketDataEntities(keyValuePair.Key)));
 
-        internal static IMarketDataEntities GetMarketDataEntities(
+        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(
             this IEnumerable<HtmlNode> rows,
             string stockExchangeName)
         {
