@@ -6,17 +6,31 @@ using NLog;
 
 namespace Infrastructure
 {
+    /// <summary>
+    /// Provides access to the file system.
+    /// </summary>
     public class FileSystemFacade : IFileSystemFacade
     {
         private readonly Logger _logger;
 
+        /// <summary>
+        /// Returns the user's desktop folder.
+        /// </summary>
+        public string DesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public FileSystemFacade()
         {
             _logger = LogManager.GetCurrentClassLogger();
         }
 
-        public string DesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
+        /// <summary>
+        /// Backs up a file (into another folder and/or under another name).
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="backupFullPath"></param>
         public void Backup(string fullPath, string backupFullPath)
         {
             try
@@ -36,7 +50,11 @@ namespace Infrastructure
                 throw new FileSystemFacadeException($"Backup directory cannot be created. {ex.Message}", ex);
             }
         }
-
+        /// <summary>
+        /// Loads the content of a text file.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns></returns>
         public string Load(string fullPath)
         {
             try
@@ -49,9 +67,18 @@ namespace Infrastructure
                 throw new FileSystemFacadeException($"File cannot be loaded. {ex.Message}", ex);
             }
         }
-
+        /// <summary>
+        /// Opens an existing UTF-8 encoded text file for reading.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns></returns>
         public StreamReader Open(string fullPath) => File.OpenText(fullPath);
-
+        /// <summary>
+        /// Read the lines of a file that has a specified encoding.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
         public IEnumerable<string> ReadLines(string fullPath, Encoding encoding)
         {
             try
@@ -64,7 +91,11 @@ namespace Infrastructure
                 throw new FileSystemFacadeException($"File content cannot be read. {ex.Message}", ex);
             }
         }
-
+        /// <summary>
+        /// Saves the content into a text file.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="content"></param>
         public void Save(string fullPath, string content)
         {
             try
