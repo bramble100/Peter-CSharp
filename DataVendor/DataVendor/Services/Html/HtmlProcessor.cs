@@ -7,13 +7,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-// http://html-agility-pack.net/from-string
-
 namespace DataVendor.Services.Html
 {
     internal static class HtmlProcessor
     {
-
         internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls) =>
             new HashSet<IMarketDataEntity>(
                 stockExchangesHtmls.SelectMany(keyValuePair =>
