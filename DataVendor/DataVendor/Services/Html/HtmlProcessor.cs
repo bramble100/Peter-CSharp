@@ -13,17 +13,16 @@ namespace DataVendor.Services.Html
 {
     internal static class HtmlProcessor
     {
-        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls)
-        {
-            return new List<IMarketDataEntity>(
+
+        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls) =>
+            new IEnumerable<IMarketDataEntity>(
                 stockExchangesHtmls.SelectMany(keyValuePair =>
                     GetTable(keyValuePair.Value)
-                    .GetRows()
-                    .GetMarketDataEntities(keyValuePair.Key))).ToImmutableList();
-        }
+                        .GetRows()
+                        .GetMarketDataEntities(keyValuePair.Key)));
 
-        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(
-            this IEnumerable<HtmlNode> rows, 
+        internal static IMarketDataEntities GetMarketDataEntities(
+            this IEnumerable<HtmlNode> rows,
             string stockExchangeName)
         {
             IEnumerable<IMarketDataEntity> entities = new List<IMarketDataEntity>(rows.Select(row => GetMarketDataEntity(row, stockExchangeName)));
@@ -31,9 +30,8 @@ namespace DataVendor.Services.Html
             return entities.ToImmutableList();
         }
 
-        internal static IMarketDataEntity GetMarketDataEntity(HtmlNode htmlTableRow, string stockExchange)
-        {
-            return new MarketDataEntity
+        internal static IMarketDataEntity GetMarketDataEntity(HtmlNode htmlTableRow, string stockExchange) =>
+            new MarketDataEntity
             {
                 Name = HtmlRowProcessor.GetName(htmlTableRow),
                 ClosingPrice = HtmlRowProcessor.GetClosingPrice(htmlTableRow),
@@ -42,7 +40,6 @@ namespace DataVendor.Services.Html
                 PreviousDayClosingPrice = HtmlRowProcessor.GetPreviousDayClosingPrice(htmlTableRow),
                 StockExchange = stockExchange
             };
-        }
 
         internal static HtmlNode GetTable(string htmlString)
         {
@@ -56,12 +53,10 @@ namespace DataVendor.Services.Html
                 .ToList()[1];
         }
 
-        internal static IEnumerable<HtmlNode> GetRows(this HtmlNode htmlTable)
-        {
-            return htmlTable
+        internal static IEnumerable<HtmlNode> GetRows(this HtmlNode htmlTable) =>
+            htmlTable
                 .Descendants()
                 .Where(n => string.Equals(n.Name, "tr"))
                 .Skip(3);
-        }
     }
 }
