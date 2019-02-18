@@ -24,11 +24,11 @@ namespace Peter.Repositories.Implementations
         /// </summary>
         /// <param name="fileSystemFacade"></param>
         public IsinsCsvFileRepository(
-            IConfig config,
+            IConfigReader config,
             IFileSystemFacade fileSystemFacade) 
             : base(config, fileSystemFacade)
         {
-            _fileName = _config.GetValue<string>("IsinFileName");
+            _fileName = _configReader.Settings.IsinFileName;
             _logger.Debug($"Isin filename is {_fileName} from config file.");
 
             _isins = new Dictionary<string, string>();

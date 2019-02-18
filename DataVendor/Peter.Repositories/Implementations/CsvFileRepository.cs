@@ -14,7 +14,7 @@ namespace Peter.Repositories.Implementations
         protected readonly Logger _logger;
 
         protected readonly string _fileNameExtension;
-        protected readonly IConfig _config;
+        protected readonly IConfigReader _configReader;
         protected readonly IFileSystemFacade _fileSystemFacade;
         
         protected CultureInfo _cultureInfo;
@@ -44,26 +44,26 @@ namespace Peter.Repositories.Implementations
         /// Constructor.
         /// </summary>
         public CsvFileRepository(
-            IConfig config,
+            IConfigReader config,
             IFileSystemFacade fileSystemFacade)
         {
-            _config = config;
+            _configReader = config;
             _fileSystemFacade = fileSystemFacade;
             _logger = LogManager.GetCurrentClassLogger();
 
-            BaseDirectory = _config.GetValue<string>("WorkingDirectoryBase");
+            BaseDirectory = _configReader.Settings.WorkingDirectoryBase;
             if (string.IsNullOrWhiteSpace(BaseDirectory) || string.Equals(BaseDirectory.ToLower(), "desktop"))
             {
                 BaseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
 
-            WorkingDirectory = Path.Combine(BaseDirectory, _config.GetValue<string>("WorkingDirectory"));
-            BackupDirectory = Path.Combine(WorkingDirectory, _config.GetValue<string>("BackupDirectory"));
+            WorkingDirectory = Path.Combine(BaseDirectory, _configReader.Settings.WorkingDirectory);
+            BackupDirectory = Path.Combine(WorkingDirectory, _configReader.Settings.BackupDirectory);
 
-            _separator = _config.GetValue<string>("CsvSeparator");
-            _dateFormat = _config.GetValue<string>("DateFormatForFileName");
-            _fileNameExtension = _config.GetValue<string>("CsvFileNameExtension");
-            _cultureInfo = new CultureInfo(_config.GetValue<string>("CultureInfo"));
+            _separator = _configReader.Settings.CsvSeparator;
+            _dateFormat = _configReader.Settings.DateFormatForFileName;
+            _fileNameExtension = _configReader.Settings.CsvFileNameExtension;
+            _cultureInfo = new CultureInfo(_configReader.Settings.CultureInfo);
 
             _logger.Debug($"Base directory is {BaseDirectory} from config file.");
             _logger.Debug($"Working directory is {WorkingDirectory} from config file.");

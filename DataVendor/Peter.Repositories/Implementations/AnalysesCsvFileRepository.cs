@@ -18,13 +18,13 @@ namespace Peter.Repositories.Implementations
         private Dictionary<string, IAnalysis> _entities;
 
         public AnalysesCsvFileRepository(
-            IConfig config, 
+            IConfigReader config, 
             IFileSystemFacade fileSystemFacade) 
             : base(config, fileSystemFacade)
         {
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
-                _config.GetValue<string>("WorkingDirectoryAnalyses"));
+                _configReader.Settings.WorkingDirectoryAnalyses);
             _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
 
             _entities = new Dictionary<string, IAnalysis>();
@@ -48,7 +48,7 @@ namespace Peter.Repositories.Implementations
             _logger.Info($"{analyses.Count()} new analyses added.");
         }
 
-        public IFinancialAnalysis Find(string isin) => throw new System.NotImplementedException();
+        public IAnalysis Find(string isin) => throw new System.NotImplementedException();
 
         public IDictionary<string, IAnalysis> GetAll() => _entities;
 
@@ -56,9 +56,9 @@ namespace Peter.Repositories.Implementations
         {
             if (_fileContentSaved) return;
 
-            _fileName = $"{_config.GetValue<string>("AnalysesFileName")}" +
-                $" {DateTime.Now.ToString(_config.GetValue<string>("DateFormatForFileName"))}" +
-                $".{_config.GetValue<string>("CsvFileNameExtension")}";
+            _fileName = _configReader.Settings.AnalysesFileName +
+                $" {DateTime.Now.ToString(_configReader.Settings.DateFormatForFileName)}." +
+                _configReader.Settings.CsvFileNameExtension;
 
             SaveChanges(
                 CsvLineAnalysis.Header,

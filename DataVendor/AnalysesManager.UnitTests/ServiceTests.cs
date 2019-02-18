@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AnalysesManager.Services.Implementations;
+using FluentAssertions;
 using NUnit.Framework;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 namespace AnalysesManager.UnitTests
 {
     [TestFixture]
-    public class Service
+    public class ServiceTests
     {
         [Test]
         public void ContainsDataWithoutIsin_WithDataWithoutIsin_ReturnsTrue()
@@ -21,7 +22,7 @@ namespace AnalysesManager.UnitTests
                     Isin=string.Empty
                 }
             };
-            Services.Implementations.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeTrue();
+            Service.ContainsDataWithoutIsin(inputMarketData).Should().BeTrue();
         }
 
         [Test]
@@ -35,7 +36,7 @@ namespace AnalysesManager.UnitTests
                     Isin="Keep"
                 }
             };
-            Services.Implementations.Service.ContainsDataWithoutIsin(inputMarketData).Should().BeFalse();
+            Service.ContainsDataWithoutIsin(inputMarketData).Should().BeFalse();
         }
 
         [Test]
@@ -79,7 +80,7 @@ namespace AnalysesManager.UnitTests
                 }
             };
 
-            Services.Implementations.Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
+            Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
             testMarketData.Should().Equal(expectedMarketData);
         }
 

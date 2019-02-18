@@ -13,12 +13,12 @@ namespace AnalysesManager.Services.Implementations
 {
     public class Service : IService
     {
-        protected readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IAnalysesRepository _financialAnalysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
-        private readonly IConfig _config;
+        private readonly IConfigReader _configReader;
 
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
@@ -28,18 +28,18 @@ namespace AnalysesManager.Services.Implementations
             IAnalysesRepository analysesRepository,
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository,
-            IConfig config)
+            IConfigReader config)
         {
             try
             {
                 _financialAnalysesCsvFileRepository = analysesRepository;
                 _marketDataRepository = marketDataRepository;
                 _registryRepository = registryRepository;
-                _config = config;
+                _configReader = config;
 
-                _buyingPacketInEuro = _config.GetValue<int>("BuyingPacketInEuro");
-                _fastMovingAverage = _config.GetValue<int>("FastMovingAverage");
-                _slowMovingAverage = _config.GetValue<int>("SlowMovingAverage");
+                _buyingPacketInEuro = _configReader.Settings.BuyingPacketInEuro;
+                _fastMovingAverage = _configReader.Settings.FastMovingAverage;
+                _slowMovingAverage = _configReader.Settings.SlowMovingAverage;
 
                 _logger.Debug($"Buying Packet is {_buyingPacketInEuro} EUR from config file.");
                 _logger.Debug($"Fast Moving Average subset size is {_fastMovingAverage} from config file.");
@@ -127,11 +127,11 @@ namespace AnalysesManager.Services.Implementations
                 .SetFinancialAnalysis(financialAnalysis)
                 .SetTechnicalAnalysis(technicalAnalysis)
                 .Build();
-                
-            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
-            analysis.TechnicalAnalysis.Trend = GetTrend(analysis);
 
-            return new KeyValuePair<string, IAnalysis>(isin, analysis); ;
+            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
+            analysis.TechnicalAnalysis.Trend = GetTrend(analysis?.TechnicalAnalysis);
+
+            return new KeyValuePair<string, IAnalysis>(isin, analysis);
         }
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
@@ -150,34 +150,50 @@ namespace AnalysesManager.Services.Implementations
                 entry.Value.FinancialReport.MonthsInReport != 0;
         }
 
-        private static TAZ GetTAZ(IAnalysis analysis)
+        internal static TAZ GetTAZ(IAnalysis analysis)
         {
-            if (analysis.ClosingPrice > Math.Max(
-                analysis.TechnicalAnalysis.FastSMA,
-                analysis.TechnicalAnalysis.SlowSMA))
-            {
+            if (analysis is null)
+                throw new ArgumentNullException(nameof(analysis));
+            var technicalAnalysis = analysis.TechnicalAnalysis;
+            if (technicalAnalysis is null)
+                throw new ArgumentNullException(nameof(technicalAnalysis));
+
+            var closingPrice = analysis.ClosingPrice;
+            var fastSMA = technicalAnalysis.FastSMA;
+            var slowSMA = technicalAnalysis.SlowSMA;
+
+            if (closingPrice <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(closingPrice));
+            if (fastSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
+            if (slowSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
+
+            if (closingPrice > Math.Max(fastSMA,slowSMA))
                 return TAZ.AboveTAZ;
-            }
-            else if (analysis.ClosingPrice < Math.Min(
-                analysis.TechnicalAnalysis.FastSMA,
-                analysis.TechnicalAnalysis.SlowSMA))
-            {
+            if (closingPrice < Math.Min(fastSMA,slowSMA))
                 return TAZ.BelowTAZ;
-            }
 
             return TAZ.InTAZ;
         }
 
-        private static Trend GetTrend(IAnalysis analysis)
+        internal static Trend GetTrend(ITechnicalAnalysis analysis)
         {
-            if (analysis.TechnicalAnalysis.FastSMA > analysis.TechnicalAnalysis.SlowSMA)
-            {
+            if (analysis is null)
+                throw new ArgumentNullException(nameof(analysis));
+
+            var fastSMA = analysis.FastSMA;
+            var slowSMA = analysis.SlowSMA;
+
+            if (fastSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
+            if (slowSMA <= 0)
+                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
+
+            if (analysis.FastSMA > analysis.SlowSMA)
                 return Trend.Up;
-            }
-            else if (analysis.TechnicalAnalysis.FastSMA < analysis.TechnicalAnalysis.SlowSMA)
-            {
+            if (analysis.FastSMA < analysis.SlowSMA)
                 return Trend.Down;
-            }
 
             return Trend.Undefined;
         }

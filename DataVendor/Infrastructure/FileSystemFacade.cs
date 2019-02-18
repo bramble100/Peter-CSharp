@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using NLog;
-using Peter.Repositories.Exceptions;
-using Peter.Repositories.Interfaces;
 
-namespace Peter.Repositories.Implementations
+namespace Infrastructure
 {
     public class FileSystemFacade : IFileSystemFacade
     {
-        protected readonly Logger _logger;
+        private readonly Logger _logger;
 
         public FileSystemFacade()
         {
@@ -35,7 +33,7 @@ namespace Peter.Repositories.Implementations
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Backup directory cannot be created. {ex.Message}");
-                throw new RepositoryException($"Backup directory cannot be created. {ex.Message}", ex);
+                throw new FileSystemFacadeException($"Backup directory cannot be created. {ex.Message}", ex);
             }
         }
 
@@ -48,7 +46,7 @@ namespace Peter.Repositories.Implementations
             catch (Exception ex)
             {
                 _logger.Error(ex, $"File cannot be loaded. {ex.Message}");
-                throw new RepositoryException($"File cannot be loaded. {ex.Message}", ex);
+                throw new FileSystemFacadeException($"File cannot be loaded. {ex.Message}", ex);
             }
         }
 
@@ -63,7 +61,7 @@ namespace Peter.Repositories.Implementations
             catch (Exception ex)
             {
                 _logger.Error(ex, $"File content cannot be read. {ex.Message}");
-                throw new RepositoryException($"File content cannot be read. {ex.Message}", ex);
+                throw new FileSystemFacadeException($"File content cannot be read. {ex.Message}", ex);
             }
         }
 
@@ -83,7 +81,7 @@ namespace Peter.Repositories.Implementations
             catch (Exception ex)
             {
                 _logger.Error(ex, $"File cannot be saved. {ex.Message}");
-                throw new RepositoryException($"File cannot be saved. {ex.Message}", ex);
+                throw new FileSystemFacadeException($"File cannot be saved. {ex.Message}", ex);
             }
         }
     }

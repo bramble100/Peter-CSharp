@@ -22,16 +22,16 @@ namespace Peter.Repositories.Implementations
         public IEnumerable<string> Isins => _entities.Select(e => e.Isin);
 
         public RegistryCsvFileRepository(
-            IConfig config, 
+            IConfigReader config, 
             IFileSystemFacade fileSystemFacade) 
             : base(config, fileSystemFacade)
         {
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
-                _config.GetValue<string>("WorkingDirectoryRegistry"));
+                _configReader.Settings.WorkingDirectoryRegistry);
             _logger.Debug($"Working directory is {WorkingDirectory} from config file.");
 
-            _fileName = _config.GetValue<string>("RegistryFileName");
+            _fileName = _configReader.Settings.RegistryFileName;
             _logger.Debug($"Market data filename is {_fileName} from config file.");
 
             _entities = new List<IRegistryEntry>();
