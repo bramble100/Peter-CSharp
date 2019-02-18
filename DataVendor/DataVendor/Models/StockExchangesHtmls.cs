@@ -80,7 +80,7 @@ namespace DataVendor.Models
         /// <param name="function"></param>
         /// <returns></returns>
         internal IEnumerable<IMarketDataEntity> SelectMany(
-            Func<KeyValuePair<string, string>, IMarketDataEntities> function)
+            Func<KeyValuePair<string, string>, IEnumerable<IMarketDataEntity>> function)
         {
             return _htmls.SelectMany(keyValuePair => function(keyValuePair));
         }

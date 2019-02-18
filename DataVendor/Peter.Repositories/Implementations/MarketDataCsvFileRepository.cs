@@ -1,13 +1,13 @@
 ﻿using Infrastructure;
 using Microsoft.VisualBasic.FileIO;
 using NLog;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 
@@ -17,7 +17,7 @@ namespace Peter.Repositories.Implementations
     {
         protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IMarketDataEntities _entities;
+        private readonly HashSet<IMarketDataEntity> _entities;
 
         public MarketDataCsvFileRepository(
             IConfigReader config,
@@ -32,7 +32,7 @@ namespace Peter.Repositories.Implementations
             _fileName = _configReader.Settings.MarketDataFileName;
             _logger.Debug($"Market data filename is {_fileName} from config file.");
 
-            _entities = new MarketDataEntities();
+            _entities = new HashSet<IMarketDataEntity>();
         }
 
         public IEnumerable<string> Isins
@@ -41,26 +41,34 @@ namespace Peter.Repositories.Implementations
             {
                 if (!_fileContentLoaded) Load();
 
-                return _entities.Isins;
+                return _entities.Select(e => e.Isin).ToImmutableList();
             }
         }
 
-        public void AddRange(IMarketDataEntities latestData)
+        public void AddRange(IEnumerable<IMarketDataEntity> entities)
         {
+            if (entities is null)
+                throw new ArgumentNullException(nameof(entities));
+
+            var entitiesSet = new HashSet<IMarketDataEntity>(entities);
+
+            if (!entitiesSet.Any()) return;
+
             if (!_fileContentLoaded) Load();
 
             _logger.Info("Adding market data entities ...");
-            _entities.AddRange(latestData);
-            _logger.Info($"{latestData.Count} new market data entities added.");
+            entitiesSet.ExceptWith(_entities);
+            _entities.UnionWith(entitiesSet);
+            _logger.Info($"{entitiesSet.Count} new market data entities added.");
 
-            _fileContentSaved = false;
+            _fileContentSaved = !entitiesSet.Any();
         }
 
-        public IMarketDataEntities GetAll()
+        public IEnumerable<IMarketDataEntity> GetAll()
         {
             if (!_fileContentLoaded) Load();
 
-            return _entities;
+            return _entities.ToImmutableList();
         }
 
         public void SaveChanges()
@@ -72,8 +80,6 @@ namespace Peter.Repositories.Implementations
                 WorkingDirectory,
                 BackupDirectory,
                 _fileName);
-
-            _entities.Sort();
 
             SaveChanges(
                 CsvLineMarketData.Header,
