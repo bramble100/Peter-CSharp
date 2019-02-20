@@ -1,8 +1,5 @@
-﻿using Peter.Models.Implementations;
-using Peter.Models.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace Peter.Repositories.Helpers
 {
@@ -15,6 +12,12 @@ namespace Peter.Repositories.Helpers
                 nameToIsin.Value);
         }
 
-        public static string WrapWithQuotes(this object obj) => $"\"{obj.ToString()}\"";
+        public static string WrapWithQuotes(this object obj)
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+
+            return $"\"{obj.ToString()}\"";
+        }
     }
 }
