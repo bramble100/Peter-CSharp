@@ -75,34 +75,6 @@
             The date on which the next financial report will be published.
             </summary>
         </member>
-        <member name="T:Peter.Models.Interfaces.IMarketDataEntities">
-            <summary>
-            Collection of market data informations collected from the data vendor pages.
-            </summary>
-        </member>
-        <member name="P:Peter.Models.Interfaces.IMarketDataEntities.Isins">
-            <summary>
-            Returns all the ISINs in the collection.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Peter.Models.Interfaces.IMarketDataEntities.AddRange(System.Collections.Generic.IEnumerable{Peter.Models.Interfaces.IMarketDataEntity})">
-            <summary>
-            Adds the market data informations to the collection.
-            </summary>
-            <param name="entities"></param>
-        </member>
-        <member name="M:Peter.Models.Interfaces.IMarketDataEntities.ForEach(System.Action{Peter.Models.Interfaces.IMarketDataEntity})">
-            <summary>
-            Performs the specified action on each element of the collection.
-            </summary>
-            <param name="action"></param>
-        </member>
-        <member name="M:Peter.Models.Interfaces.IMarketDataEntities.Sort">
-            <summary>
-            Sorts the market data informations.
-            </summary>
-        </member>
         <member name="T:Peter.Models.Interfaces.IMarketDataEntity">
             <summary>
             Data downloaded from the data vendor page.
