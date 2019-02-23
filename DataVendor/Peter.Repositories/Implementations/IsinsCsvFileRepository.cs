@@ -25,7 +25,7 @@ namespace Peter.Repositories.Implementations
         /// <param name="fileSystemFacade"></param>
         public IsinsCsvFileRepository(
             IConfigReader config,
-            IFileSystemFacade fileSystemFacade) 
+            IFileSystemFacade fileSystemFacade)
             : base(config, fileSystemFacade)
         {
             _fileName = _configReader.Settings.IsinFileName;
@@ -81,8 +81,7 @@ namespace Peter.Repositories.Implementations
                 _fileName);
             SaveChanges(
                 CsvLineIsin.Header,
-                // TODO use CsvLineIsin for CSV formatting
-                _isins.Select(i => i.FormatterForCSV(_separator)),
+                _isins.Select(i => CsvLineIsin.FormatForCSV(i, _separator)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
         }
