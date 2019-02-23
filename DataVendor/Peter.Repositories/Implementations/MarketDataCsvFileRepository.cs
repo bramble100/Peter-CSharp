@@ -73,8 +73,17 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            // TODO watch _fileContentSaved
-            if (!_fileContentLoaded) return;
+            if (!_fileContentLoaded)
+            {
+                _logger.Debug("No need to save the data, nothing was loaded.");
+                return;
+            }
+
+            if (_fileContentSaved)
+            {
+                _logger.Debug("No need to save the data, nothing changed since last save.");
+                return;
+            }
 
             CreateBackUp(
                 WorkingDirectory,
