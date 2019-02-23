@@ -178,7 +178,6 @@ namespace AnalysesManager.Services.Implementations
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
-            // TODO add null check
             return entry.Value?.FinancialReport != null &&
                 entry.Value.FinancialReport.EPS != 0 &&
                 entry.Value.FinancialReport.MonthsInReport != 0;
