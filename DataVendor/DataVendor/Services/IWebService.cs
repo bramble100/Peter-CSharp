@@ -9,7 +9,7 @@ namespace DataVendor.Services
         /// Returns all market data downloaded from datavendor.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IMarketDataEntity> DownloadFromWeb();
+        IEnumerable<IMarketDataEntity> GetDownloadedDataFromWeb();
 
         /// <summary>
         /// Updates underlying repository with the given data.

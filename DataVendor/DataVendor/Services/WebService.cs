@@ -3,6 +3,8 @@ using Peter.Repositories.Interfaces;
 using NLog;
 using DataVendor.Services.Html;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace DataVendor.Services
 {
@@ -17,19 +19,38 @@ namespace DataVendor.Services
             _marketDataCsvFileRepository = marketDataRepository;
         }
 
-        public IEnumerable<IMarketDataEntity> DownloadFromWeb()
+        public IEnumerable<IMarketDataEntity> GetDownloadedDataFromWeb()
         {
-            return HtmlDownloader
+            _logger.Info("Downloading market data ...");
+
+            var entities = HtmlDownloader
                 .DownloadAll()
-                .GetMarketDataEntities();
+                .GetMarketDataEntities()
+                .ToImmutableList();
+
+            _logger.Info($"{(entities.Any() ? entities.Count.ToString() : "No")} market data entity downloaded.");
+
+            return entities;
         }
 
         public void Update(IEnumerable<IMarketDataEntity> latestData)
         {
-            _marketDataCsvFileRepository.AddRange(latestData);
+            _logger.Info("Updating and saving market data ...");
 
-            _marketDataCsvFileRepository.SaveChanges();
-            _logger.Info("Market data saved.");
+            var entities = latestData.ToImmutableList();
+
+            if (entities.Any())
+            {
+                _marketDataCsvFileRepository.AddRange(entities);
+                _logger.Info("Market data updated.");
+
+                _marketDataCsvFileRepository.SaveChanges();
+                _logger.Info("Market data saved.");
+            }
+            else
+            {
+                _logger.Info("No market data to add.");
+            }
         }
     }
 }
