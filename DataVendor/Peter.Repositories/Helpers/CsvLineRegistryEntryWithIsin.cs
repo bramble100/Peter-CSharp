@@ -1,5 +1,4 @@
 ﻿using Peter.Models.Builders;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
 using System.Globalization;
@@ -21,28 +20,30 @@ namespace Peter.Repositories.Helpers
         };
 
         public static bool TryParseFromCsv(
-            string[] input, 
-            CultureInfo cultureInfo, 
+            string[] input,
+            CultureInfo cultureInfo,
             out IRegistryEntry result)
         {
-            result = new RegistryEntry();
-
-            if (input.Length != 8) return false;
+            result = null;
 
             try
             {
-                result = new RegistryEntry()
-                {
-                    Name = input[0],
-                    Isin = input[1],
-                    StockExchangeLink = input[2],
-                    OwnInvestorLink = input[3],
-                    FinancialReport = new FinancialReportBuilder()
+                if (input.Length != 8
+                    || string.IsNullOrWhiteSpace(input[0])
+                    || string.IsNullOrWhiteSpace(input[1]))
+                    return false;
+
+                result = new RegistryEntryBuilder()
+                    .SetName(input[0])
+                    .SetIsin(input[1])
+                    .SetStockExchangeLink(input[2])
+                    .SetOwnInvestorLink(input[3])
+                    .SetFinancialReport(new FinancialReportBuilder()
                         .SetEPS(input[4])
                         .SetMonthsInReport(input[5])
                         .SetNextReportDate(input[6])
-                        .Build()
-                };
+                        .Build())
+                    .Build();
                 return true;
             }
             catch (Exception)
@@ -51,17 +52,26 @@ namespace Peter.Repositories.Helpers
             }
         }
 
-        public static string FormatForCSV(IRegistryEntry e, string separator, CultureInfo cultureInfo) => 
-            string.Join(separator, new string[]
+        public static string FormatForCSV(IRegistryEntry entry, string separator, CultureInfo cultureInfo)
+        {
+            if (entry is null)
+                throw new ArgumentNullException(nameof(entry));
+            if (string.IsNullOrEmpty(separator))
+                throw new ArgumentNullException(nameof(separator));
+            if (cultureInfo is null)
+                throw new ArgumentNullException(nameof(cultureInfo));
+
+            return string.Join(separator, new string[]
             {
-                e.Name.WrapWithQuotes(),
-                e.Isin,
-                e.StockExchangeLink?.ToString(),
-                e.OwnInvestorLink?.ToString(),
-                e.FinancialReport?.EPS.ToString(cultureInfo).WrapWithQuotes(),
-                e.FinancialReport?.MonthsInReport.ToString(),
-                e.FinancialReport?.NextReportDate.ToString(cultureInfo),
-                e.Position.ToString()
+                entry.Name.WrapWithQuotes(),
+                entry.Isin,
+                entry.StockExchangeLink?.ToString(),
+                entry.OwnInvestorLink?.ToString(),
+                entry.FinancialReport?.EPS.ToString(cultureInfo).WrapWithQuotes(),
+                entry.FinancialReport?.MonthsInReport.ToString(),
+                entry.FinancialReport?.NextReportDate.ToString(cultureInfo),
+                entry.Position.ToString()
             });
+        }
     }
 }

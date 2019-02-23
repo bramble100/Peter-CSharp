@@ -2,7 +2,7 @@
 
 namespace Peter.Models.Implementations
 {
-    public class FinancialAnalysis : IFinancialAnalysis
+    internal class FinancialAnalysis : IFinancialAnalysis
     {
         public FinancialAnalysis()
         {

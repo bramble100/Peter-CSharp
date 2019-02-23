@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using Peter.Models.Builders;
 using Peter.Models.Enums;
 using Peter.Models.Implementations;
 using System;
@@ -9,19 +10,10 @@ using System.Globalization;
 namespace Repositories.UnitTests
 {
     [TestFixture]
-    public class CsvLineRegistryEntryWithIsin
+    public class CsvLineRegistryEntryWithIsin_TryParseFromCsv
     {
-        private readonly CultureInfo cultureInfo = new CultureInfo("hu-HU");
-
-        [TestCaseSource(nameof(TestCaseSource))]
-        public void WithInvalidArray_ReturnsFalse(string[] inputStrings) =>
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(inputStrings, cultureInfo, out _)
-            .Should().BeFalse();
-
-        [Test]
-        public void WithValidInput_ReturnsTrueAndValidResult()
-        {
-            var validLine = new string[]
+        private static readonly CultureInfo _cultureInfo = new CultureInfo("hu-HU");
+        private static readonly string[] _validLine = new string[]
             {
                 "Aareal Bank AG",
                 "DE0005408116",
@@ -33,23 +25,36 @@ namespace Repositories.UnitTests
                 string.Empty
             };
 
-            var validResult = new RegistryEntry()
-                {
-                    Isin = "DE0005408116",
-                    Name = "Aareal Bank AG",
-                    OwnInvestorLink = "http://www.aareal-bank.com/investor-relations/",
-                    StockExchangeLink = "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
-                    FinancialReport = new FinancialReport(2.08m, 6, DateTime.Now.AddDays(1).Date),
-                    Position = Position.NoPosition
-                };
+        [TestCaseSource(nameof(TestCaseSource))]
+        public void WithInvalidArray_ReturnsFalse(string[] inputStrings) =>
+            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(inputStrings, _cultureInfo, out _)
+            .Should().BeFalse();
 
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(validLine, cultureInfo, out var result)
+        [Test]
+        public void WithValidInput_ReturnsTrueAndValidResult()
+        {
+            var validResult = new RegistryEntryBuilder()
+                .SetIsin("DE0005408116")
+                .SetName("Aareal Bank AG")
+                .SetOwnInvestorLink("http://www.aareal-bank.com/investor-relations/")
+                .SetStockExchangeLink("http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116")
+                .SetPosition(Position.NoPosition.ToString())
+                .SetFinancialReport(new FinancialReportBuilder()
+                    .SetEPS(2.08m)
+                    .SetMonthsInReport(6)
+                    .SetNextReportDate(DateTime.Now.AddDays(1).Date)
+                    .Build())
+                .Build();
+
+            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(_validLine, _cultureInfo, out var result)
                 .Should().BeTrue();
             result.Should().Be(validResult);
         }
 
         private static IEnumerable<IEnumerable<string>> TestCaseSource()
         {
+            string[] invalidLine = new string[8];
+
             yield return new string[] { }; // empty
             yield return new string[] // too short
             {
@@ -73,6 +78,25 @@ namespace Repositories.UnitTests
                 string.Empty,
                 string.Empty
             };
+            yield return new string[] // no content at all
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            };
+
+            _validLine.CopyTo(invalidLine, 0);
+            invalidLine[0] = string.Empty;
+            yield return invalidLine; // no name
+
+            _validLine.CopyTo(invalidLine, 0);
+            invalidLine[1] = string.Empty;
+            yield return invalidLine; // no ISIN
         }
     }
 }

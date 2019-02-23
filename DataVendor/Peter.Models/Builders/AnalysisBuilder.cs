@@ -8,6 +8,7 @@ namespace Peter.Models.Builders
         private bool _nameIsSet;
         private bool _closingPriceSet;
         private bool _qtyInBuyingPacketIsSet;
+        private bool _technicalAnalysisIsSet;
 
         private string _name;
         private decimal _closingPrice;
@@ -63,6 +64,7 @@ namespace Peter.Models.Builders
             if (value != null)
             {
                 _technicalAnalysis = value;
+                _technicalAnalysisIsSet = true;
             }
 
             return this;
@@ -70,19 +72,16 @@ namespace Peter.Models.Builders
 
         public IAnalysis Build()
         {
-            if (!_nameIsSet || !_closingPriceSet || !_qtyInBuyingPacketIsSet)
-            {
-                return null;
-            }
-
-            return new Analysis()
-            {
-                Name = _name,
-                ClosingPrice = _closingPrice,
-                QtyInBuyingPacket = _qtyInBuyingPacket,
-                FinancialAnalysis = _financialAnalysis,
-                TechnicalAnalysis = _technicalAnalysis
-            };
+            return (_nameIsSet && _closingPriceSet && _qtyInBuyingPacketIsSet && _technicalAnalysisIsSet)
+                ? new Analysis()
+                {
+                    Name = _name,
+                    ClosingPrice = _closingPrice,
+                    QtyInBuyingPacket = _qtyInBuyingPacket,
+                    FinancialAnalysis = _financialAnalysis,
+                    TechnicalAnalysis = _technicalAnalysis
+                }
+                : null;
         }
     }
 }

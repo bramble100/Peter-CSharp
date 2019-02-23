@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Peter.Models.Implementations
 {
-    public class Analysis : IAnalysis
+    internal class Analysis : IAnalysis
     {
         public string Name { get; set; }
         public decimal ClosingPrice { get; set; }

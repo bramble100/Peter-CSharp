@@ -1,4 +1,5 @@
-﻿using Peter.Models.Implementations;
+﻿using Peter.Models.Enums;
+using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
 
@@ -6,29 +7,60 @@ namespace Peter.Models.Builders
 {
     public class TechnicalAnalysisBuilder : IBuilder<ITechnicalAnalysis>
     {
-        private readonly ITechnicalAnalysis _technicalAnalysis;
         private bool _fastSMAset;
         private bool _slowSMAset;
 
-        public TechnicalAnalysisBuilder()
-        {
-            _technicalAnalysis = new TechnicalAnalysis();
-        }
+        private decimal _fastSMA;
+        private decimal _slowSMA;
+
+        private TAZ _taz;
+        private Trend _trend;
 
         public TechnicalAnalysisBuilder SetFastSMA(decimal value)
         {
-            _technicalAnalysis.FastSMA = value > 0 ? value : throw new ArgumentOutOfRangeException("Fast SMA must be positive.");
-            _fastSMAset = true;
+            if (value > 0)
+            {
+                _fastSMA = value;
+                _fastSMAset = true;
+            }
+
             return this;
         }
 
         public TechnicalAnalysisBuilder SetSlowSMA(decimal value)
         {
-            _technicalAnalysis.SlowSMA = value > 0 ? value : throw new ArgumentOutOfRangeException("Slow SMA must be positive.");
-            _slowSMAset = true;
+            if (value > 0)
+            {
+                _slowSMA = value;
+                _slowSMAset = true;
+            }
+
             return this;
         }
 
-        public ITechnicalAnalysis Build() => _fastSMAset && _slowSMAset ? _technicalAnalysis : null;
+        public TechnicalAnalysisBuilder SetTAZ(string value)
+        {
+            if (Enum.TryParse<TAZ>(value, true, out var result)) _taz = result;
+
+            return this;
+        }
+
+        public TechnicalAnalysisBuilder SetTrend(string value)
+        {
+            if (Enum.TryParse<Trend>(value, true, out var result)) _trend = result;
+
+            return this;
+        }
+
+        public ITechnicalAnalysis Build() => 
+            _fastSMAset && _slowSMAset 
+            ? new TechnicalAnalysis()
+            {
+                FastSMA = _fastSMA,
+                SlowSMA = _slowSMA,
+                TAZ = _taz,
+                Trend = _trend
+            } 
+            : null;
     }
 }

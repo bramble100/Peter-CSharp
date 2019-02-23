@@ -41,7 +41,7 @@ namespace Peter.Repositories.Implementations
             {
                 if (!_fileContentLoaded) Load();
 
-                return _entities.Select(e => e.Isin).ToImmutableList();
+                return _entities.Select(e => e.Isin).Distinct().ToImmutableList();
             }
         }
 
@@ -50,9 +50,9 @@ namespace Peter.Repositories.Implementations
             if (entities is null)
                 throw new ArgumentNullException(nameof(entities));
 
-            var entitiesSet = new HashSet<IMarketDataEntity>(entities);
+            if (!entities.Any()) return;
 
-            if (!entitiesSet.Any()) return;
+            var entitiesSet = new HashSet<IMarketDataEntity>(entities);
 
             if (!_fileContentLoaded) Load();
 

@@ -1,6 +1,7 @@
 ﻿using DataVendor.Models;
 using HtmlAgilityPack;
 using NLog;
+using Peter.Models.Builders;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System.Collections.Generic;
@@ -28,15 +29,14 @@ namespace DataVendor.Services.Html
         }
 
         internal static IMarketDataEntity GetMarketDataEntity(HtmlNode htmlTableRow, string stockExchange) =>
-            new MarketDataEntity
-            {
-                Name = HtmlRowProcessor.GetName(htmlTableRow),
-                ClosingPrice = HtmlRowProcessor.GetClosingPrice(htmlTableRow),
-                DateTime = HtmlRowProcessor.GetDateTime(htmlTableRow),
-                Volumen = HtmlRowProcessor.GetVolumen(htmlTableRow),
-                PreviousDayClosingPrice = HtmlRowProcessor.GetPreviousDayClosingPrice(htmlTableRow),
-                StockExchange = stockExchange
-            };
+            new MarketDataEntityBuilder()
+                .SetName(HtmlRowProcessor.GetName(htmlTableRow))
+                .SetClosingPrice(HtmlRowProcessor.GetClosingPrice(htmlTableRow))
+                .SetDateTime(HtmlRowProcessor.GetDateTime(htmlTableRow))
+                .SetVolumen(HtmlRowProcessor.GetVolumen(htmlTableRow))
+                .SetPreviousDayClosingPrice(HtmlRowProcessor.GetPreviousDayClosingPrice(htmlTableRow))
+                .SetStockExchange(stockExchange)
+                .Build();
 
         internal static HtmlNode GetTable(string htmlString)
         {

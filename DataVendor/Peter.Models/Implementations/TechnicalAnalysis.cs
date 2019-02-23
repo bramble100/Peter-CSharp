@@ -3,7 +3,7 @@ using Peter.Models.Interfaces;
 
 namespace Peter.Models.Implementations
 {
-    public class TechnicalAnalysis : ITechnicalAnalysis
+    internal class TechnicalAnalysis : ITechnicalAnalysis
     {
         public decimal FastSMA { get; set; }
         public decimal SlowSMA { get; set; }

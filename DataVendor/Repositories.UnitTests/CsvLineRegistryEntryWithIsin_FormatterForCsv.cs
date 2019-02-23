@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using Peter.Models.Builders;
 using Peter.Models.Enums;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace Repositories.UnitTests
@@ -20,15 +19,18 @@ namespace Repositories.UnitTests
         {
             _cultureInfo = CultureInfo.CurrentCulture;
 
-            _validregistryEntry = new RegistryEntry
-            {
-                Isin = "DE0005408116",
-                Name = "Aareal Bank AG",
-                OwnInvestorLink = "http://www.aareal-bank.com/investor-relations/",
-                StockExchangeLink = "http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116",
-                FinancialReport = new FinancialReport(2.08m, 6, DateTime.Now.AddDays(1).Date),
-                Position = Position.NoPosition
-            };
+            _validregistryEntry = new RegistryEntryBuilder()
+                .SetIsin("DE0005408116")
+                .SetName("Aareal Bank AG")
+                .SetOwnInvestorLink("http://www.aareal-bank.com/investor-relations/")
+                .SetStockExchangeLink("http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116")
+                .SetPosition(Position.NoPosition.ToString())
+                .SetFinancialReport(new FinancialReportBuilder()
+                    .SetEPS(2.08m)
+                    .SetMonthsInReport(6)
+                    .SetNextReportDate(DateTime.Now.AddDays(1).Date)
+                    .Build())
+                .Build();
 
             _validResult =
                 $"\"Aareal Bank AG\"" +
@@ -39,6 +41,26 @@ namespace Repositories.UnitTests
                 ";6" +
                 $";{DateTime.Now.AddDays(1).Date.ToString(_cultureInfo)}" +
                 $";NoPosition";
+        }
+
+        [Test]
+        public void WithInvalidInput_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Peter
+                .Repositories
+                .Helpers
+                .CsvLineRegistryEntryWithIsin
+                .FormatForCSV(null, ";", _cultureInfo));
+            Assert.Throws<ArgumentNullException>(() => Peter
+                .Repositories
+                .Helpers
+                .CsvLineRegistryEntryWithIsin
+                .FormatForCSV(_validregistryEntry, null, _cultureInfo));
+            Assert.Throws<ArgumentNullException>(() => Peter
+                .Repositories
+                .Helpers
+                .CsvLineRegistryEntryWithIsin
+                .FormatForCSV(_validregistryEntry, ";", null));
         }
 
         [Test]
