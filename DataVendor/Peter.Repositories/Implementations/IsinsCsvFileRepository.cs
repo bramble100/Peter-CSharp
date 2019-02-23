@@ -92,28 +92,7 @@ namespace Peter.Repositories.Implementations
             {
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
-                using (var reader = _fileSystemFacade.Open(fullPath))
-                {
-                    var baseInfo = GetCsvSeparatorAndCultureInfo(reader.ReadLine());
-                    _separator = baseInfo.Item1;
-                    _cultureInfo = baseInfo.Item2;
-
-                    _logger.Debug($"{_fileName}: separator: \"{_separator}\" culture: \"{_cultureInfo}\".");
-                    _logger.Info("Loading ISINs from CSV file ...");
-
-                    using (var parser = new TextFieldParser(reader))
-                    {
-                        parser.SetDelimiters(_separator);
-
-                        while (!parser.EndOfData)
-                        {
-                            if (CsvLineIsin.TryParseFromCsv(parser.ReadFields(), out var result))
-                            {
-                                _isins.Add(result.Key, result.Value);
-                            }
-                        }
-                    }
-                }
+                LoadWithReader(fullPath);
 
                 _fileContentLoaded = true;
                 _fileContentSaved = true;
@@ -124,6 +103,37 @@ namespace Peter.Repositories.Implementations
             {
                 _logger.Error($"Error when loading entities in {GetType().Name}.");
                 throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
+            }
+        }
+
+        private void LoadWithReader(string fullPath)
+        {
+            using (var reader = _fileSystemFacade.Open(fullPath))
+            {
+                var baseInfo = GetCsvSeparatorAndCultureInfo(reader.ReadLine());
+                _separator = baseInfo.Item1;
+                _cultureInfo = baseInfo.Item2;
+
+                _logger.Debug($"{_fileName}: separator: \"{_separator}\" culture: \"{_cultureInfo}\".");
+                _logger.Info("Loading ISINs from CSV file ...");
+
+                LoadWithParser(reader);
+            }
+        }
+
+        private void LoadWithParser(StreamReader reader)
+        {
+            using (var parser = new TextFieldParser(reader))
+            {
+                parser.SetDelimiters(_separator);
+
+                while (!parser.EndOfData)
+                {
+                    if (CsvLineIsin.TryParseFromCsv(parser.ReadFields(), out var result))
+                    {
+                        _isins.Add(result.Key, result.Value);
+                    }
+                }
             }
         }
     }
