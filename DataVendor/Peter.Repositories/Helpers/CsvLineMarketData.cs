@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Peter.Models.Builders;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
@@ -38,26 +39,22 @@ namespace Peter.Repositories.Helpers
 
         public static bool TryParseFromCsv(string[] input, CultureInfo cultureInfo, out IMarketDataEntity result)
         {
-            try
+            result = new MarketDataEntityBuilder()
+                .SetName(input[0])
+                .SetIsin(input[1])
+                .SetClosingPrice(Convert.ToDecimal(input[2], cultureInfo))
+                .SetDateTime(Convert.ToDateTime(input[3], cultureInfo))
+                .SetVolumen(Convert.ToInt32(input[4]))
+                .SetPreviousDayClosingPrice(Convert.ToDecimal(input[5], cultureInfo))
+                .SetStockExchange(input[6])
+                .Build();
+
+            if(result is null)
             {
-                result = new MarketDataEntity
-                {
-                    Name = input[0],
-                    Isin = input[1],
-                    ClosingPrice = Convert.ToDecimal(input[2], cultureInfo),
-                    DateTime = Convert.ToDateTime(input[3], cultureInfo),
-                    Volumen = Convert.ToInt32(input[4]),
-                    PreviousDayClosingPrice = Convert.ToDecimal(input[5], cultureInfo),
-                    StockExchange = input[6]
-                };
-                return true;
+                LogManager.GetCurrentClassLogger().Warn($"Line cannot be converted into market data entity ({string.Join(",", input)})");
             }
-            catch (Exception ex)
-            {
-                LogManager.GetCurrentClassLogger().Warn(ex, $"Line cannot be converted into market data entity ({string.Join(",", input)})");
-                result = null;
-                return false;
-            }
+
+            return result != null;
         }
     }
 }

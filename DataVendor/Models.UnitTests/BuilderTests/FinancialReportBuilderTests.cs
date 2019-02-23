@@ -1,21 +1,22 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using Peter.Models.Builders;
 using System;
 
 namespace Models.UnitTests.BuilderTests
 {
     [TestFixture]
-    public class FinancialReportBuilder
+    public class FinancialReportBuilderTests
     {
         [TestCase("4", "3", "2999.12.31", 4, 3)]
-        public void ShouldReturnAnalysis_WhenInputValid(
+        public void ShouldReturnValidObject_WhenValidInput(
             string eps, 
             string months, 
             string date,
             decimal expectedEPS,
             int expectedMonths)
         {
-            var result = new Peter.Models.Builders.FinancialReportBuilder()
+            var result = new FinancialReportBuilder()
                 .SetEPS(eps)
                 .SetMonthsInReport(months)
                 .SetNextReportDate(date)

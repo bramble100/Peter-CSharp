@@ -7,6 +7,7 @@ using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -17,9 +18,17 @@ namespace Peter.Repositories.Implementations
     {
         protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly ICollection<IRegistryEntry> _entities;
+        private readonly HashSet<IRegistryEntry> _entities;
 
-        public IEnumerable<string> Isins => _entities.Select(e => e.Isin);
+        public IEnumerable<string> Isins
+        {
+            get
+            {
+                if (!_fileContentLoaded) Load();
+
+                return _entities.Select(e => e.Isin).Distinct().ToImmutableList();
+            }
+        }
 
         public RegistryCsvFileRepository(
             IConfigReader config, 
@@ -34,7 +43,7 @@ namespace Peter.Repositories.Implementations
             _fileName = _configReader.Settings.RegistryFileName;
             _logger.Debug($"Market data filename is {_fileName} from config file.");
 
-            _entities = new List<IRegistryEntry>();
+            _entities = new HashSet<IRegistryEntry>();
         }
 
         public void AddRange(IEnumerable<IRegistryEntry> entries)
@@ -42,12 +51,13 @@ namespace Peter.Repositories.Implementations
             if (entries is null)
                 throw new ArgumentNullException(nameof(entries));
 
+            if (!entries.Any()) return;
+
             if (!_fileContentLoaded) Load();
 
-            foreach (var entry in entries)
-            {
-                _entities.Add(entry);
-            }
+            entries
+                .ToList()
+                .ForEach(e => _entities.Add(e));
 
             _fileContentSaved = false;
         }
@@ -55,20 +65,34 @@ namespace Peter.Repositories.Implementations
         public IRegistryEntry GetById(string isin)
         {
             if (!_fileContentLoaded) Load();
-
-            return _entities.Where(e => e.Isin.Equals(isin)).SingleOrDefault();
+            var entity = _entities.FirstOrDefault(e => string.Equals(e.Isin, isin));
+            _logger.Debug($"Searching for {isin}, found: {(entity is null ? "null" : entity.ToString())}");
+            return entity;
         }
 
         public void RemoveRange(IEnumerable<string> isins)
         {
             if (isins is null)
+            {
                 throw new ArgumentNullException(nameof(isins));
+            }
 
-            if (!_fileContentLoaded) Load();
+            if (!isins.Any())
+            {
+                _logger.Info("No entry to remove.");
+                return;
+            }
+
+            if (!_fileContentLoaded)
+            {
+                Load();
+            } 
 
             isins
                 .ToList()
-                .ForEach(isin => _entities.Remove(_entities.SingleOrDefault(e => Equals(e.Isin, isin))));
+                .ForEach(isin => _entities.Remove(_entities.Single(e => Equals(e.Isin, isin))));
+
+            _fileContentSaved = false;
 
             _logger.Info($"{isins.Count()} registry item removed.");
         }
@@ -90,32 +114,13 @@ namespace Peter.Repositories.Implementations
 
         private void Load()
         {
+            _logger.Info("Loading registry entries ...");
+
             try
             {
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
 
-                using(var reader = _fileSystemFacade.Open(fullPath))
-                {
-                    var baseInfo = GetCsvSeparatorAndCultureInfo(reader.ReadLine());
-                    _separator = baseInfo.Item1;
-                    _cultureInfo = baseInfo.Item2;
-                    _logger.Debug($"{_fileName}: separator: \"{_separator}\" culture: \"{_cultureInfo}\".");
-                    _logger.Info("Loading registry entries from CSV file ...");
-
-                    using (var parser = new TextFieldParser(reader))
-                    {
-                        parser.SetDelimiters(_separator);
-
-                        while (!parser.EndOfData)
-                        {
-                            if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
-                                parser.ReadFields(),
-                                _cultureInfo,
-                                out IRegistryEntry result))
-                                _entities.Add(result);
-                        }
-                    }
-                }
+                LoadWithReader(fullPath);
 
                 _fileContentLoaded = true;
                 _fileContentSaved = true;
@@ -126,6 +131,37 @@ namespace Peter.Repositories.Implementations
             {
                 _logger.Error($"Error when loading entities in {GetType().Name}.");
                 throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
+            }
+        }
+
+        private void LoadWithReader(string fullPath)
+        {
+            using (var reader = _fileSystemFacade.Open(fullPath))
+            {
+                var baseInfo = GetCsvSeparatorAndCultureInfo(reader.ReadLine());
+                _separator = baseInfo.Item1;
+                _cultureInfo = baseInfo.Item2;
+                _logger.Debug($"{_fileName}: separator: \"{_separator}\" culture: \"{_cultureInfo}\".");
+                _logger.Info("Loading registry entries from CSV file ...");
+
+                LoadWithParser(reader);
+            }
+        }
+
+        private void LoadWithParser(StreamReader reader)
+        {
+            using (var parser = new TextFieldParser(reader))
+            {
+                parser.SetDelimiters(_separator);
+
+                while (!parser.EndOfData)
+                {
+                    if (CsvLineRegistryEntryWithIsin.TryParseFromCsv(
+                        parser.ReadFields(),
+                        _cultureInfo,
+                        out IRegistryEntry result) && result != null)
+                        _entities.Add(result);
+                }
             }
         }
     }

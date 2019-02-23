@@ -1,6 +1,7 @@
 ﻿using NLog;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DataVendor.Services
@@ -39,13 +40,13 @@ namespace DataVendor.Services
             _logger.Info("ISINs saved.");
         }
 
-        private void AddIsinToEntities(IMarketDataEntities entities) =>
+        private void AddIsinToEntities(IEnumerable<IMarketDataEntity> entities) =>
             entities
                 .Where(e => _isinsCsvFileRepository.ContainsName(e.Name))
                 .ToList()
                 .ForEach(e => e.Isin = _isinsCsvFileRepository.GetIsinByCompanyName(e.Name));
 
-        private int RemoveIsinFromIsins(IMarketDataEntities entities)
+        private int RemoveIsinFromIsins(IEnumerable<IMarketDataEntity> entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)
@@ -58,7 +59,7 @@ namespace DataVendor.Services
             return deadNames.Count;
         }
 
-        private int AddNewNames(IMarketDataEntities entities)
+        private int AddNewNames(IEnumerable<IMarketDataEntity> entities)
         {
             var namesInEntities = entities
                 .Select(e => e.Name)

@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Peter.Models</name>
+    </assembly>
+    <members>
+        <member name="T:Peter.Models.Interfaces.IAnalysis">
+            <summary>
+            All-in analysis containing some basic data with financial and technical analyses.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IAnalysis.Name">
+            <summary>
+            Name of the share.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IAnalysis.ClosingPrice">
+            <summary>
+            Latest closing price.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IAnalysis.QtyInBuyingPacket">
+            <summary>
+            The number of stocks to buy in one packet (for preset amount of money).
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IAnalysis.TechnicalAnalysis">
+            <summary>
+            Indicators based on technical analysis.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IAnalysis.FinancialAnalysis">
+            <summary>
+            Indicators based on financial analysis.
+            </summary>
+        </member>
+        <member name="M:Peter.Models.Interfaces.IBuilder`1.Build">
+            <summary>
+            Returns the constructed instance but only when every necessary property set (otherwise null).
+            </summary>
+            <returns>The constructed instance</returns>
+        </member>
+        <member name="T:Peter.Models.Interfaces.IFinancialAnalysis">
+            <summary>
+            Indicators calculated from the fundamental numbers and market data.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IFinancialAnalysis.PE">
+            <summary>
+            Price/Earning ratio (latest closing price divided by the earning per share).
+            </summary>
+        </member>
+        <member name="T:Peter.Models.Interfaces.IFinancialReport">
+            <summary>
+            Quarterly reports related data and metadata.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IFinancialReport.EPS">
+            <summary>
+            Earning Per Share.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IFinancialReport.IsOutdated">
+            <summary>
+            True if the report is outdated.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IFinancialReport.MonthsInReport">
+            <summary>
+            The number of months covered by the financial report.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IFinancialReport.NextReportDate">
+            <summary>
+            The date on which the next financial report will be published.
+            </summary>
+        </member>
+        <member name="T:Peter.Models.Interfaces.IMarketDataEntity">
+            <summary>
+            Data downloaded from the data vendor page.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IMarketDataEntity.ClosingPrice">
+            <summary>
+            Latest recorded price (in euro). If recorded after closing it is called closing price.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IMarketDataEntity.Isin">
+            <summary>
+            ISIN of the stock (ISIN = International Securities Identification Number).
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IMarketDataEntity.Name">
+            <summary>
+            Name of the stock.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IMarketDataEntity.PreviousDayClosingPrice">
+            <summary>
+            Recorded closing price (in euro) on the previous day.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IMarketDataEntity.StockExchange">
+            <summary>
+            The name of the stock exchange from where the data were downloaded.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IMarketDataEntity.Volumen">
+            <summary>
+            Number of stocks traded during the day.
+            </summary>
+        </member>
+        <member name="T:Peter.Models.Interfaces.xxxINameToIsin">
+            <summary>
+            A key-value pair to contain the ISIN by the company name. Key: Company name; Value: ISIN
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.xxxINameToIsin.Name">
+            <summary>
+            Company name.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.xxxINameToIsin.Isin">
+            <summary>
+            ISIN.
+            </summary>
+        </member>
+        <member name="T:Peter.Models.Interfaces.IRegistryEntry">
+            <summary>
+            Basic stock data for one paper.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IRegistryEntry.Isin">
+            <summary>
+            International Securities Identification Number (unique ID).
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IRegistryEntry.Name">
+            <summary>
+            Name of the share.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IRegistryEntry.OwnInvestorLink">
+            <summary>
+            Link to the investor info on the company's own site.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IRegistryEntry.StockExchangeLink">
+            <summary>
+            Link to the investor info on the site of the registering stock exchange.
+            </summary>
+        </member>
+        <member name="T:Peter.Models.Interfaces.ITechnicalAnalysis">
+            <summary>
+            Indicators calculated from the market data.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.ITechnicalAnalysis.FastSMA">
+            <summary>
+            Fast Simple Moving Average.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.ITechnicalAnalysis.SlowSMA">
+            <summary>
+            Slow Simple Moving Average.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.ITechnicalAnalysis.TAZ">
+            <summary>
+            Traders Action Zone. Determined by the slow and the fast moving average.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.ITechnicalAnalysis.Trend">
+            <summary>
+            Trend that may go up or down (or rarely can be undefined).
+            </summary>
+        </member>
+    </members>
+</doc>

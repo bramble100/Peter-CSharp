@@ -1,7 +1,7 @@
 ﻿using AnalysesManager.Services.Implementations;
 using FluentAssertions;
 using NUnit.Framework;
-using Peter.Models.Implementations;
+using Peter.Models.Builders;
 using Peter.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,11 +16,10 @@ namespace AnalysesManager.UnitTests
         {
             var inputMarketData = new List<IMarketDataEntity>
             {
-                new MarketDataEntity
-                {
-                    Name="Keep",
-                    Isin=string.Empty
-                }
+                new MarketDataEntityBuilder()
+                    .SetName("Keep")
+                    .SetIsin(string.Empty)
+                    .Build()
             };
             Service.ContainsDataWithoutIsin(inputMarketData).Should().BeTrue();
         }
@@ -30,11 +29,10 @@ namespace AnalysesManager.UnitTests
         {
             var inputMarketData = new List<IMarketDataEntity>
             {
-                new MarketDataEntity
-                {
-                    Name="Keep",
-                    Isin="Keep"
-                }
+                new MarketDataEntityBuilder()
+                    .SetName("Keep")
+                    .SetIsin("Keep")
+                    .Build()
             };
             Service.ContainsDataWithoutIsin(inputMarketData).Should().BeFalse();
         }
@@ -44,40 +42,35 @@ namespace AnalysesManager.UnitTests
         {
             var testMarketData = new List<IMarketDataEntity>
             {
-                new MarketDataEntity
-                {
-                    Name="Keep",
-                    Isin="1",
-                    DateTime = DateTime.Now.Date
-                },
-                new MarketDataEntity
-                {
-                    Name="Keep",
-                    Isin="1",
-                    DateTime = DateTime.Now.AddDays(-1).Date
-                },
-                new MarketDataEntity
-                {
-                    Name="Throw",
-                    Isin="2",
-                    DateTime = DateTime.Now.AddDays(-1).Date
-                },
+                new MarketDataEntityBuilder()
+                    .SetName("Keep")
+                    .SetIsin("1")
+                    .SetDateTime(DateTime.Now.Date)
+                    .Build(),
+                new MarketDataEntityBuilder()
+                    .SetName("Keep")
+                    .SetIsin("1")
+                    .SetDateTime(DateTime.Now.AddDays(-1).Date)
+                    .Build(),
+                new MarketDataEntityBuilder()
+                    .SetName("Throw")
+                    .SetIsin("2")
+                    .SetDateTime(DateTime.Now.AddDays(-1).Date)
+                    .Build()
             };
 
             var expectedMarketData = new List<IMarketDataEntity>
             {
-                new MarketDataEntity
-                {
-                    Name="Keep",
-                    Isin="1",
-                    DateTime = DateTime.Now.Date
-                },
-                new MarketDataEntity
-                {
-                    Name="Keep",
-                    Isin="1",
-                    DateTime = DateTime.Now.AddDays(-1).Date
-                }
+                new MarketDataEntityBuilder()
+                    .SetName("Keep")
+                    .SetIsin("1")
+                    .SetDateTime(DateTime.Now.Date)
+                    .Build(),
+                new MarketDataEntityBuilder()
+                    .SetName("Keep")
+                    .SetIsin("1")
+                    .SetDateTime(DateTime.Now.AddDays(-1).Date)
+                    .Build()
             };
 
             Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
@@ -87,24 +80,39 @@ namespace AnalysesManager.UnitTests
         [Test]
         public void GetRegistryEntriesWithoutFinancialReport_WithMixedRegistry_ReturnsCorrectData()
         {
-            var testRegistry = new List<RegistryEntry>
+            var testRegistry = new List<IRegistryEntry>
             {
-                new RegistryEntry("Keep",new RegistryEntry
-                {
-                    FinancialReport = new FinancialReport(0.1m, 3, DateTime.Now.AddDays(1).Date)
-                }),
-                new RegistryEntry("Throw",new RegistryEntry
-                {
-                    FinancialReport = new FinancialReport()
-                }),
+                new RegistryEntryBuilder()
+                    .SetName("Keep")
+                    .SetFinancialReport(new FinancialReportBuilder()
+                        .SetEPS(0.1m)
+                        .SetMonthsInReport(3)
+                        .SetNextReportDate(DateTime.Now.AddDays(1).Date)
+                        .Build())
+                    .Build(),
+                new RegistryEntryBuilder()
+                    .SetName("Throw")
+                    .SetFinancialReport(new FinancialReportBuilder()
+                        .SetEPS(0.1m)
+                        .SetMonthsInReport(3)
+                        .SetNextReportDate(DateTime.Now.AddDays(1).Date)
+                        .Build())
+                    .Build(),
+                new RegistryEntryBuilder()
+                    .SetFinancialReport(new FinancialReportBuilder().Build())
+                    .Build()
             };
 
-            var expectedResult = new List<RegistryEntry>
+            var expectedResult = new List<IRegistryEntry>
             {
-                new RegistryEntry("Keep",new RegistryEntry
-                {
-                    FinancialReport = new FinancialReport(0.1m, 3, DateTime.Now.AddDays(1).Date)
-                }),
+                new RegistryEntryBuilder()
+                    .SetName("Keep")
+                    .SetFinancialReport(new FinancialReportBuilder()
+                        .SetEPS(0.1m)
+                        .SetMonthsInReport(3)
+                        .SetNextReportDate(DateTime.Now.AddDays(1).Date)
+                        .Build())
+                    .Build()
             };
 
             // TODO investigate

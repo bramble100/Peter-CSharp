@@ -19,11 +19,11 @@ namespace Peter.Models.Interfaces
         /// <summary>
         /// Link to the investor info on the company's own site.
         /// </summary>
-        string OwnInvestorLink { get; set; }
+        Uri OwnInvestorLink { get; set; }
         /// <summary>
         /// Link to the investor info on the site of the registering stock exchange.
         /// </summary>
-        string StockExchangeLink { get; set; }
+        Uri StockExchangeLink { get; set; }
         Position Position { get; set; }
         IFinancialReport FinancialReport { get; set; }
         IFinancialAnalysis FinancialAnalysis { get; set; }

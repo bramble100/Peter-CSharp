@@ -46,9 +46,38 @@ namespace Peter.Models.Builders
             return this;
         }
 
+        public FinancialReportBuilder SetEPS(decimal value)
+        {
+            try
+            {
+                _eps = Convert.ToDecimal(value, _cultureInfo);
+                _EPSset = true;
+            }
+            catch (FormatException)
+            {
+            }
+
+            return this;
+        }
+
         public FinancialReportBuilder SetMonthsInReport(string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return this;
+
+            try
+            {
+                _monthsInReport = Convert.ToInt32(value);
+                _monthsInReportSet = _validMonths.Contains(_monthsInReport);
+            }
+            catch (FormatException)
+            {
+            }
+
+            return this;
+        }
+
+        public FinancialReportBuilder SetMonthsInReport(int value)
+        {
 
             try
             {
@@ -66,6 +95,20 @@ namespace Peter.Models.Builders
         {
             if (string.IsNullOrWhiteSpace(value)) return this;
 
+            try
+            {
+                _nextReportDate = Convert.ToDateTime(value, _cultureInfo);
+                _nextReportDateSet = true;
+            }
+            catch (FormatException)
+            {
+            }
+
+            return this;
+        }
+
+        public FinancialReportBuilder SetNextReportDate(DateTime value)
+        {
             try
             {
                 _nextReportDate = Convert.ToDateTime(value, _cultureInfo);

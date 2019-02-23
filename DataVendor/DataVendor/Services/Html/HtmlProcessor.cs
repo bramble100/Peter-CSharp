@@ -1,43 +1,42 @@
 ﻿using DataVendor.Models;
 using HtmlAgilityPack;
 using NLog;
+using Peter.Models.Builders;
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-
-// http://html-agility-pack.net/from-string
 
 namespace DataVendor.Services.Html
 {
     internal static class HtmlProcessor
     {
-        internal static IMarketDataEntities GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls) =>
-            new MarketDataEntities(
+        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls) =>
+            new HashSet<IMarketDataEntity>(
                 stockExchangesHtmls.SelectMany(keyValuePair =>
                     GetTable(keyValuePair.Value)
                         .GetRows()
                         .GetMarketDataEntities(keyValuePair.Key)));
 
-        internal static IMarketDataEntities GetMarketDataEntities(
+        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(
             this IEnumerable<HtmlNode> rows,
             string stockExchangeName)
         {
-            IMarketDataEntities entities = new MarketDataEntities(rows.Select(row => GetMarketDataEntity(row, stockExchangeName)));
-            LogManager.GetCurrentClassLogger().Info($"Number of records added from {stockExchangeName}: {entities.Count}");
-            return entities;
+            IEnumerable<IMarketDataEntity> entities = new List<IMarketDataEntity>(rows.Select(row => GetMarketDataEntity(row, stockExchangeName)));
+            LogManager.GetCurrentClassLogger().Info($"Number of records added from {stockExchangeName}: {entities.Count()}");
+            return entities.ToImmutableList();
         }
 
         internal static IMarketDataEntity GetMarketDataEntity(HtmlNode htmlTableRow, string stockExchange) =>
-            new MarketDataEntity
-            {
-                Name = HtmlRowProcessor.GetName(htmlTableRow),
-                ClosingPrice = HtmlRowProcessor.GetClosingPrice(htmlTableRow),
-                DateTime = HtmlRowProcessor.GetDateTime(htmlTableRow),
-                Volumen = HtmlRowProcessor.GetVolumen(htmlTableRow),
-                PreviousDayClosingPrice = HtmlRowProcessor.GetPreviousDayClosingPrice(htmlTableRow),
-                StockExchange = stockExchange
-            };
+            new MarketDataEntityBuilder()
+                .SetName(HtmlRowProcessor.GetName(htmlTableRow))
+                .SetClosingPrice(HtmlRowProcessor.GetClosingPrice(htmlTableRow))
+                .SetDateTime(HtmlRowProcessor.GetDateTime(htmlTableRow))
+                .SetVolumen(HtmlRowProcessor.GetVolumen(htmlTableRow))
+                .SetPreviousDayClosingPrice(HtmlRowProcessor.GetPreviousDayClosingPrice(htmlTableRow))
+                .SetStockExchange(stockExchange)
+                .Build();
 
         internal static HtmlNode GetTable(string htmlString)
         {

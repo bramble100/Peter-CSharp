@@ -2,6 +2,7 @@
 using Peter.Repositories.Interfaces;
 using NLog;
 using DataVendor.Services.Html;
+using System.Collections.Generic;
 
 namespace DataVendor.Services
 {
@@ -16,14 +17,14 @@ namespace DataVendor.Services
             _marketDataCsvFileRepository = marketDataRepository;
         }
 
-        public IMarketDataEntities DownloadFromWeb()
+        public IEnumerable<IMarketDataEntity> DownloadFromWeb()
         {
             return HtmlDownloader
                 .DownloadAll()
                 .GetMarketDataEntities();
         }
 
-        public void Update(IMarketDataEntities latestData)
+        public void Update(IEnumerable<IMarketDataEntity> latestData)
         {
             _marketDataCsvFileRepository.AddRange(latestData);
 

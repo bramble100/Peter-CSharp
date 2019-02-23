@@ -4,7 +4,7 @@ using Peter.Models.Interfaces;
 
 namespace Peter.Models.Implementations
 {
-    public class FinancialReport : IFinancialReport
+    internal class FinancialReport : IFinancialReport
     {
         private readonly static HashSet<int> _validMonths = new HashSet<int>() { 3, 6, 9, 12 };
 

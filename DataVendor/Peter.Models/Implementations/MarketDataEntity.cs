@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Peter.Models.Implementations
 {
-    public class MarketDataEntity : IMarketDataEntity
+    internal class MarketDataEntity : IMarketDataEntity
     {
         public decimal ClosingPrice { get; set; }
         public DateTime DateTime { get; set; }
