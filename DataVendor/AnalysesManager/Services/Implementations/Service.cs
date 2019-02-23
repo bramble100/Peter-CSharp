@@ -7,6 +7,7 @@ using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace AnalysesManager.Services.Implementations
@@ -63,7 +64,7 @@ namespace AnalysesManager.Services.Implementations
 
         public void GenerateAnalyses()
         {
-            _logger.Info("Start generating analyses.");
+            _logger.Info("Generating analyses ...");
 
             var marketData = _marketDataRepository.GetAll().ToList();
             if (ContainsDataWithoutIsin(marketData))
@@ -82,11 +83,23 @@ namespace AnalysesManager.Services.Implementations
                                         .OrderByDescending(d => d.DateTime)
                                         .Take(_slowMovingAverage);
 
-            var analyses = groupedMarketData.Select(GetAnalysis);
-            _logger.Info($"{analyses.Count()} analyses generated.");
+            var analyses = groupedMarketData.Select(GetAnalysis).ToImmutableList();
 
+            if (!analyses.Any())
+            {
+                _logger.Info("No analyses generated.");
+                return;
+            }
+
+            _logger.Info($"{analyses} analyses generated.");
+
+            _logger.Debug("Adding analyses to repository ...");
             _financialAnalysesCsvFileRepository.AddRange(analyses);
+            _logger.Debug("Analyses added.");
+
+            _logger.Debug("Saving analyses to repository ...");
             _financialAnalysesCsvFileRepository.SaveChanges();
+            _logger.Debug("Analyses saved.");
 
             _logger.Info("*** *** ***");
         }
@@ -120,6 +133,9 @@ namespace AnalysesManager.Services.Implementations
                     .SetFastSMA(marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
                     .SetSlowSMA(marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
                     .Build();
+            if (technicalAnalysis is null)
+                throw new ServiceException($"No technical analysis can be created for {isin}");
+
             var analysis = new AnalysisBuilder()
                 .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
                 .SetName(stockBaseData.Name)
@@ -145,6 +161,7 @@ namespace AnalysesManager.Services.Implementations
 
         private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
         {
+            // TODO add null check
             return entry.Value?.FinancialReport != null &&
                 entry.Value.FinancialReport.EPS != 0 &&
                 entry.Value.FinancialReport.MonthsInReport != 0;
@@ -152,6 +169,7 @@ namespace AnalysesManager.Services.Implementations
 
         internal static TAZ GetTAZ(IAnalysis analysis)
         {
+            // TODO refactor to three simple parameter
             if (analysis is null)
                 throw new ArgumentNullException(nameof(analysis));
             var technicalAnalysis = analysis.TechnicalAnalysis;
@@ -179,6 +197,7 @@ namespace AnalysesManager.Services.Implementations
 
         internal static Trend GetTrend(ITechnicalAnalysis analysis)
         {
+            // TODO refactor to two simple parameter
             if (analysis is null)
                 throw new ArgumentNullException(nameof(analysis));
 

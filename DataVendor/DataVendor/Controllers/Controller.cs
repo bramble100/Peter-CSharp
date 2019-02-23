@@ -22,11 +22,11 @@ namespace DataVendor.Controllers.Implementations
 
         public void WebToCsv()
         {
-            _logger.Info("*** Web To Csv ***");
+            _logger.Info("*** Download and save data from data vendor pages ***");
 
             try
             {
-                _webService.Update(_webService.DownloadFromWeb());
+                _webService.Update(_webService.GetDownloadedDataFromWeb());
             }
             catch (Exception ex)
             {
@@ -38,7 +38,7 @@ namespace DataVendor.Controllers.Implementations
 
         public void AddIsins()
         {
-            _logger.Info("*** Add Isins ***");
+            _logger.Info("*** Add Isins to downloaded data ***");
 
             try
             {
