@@ -111,43 +111,60 @@ namespace AnalysesManager.Services.Implementations
         private bool RegistryItemIsInteresting(IRegistryEntry entry) =>
             entry.FinancialReport?.EPS >= 0 || entry.Position != Position.NoPosition;
 
-        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketData)
+        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketDataInput)
         {
-            if (marketData == null)
-                throw new ArgumentNullException(nameof(marketData));
+            if (marketDataInput == null)
+                throw new ArgumentNullException(nameof(marketDataInput));
 
-            var isin = marketData.First()?.Isin;
-            if (string.IsNullOrEmpty(isin))
-                throw new ServiceException("No ISIN found for market data set.");
+            try
+            {
+                var marketData = marketDataInput.ToImmutableList();
+                if (!marketData.Any())
+                    throw new ArgumentException("Market data set cannot be empty", nameof(marketDataInput));
 
-            var stockBaseData = _registryRepository.GetById(isin);
-            if (stockBaseData is null)
-                throw new ServiceException($"No registry entry found for {isin}");
+                var isin = marketDataInput.First().Isin;
+                if (string.IsNullOrEmpty(isin))
+                    throw new ServiceException("No ISIN found in market data set.");
 
-            var financialAnalysis = new FinancialAnalysisBuilder()
-                    .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
+                var closingPrice = marketDataInput.FirstOrDefault().ClosingPrice;
+                var fastSMA = marketDataInput.Take(_fastMovingAverage).Average(d => d.ClosingPrice);
+                var slowSMA = marketDataInput.Take(_slowMovingAverage).Average(d => d.ClosingPrice);
+
+                var stockBaseData = _registryRepository.GetById(isin);
+                if (stockBaseData is null)
+                    throw new ServiceException($"No registry entry found for {isin}");
+
+                var financialAnalysis = new FinancialAnalysisBuilder()
+                    .SetClosingPrice(closingPrice)
                     .SetEPS(stockBaseData.FinancialReport?.EPS)
                     .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
                     .Build();
-            var technicalAnalysis = new TechnicalAnalysisBuilder()
-                    .SetFastSMA(marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice))
-                    .SetSlowSMA(marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice))
+                var technicalAnalysis = new TechnicalAnalysisBuilder()
+                    .SetFastSMA(fastSMA)
+                    .SetSlowSMA(slowSMA)
+                    .SetTAZ(GetTAZ(closingPrice, fastSMA, slowSMA))
+                    .SetTrend(GetTrend(fastSMA, slowSMA))
                     .Build();
-            if (technicalAnalysis is null)
-                throw new ServiceException($"No technical analysis can be created for {isin}");
+                if (technicalAnalysis is null)
+                    throw new ServiceException($"No technical analysis can be created for {isin}");
 
-            var analysis = new AnalysisBuilder()
-                .SetClosingPrice(marketData.FirstOrDefault().ClosingPrice)
-                .SetName(stockBaseData.Name)
-                .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / marketData.FirstOrDefault().ClosingPrice))
-                .SetFinancialAnalysis(financialAnalysis)
-                .SetTechnicalAnalysis(technicalAnalysis)
-                .Build();
+                var analysis = new AnalysisBuilder()
+                    .SetClosingPrice(closingPrice)
+                    .SetName(stockBaseData.Name)
+                    .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / closingPrice))
+                    .SetFinancialAnalysis(financialAnalysis)
+                    .SetTechnicalAnalysis(technicalAnalysis)
+                    .Build();
 
-            analysis.TechnicalAnalysis.TAZ = GetTAZ(analysis);
-            analysis.TechnicalAnalysis.Trend = GetTrend(analysis?.TechnicalAnalysis);
+                if (analysis is null)
+                    throw new ServiceException($"No analysis can be created for {isin}");
 
-            return new KeyValuePair<string, IAnalysis>(isin, analysis);
+                return new KeyValuePair<string, IAnalysis>(isin, analysis);
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException($"No analysis can be created.", ex);
+            }
         }
 
         internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
@@ -167,19 +184,8 @@ namespace AnalysesManager.Services.Implementations
                 entry.Value.FinancialReport.MonthsInReport != 0;
         }
 
-        internal static TAZ GetTAZ(IAnalysis analysis)
+        internal static TAZ GetTAZ(decimal closingPrice, decimal fastSMA, decimal slowSMA)
         {
-            // TODO refactor to three simple parameter
-            if (analysis is null)
-                throw new ArgumentNullException(nameof(analysis));
-            var technicalAnalysis = analysis.TechnicalAnalysis;
-            if (technicalAnalysis is null)
-                throw new ArgumentNullException(nameof(technicalAnalysis));
-
-            var closingPrice = analysis.ClosingPrice;
-            var fastSMA = technicalAnalysis.FastSMA;
-            var slowSMA = technicalAnalysis.SlowSMA;
-
             if (closingPrice <= 0)
                 throw new ArgumentException("Must be greater than 0", nameof(closingPrice));
             if (fastSMA <= 0)
@@ -195,23 +201,16 @@ namespace AnalysesManager.Services.Implementations
             return TAZ.InTAZ;
         }
 
-        internal static Trend GetTrend(ITechnicalAnalysis analysis)
+        internal static Trend GetTrend(decimal fastSMA, decimal slowSMA)
         {
-            // TODO refactor to two simple parameter
-            if (analysis is null)
-                throw new ArgumentNullException(nameof(analysis));
-
-            var fastSMA = analysis.FastSMA;
-            var slowSMA = analysis.SlowSMA;
-
             if (fastSMA <= 0)
                 throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
             if (slowSMA <= 0)
                 throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
 
-            if (analysis.FastSMA > analysis.SlowSMA)
+            if (fastSMA > slowSMA)
                 return Trend.Up;
-            if (analysis.FastSMA < analysis.SlowSMA)
+            if (fastSMA < slowSMA)
                 return Trend.Down;
 
             return Trend.Undefined;
