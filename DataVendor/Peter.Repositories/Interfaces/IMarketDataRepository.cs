@@ -12,6 +12,10 @@ namespace Peter.Repositories.Interfaces
         /// Collection of the ISINs in the repository.
         /// </summary>
         IEnumerable<string> Isins { get; }
+        /// <summary>
+        /// Collection of the market data entities.
+        /// </summary>
+        IEnumerable<IMarketDataEntity> Entities { get; }
 
         /// <summary>
         /// Adds new market data to the existing data.
@@ -27,5 +31,6 @@ namespace Peter.Repositories.Interfaces
         /// Saves the content of the repository.
         /// </summary>
         void SaveChanges();
+        void UpdateEntityWithIsin(IMarketDataEntity entity, string v);
     }
 }

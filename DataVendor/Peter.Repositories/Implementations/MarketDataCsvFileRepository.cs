@@ -40,8 +40,16 @@ namespace Peter.Repositories.Implementations
             get
             {
                 if (!_fileContentLoaded) Load();
-
                 return _entities.Select(e => e.Isin).Distinct().ToImmutableList();
+            }
+        }
+
+        public IEnumerable<IMarketDataEntity> Entities
+        {
+            get
+            {
+                if (!_fileContentLoaded) Load();
+                return _entities.ToImmutableList();
             }
         }
 
@@ -95,6 +103,23 @@ namespace Peter.Repositories.Implementations
                 _entities.Select(e => CsvLineMarketData.FormatForCSV(e, _separator, _cultureInfo)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
+        }
+
+        public void UpdateEntityWithIsin(IMarketDataEntity entity, string isin)
+        {
+            if (!_fileContentLoaded) Load();
+
+            var foundEntities = _entities
+                .Where(e => DateTime.Equals(e.DateTime, entity.DateTime) && string.Equals(e.Name, entity.Name));
+
+            foreach (var foundEntity in foundEntities)
+            {
+                if (!string.Equals(foundEntity.Isin, isin))
+                {
+                    foundEntity.Isin = isin;
+                    _fileContentSaved = false;
+                }
+            }
         }
 
         private void Load()
