@@ -42,7 +42,7 @@ namespace DataVendor.Controllers.Implementations
 
             try
             {
-                _isinAdderService.AddIsinsToEntities();
+                _isinAdderService.AddIsinsToMarketData();
             }
             catch (Exception ex)
             {

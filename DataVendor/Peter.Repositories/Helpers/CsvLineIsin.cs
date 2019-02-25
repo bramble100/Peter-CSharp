@@ -27,5 +27,9 @@ namespace Peter.Repositories.Helpers
             }
         }
 
+        public static string FormatForCSV(KeyValuePair<string, string> keyValuePair, string separator) => 
+            string.Join(separator,
+                keyValuePair.Key.WrapWithQuotes(),
+                keyValuePair.Value);
     }
 }
