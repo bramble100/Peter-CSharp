@@ -12,6 +12,6 @@
         /// <summary>
         /// ISIN.
         /// </summary>
-        string Isin { get; }
+        string Isin { get; set; }
     }
 }

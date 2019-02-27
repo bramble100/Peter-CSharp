@@ -9,6 +9,12 @@
             A key-value pair to contain the ISIN by the company name. Key: Company name; Value: ISIN
             </summary>
         </member>
+        <member name="M:Peter.Models.Implementations.NameToIsin.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="name"></param>
+        </member>
         <member name="M:Peter.Models.Implementations.NameToIsin.#ctor(System.String,System.String)">
             <summary>
             Constructor.

@@ -13,19 +13,28 @@ namespace Peter.Models.Implementations
         /// Constructor.
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="isin"></param>
-        public NameToIsin(string name, string isin)
+        public NameToIsin(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
-            if (string.IsNullOrWhiteSpace(isin))
+
+            Name = name;
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isin"></param>
+        public NameToIsin(string name, string isin) : this(name)
+        {
+            if (!Validators.Isin.IsValidOrEmpty(isin))
             {
                 throw new ArgumentNullException(nameof(isin));
             }
 
-            Name = name;
             Isin = isin;
         }
 
@@ -36,7 +45,7 @@ namespace Peter.Models.Implementations
         /// <summary>
         /// ISIN.
         /// </summary>
-        public string Isin { get; }
+        public string Isin { get; set; }
 
         public override bool Equals(object obj) => Equals(obj as NameToIsin);
 

@@ -57,7 +57,7 @@ namespace DataVendor.Services
 
             deadNames.ToList().ForEach(name => _isinsCsvFileRepository.Remove(name));
 
-            return deadNames.Count;
+            return deadNames.Count();
         }
 
         private int AddNewNames()
