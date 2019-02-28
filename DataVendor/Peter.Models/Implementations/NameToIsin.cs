@@ -49,7 +49,7 @@ namespace Peter.Models.Implementations
 
         public override bool Equals(object obj) => Equals(obj as NameToIsin);
 
-        public bool Equals(NameToIsin other) => 
+        public bool Equals(NameToIsin other) =>
             other != null &&
                    Name == other.Name &&
                    Isin == other.Isin;
@@ -57,8 +57,8 @@ namespace Peter.Models.Implementations
         public override int GetHashCode()
         {
             var hashCode = 1457120196;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Isin);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(Isin);
             return hashCode;
         }
     }
