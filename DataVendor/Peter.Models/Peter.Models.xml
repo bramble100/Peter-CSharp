@@ -4,6 +4,34 @@
         <name>Peter.Models</name>
     </assembly>
     <members>
+        <member name="T:Peter.Models.Implementations.NameToIsin">
+            <summary>
+            A key-value pair to contain the ISIN by the company name. Key: Company name; Value: ISIN
+            </summary>
+        </member>
+        <member name="M:Peter.Models.Implementations.NameToIsin.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:Peter.Models.Implementations.NameToIsin.#ctor(System.String,System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="name"></param>
+            <param name="isin"></param>
+        </member>
+        <member name="P:Peter.Models.Implementations.NameToIsin.Name">
+            <summary>
+            Company name.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Implementations.NameToIsin.Isin">
+            <summary>
+            ISIN.
+            </summary>
+        </member>
         <member name="T:Peter.Models.Interfaces.IAnalysis">
             <summary>
             All-in analysis containing some basic data with financial and technical analyses.
@@ -110,17 +138,17 @@
             Number of stocks traded during the day.
             </summary>
         </member>
-        <member name="T:Peter.Models.Interfaces.xxxINameToIsin">
+        <member name="T:Peter.Models.Interfaces.INameToIsin">
             <summary>
             A key-value pair to contain the ISIN by the company name. Key: Company name; Value: ISIN
             </summary>
         </member>
-        <member name="P:Peter.Models.Interfaces.xxxINameToIsin.Name">
+        <member name="P:Peter.Models.Interfaces.INameToIsin.Name">
             <summary>
             Company name.
             </summary>
         </member>
-        <member name="P:Peter.Models.Interfaces.xxxINameToIsin.Isin">
+        <member name="P:Peter.Models.Interfaces.INameToIsin.Isin">
             <summary>
             ISIN.
             </summary>

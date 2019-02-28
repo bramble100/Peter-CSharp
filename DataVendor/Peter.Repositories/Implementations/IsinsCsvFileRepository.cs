@@ -1,6 +1,8 @@
 ﻿using Infrastructure;
 using Microsoft.VisualBasic.FileIO;
 using NLog;
+using Peter.Models.Implementations;
+using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
@@ -16,8 +18,7 @@ namespace Peter.Repositories.Implementations
     {
         private new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        // TODO change to separate class (so that it can be persisted)
-        private readonly Dictionary<string, string> _isins;
+        private readonly HashSet<INameToIsin> _entities;
 
         /// <summary>
         /// Constructor for DI.
@@ -31,14 +32,15 @@ namespace Peter.Repositories.Implementations
             _fileName = _configReader.Settings.IsinFileName;
             _logger.Debug($"Isin filename is {_fileName} from config file.");
 
-            _isins = new Dictionary<string, string>();
+            _entities = new HashSet<INameToIsin>();
         }
 
         public void Add(string name)
         {
             if (!_fileContentLoaded) Load();
 
-            _isins.Add(name, string.Empty);
+            _entities.Add(new NameToIsin(name));
+
             _fileContentSaved = false;
         }
 
@@ -46,28 +48,28 @@ namespace Peter.Repositories.Implementations
         {
             if (!_fileContentLoaded) Load();
 
-            return _isins.ContainsKey(name);
+            return _entities.Any(entity => string.Equals(entity.Name, name));
         }
 
         public string GetIsinByCompanyName(string name)
         {
             if (!_fileContentLoaded) Load();
 
-            return _isins[name];
+            return _entities.SingleOrDefault(entity => string.Equals(entity.Name, name))?.Isin;
         }
 
-        public ImmutableHashSet<string> GetNames()
+        public IEnumerable<string> GetNames()
         {
             if (!_fileContentLoaded) Load();
 
-            return _isins.Keys.ToImmutableHashSet();
+            return _entities.Select(entity => entity.Name).ToImmutableArray();
         }
 
         public void Remove(string name)
         {
             if (!_fileContentLoaded) Load();
 
-            _isins.Remove(name);
+            _entities.RemoveWhere(entity => string.Equals(entity.Name, name));
             _fileContentSaved = false;
         }
 
@@ -81,7 +83,7 @@ namespace Peter.Repositories.Implementations
                 _fileName);
             SaveChanges(
                 CsvLineIsin.Header,
-                _isins.Select(i => CsvLineIsin.FormatForCSV(i, _separator)),
+                _entities.Select(i => CsvLineIsin.FormatForCSV(i, _separator)),
                 Path.Combine(WorkingDirectory, _fileName),
                 _separator);
         }
@@ -97,7 +99,7 @@ namespace Peter.Repositories.Implementations
                 _fileContentLoaded = true;
                 _fileContentSaved = true;
 
-                _logger.Info($"{_isins.Count} new ISIN entries loaded.");
+                _logger.Info($"{_entities.Count} new ISIN entries loaded.");
             }
             catch (Exception ex)
             {
@@ -131,7 +133,7 @@ namespace Peter.Repositories.Implementations
                 {
                     if (CsvLineIsin.TryParseFromCsv(parser.ReadFields(), out var result))
                     {
-                        _isins.Add(result.Key, result.Value);
+                        _entities.Add(result);
                     }
                 }
             }

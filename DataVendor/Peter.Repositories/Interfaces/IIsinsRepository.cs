@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 
 namespace Peter.Repositories.Interfaces
 {
@@ -28,7 +28,7 @@ namespace Peter.Repositories.Interfaces
         /// Gets an immutable set of company names.
         /// </summary>
         /// <returns></returns>
-        ImmutableHashSet<string> GetNames();
+        IEnumerable<string> GetNames();
         /// <summary>
         /// Removes company name from collection.
         /// </summary>
