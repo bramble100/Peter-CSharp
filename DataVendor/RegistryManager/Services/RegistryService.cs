@@ -9,7 +9,7 @@ namespace RegistryManager.Services
 {
     public class RegistryService : IRegistryService
     {
-        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;

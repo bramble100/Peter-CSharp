@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Infrastructure;
 using NLog;
+using Peter.Repositories.Implementations;
+using Peter.Repositories.Interfaces;
 using System;
 using System.Linq;
 
@@ -19,6 +21,13 @@ namespace CLI
             builder.RegisterType<ConfigReader>().As<IConfigReader>();
             builder.RegisterType<FileSystemFacade>().As<IFileSystemFacade>();
 
+            builder.RegisterType<Services.Analyses.Service>().As<Services.Analyses.IService>();
+
+            builder.RegisterType<AnalysesCsvFileRepository>().As<IAnalysesRepository>();
+            builder.RegisterType<IsinsCsvFileRepository>().As<IIsinsRepository>();
+            builder.RegisterType<MarketDataCsvFileRepository>().As<IMarketDataRepository>();
+            builder.RegisterType<RegistryCsvFileRepository>().As<IRegistryRepository>();
+
             var container = builder.Build();
             using (var scope = container.BeginLifetimeScope())
             {
@@ -27,12 +36,12 @@ namespace CLI
 
                 if (!args.Any())
                 {
-                    Console.WriteLine("No parameter given.");
+                    _logger.Fatal("No parameter given.");
                 }
                 else if (args.Count() > 1)
                 {
-                    Console.WriteLine("Too many parameters given.");
-                    Console.WriteLine(string.Join(" ", args));
+                    _logger.Fatal("Too many parameters given.");
+                    _logger.Info(string.Join(" ", args));
                 }
                 else
                 {
@@ -40,24 +49,28 @@ namespace CLI
 
                     if (string.Equals(command, _configReader.Settings.FetchNewMarketData))
                     {
-                        Console.WriteLine(_configReader.Settings.FetchNewMarketData);
+                        _logger.Info(_configReader.Settings.FetchNewMarketData);
                     }
                     else if (string.Equals(command, _configReader.Settings.UpdateMarketDataWithISINs))
                     {
-                        Console.WriteLine(_configReader.Settings.UpdateMarketDataWithISINs);
+                        _logger.Info(_configReader.Settings.UpdateMarketDataWithISINs);
                     }
                     else if (string.Equals(command, "registry"))
                     {
-                        Console.WriteLine("registry");
+                        _logger.Info("registry");
                     }
                     else if (string.Equals(command, "analyse"))
                     {
-                        Console.WriteLine("analyse");
+                        _logger.Info("analyse");
+
+                        scope
+                            .Resolve<Services.Analyses.IService>()
+                            .GenerateAnalyses();
                     }
                     else
                     {
-                        Console.WriteLine("Unknown parameter given.");
-                        Console.WriteLine(command);
+                        _logger.Fatal("Unknown parameter given.");
+                        _logger.Info(command);
                     }
                 }
             }
