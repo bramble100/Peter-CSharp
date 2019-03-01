@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models.UnitTests", "Models.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.UnitTests", "Repositories.UnitTests\Repositories.UnitTests.csproj", "{42CCF141-CF4A-401E-B25F-6281D4DE7D16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistryManager", "RegistryManager\RegistryManager.csproj", "{3D9A1E73-B959-4E70-B512-3CC4CC6C30E3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.IntegrationTests", "Repositories.IntegrationTests\Repositories.IntegrationTests.csproj", "{5A09A423-2F9E-4659-9590-DEAF02A301E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{373D71A0-34B5-42AA-9F6D-961051ADFF5F}"
@@ -51,10 +49,6 @@ Global
 		{42CCF141-CF4A-401E-B25F-6281D4DE7D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42CCF141-CF4A-401E-B25F-6281D4DE7D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42CCF141-CF4A-401E-B25F-6281D4DE7D16}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D9A1E73-B959-4E70-B512-3CC4CC6C30E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D9A1E73-B959-4E70-B512-3CC4CC6C30E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D9A1E73-B959-4E70-B512-3CC4CC6C30E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D9A1E73-B959-4E70-B512-3CC4CC6C30E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5A09A423-2F9E-4659-9590-DEAF02A301E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5A09A423-2F9E-4659-9590-DEAF02A301E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A09A423-2F9E-4659-9590-DEAF02A301E5}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -54,6 +54,8 @@
   <ItemGroup>
     <Compile Include="Analyses\IService.cs" />
     <Compile Include="Analyses\Service.cs" />
+    <Compile Include="Registry\IService.cs" />
+    <Compile Include="Registry\Service.cs" />
     <Compile Include="ServiceException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

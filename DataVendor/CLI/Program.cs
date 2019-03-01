@@ -22,6 +22,7 @@ namespace CLI
             builder.RegisterType<FileSystemFacade>().As<IFileSystemFacade>();
 
             builder.RegisterType<Services.Analyses.Service>().As<Services.Analyses.IService>();
+            builder.RegisterType<Services.Registry.Service>().As<Services.Registry.IService>();
 
             builder.RegisterType<AnalysesCsvFileRepository>().As<IAnalysesRepository>();
             builder.RegisterType<IsinsCsvFileRepository>().As<IIsinsRepository>();
@@ -58,6 +59,11 @@ namespace CLI
                     else if (string.Equals(command, "registry"))
                     {
                         _logger.Info("registry");
+
+                        scope
+                            .Resolve<Services.Registry.IService>()
+                            .Update();
+
                     }
                     else if (string.Equals(command, "analyse"))
                     {
