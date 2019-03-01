@@ -6,11 +6,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A6EEB019-2B1D-4715-9157-92E9383E9DA0}</ProjectGuid>
+    <ProjectGuid>{C796F0A0-FB8B-42C5-8C01-457DC0222A4B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AnalysesManager.UnitTests</RootNamespace>
-    <AssemblyName>AnalysesManager.UnitTests</AssemblyName>
+    <RootNamespace>Services.UnitTests</RootNamespace>
+    <AssemblyName>Services.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -51,25 +51,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceTests_GetTrend.cs" />
+    <Compile Include="ServiceTests.cs" />
     <Compile Include="ServiceTests_GetTaz.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <Compile Include="ServiceTests_GetTrend.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
-      <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
+      <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
       <Name>Peter.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\Services\Services.csproj">
-      <Project>{7C414CF1-2E3A-4C30-BF20-CBEA83D7D280}</Project>
+      <Project>{7c414cf1-2e3a-4c30-bf20-cbea83d7d280}</Project>
       <Name>Services</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
