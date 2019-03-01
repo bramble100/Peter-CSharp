@@ -23,6 +23,8 @@ namespace CLI
 
             builder.RegisterType<Services.Analyses.Service>().As<Services.Analyses.IService>();
             builder.RegisterType<Services.Registry.Service>().As<Services.Registry.IService>();
+            builder.RegisterType<Services.DataVendor.WebService>().As<Services.DataVendor.IWebService>();
+            builder.RegisterType<Services.DataVendor.IsinAdderService>().As<Services.DataVendor.IIsinAdderService>();
 
             builder.RegisterType<AnalysesCsvFileRepository>().As<IAnalysesRepository>();
             builder.RegisterType<IsinsCsvFileRepository>().As<IIsinsRepository>();
@@ -51,10 +53,18 @@ namespace CLI
                     if (string.Equals(command, _configReader.Settings.FetchNewMarketData))
                     {
                         _logger.Info(_configReader.Settings.FetchNewMarketData);
+                        var service = scope.Resolve<Services.DataVendor.IWebService>();
+
+                        var marketData = service.GetDownloadedDataFromWeb();
+                        service.Update(marketData);
                     }
                     else if (string.Equals(command, _configReader.Settings.UpdateMarketDataWithISINs))
                     {
                         _logger.Info(_configReader.Settings.UpdateMarketDataWithISINs);
+
+                        scope
+                            .Resolve<Services.DataVendor.IIsinAdderService>()
+                            .AddIsinsToMarketData();
                     }
                     else if (string.Equals(command, "registry"))
                     {
