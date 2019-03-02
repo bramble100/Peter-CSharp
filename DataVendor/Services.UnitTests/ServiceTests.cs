@@ -6,7 +6,7 @@ using Services.Analyses;
 using System;
 using System.Collections.Generic;
 
-namespace Services.UnitTests
+namespace AnalysesManager.UnitTests
 {
     [TestFixture]
     public class ServiceTests

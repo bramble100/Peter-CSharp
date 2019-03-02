@@ -105,7 +105,6 @@
     <Compile Include="Models\StockExchangesHtmls.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Extensions.cs" />
     <Compile Include="Services\Html\HtmlDownloader.cs" />
     <Compile Include="Services\Html\HtmlProcessor.cs" />
     <Compile Include="Services\Html\HtmlRowProcessor.cs" />

@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3D9A1E73-B959-4E70-B512-3CC4CC6C30E3}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>RegistryManager</RootNamespace>
-    <AssemblyName>RegistryManager</AssemblyName>
+    <ProjectGuid>{7C414CF1-2E3A-4C30-BF20-CBEA83D7D280}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Services</RootNamespace>
+    <AssemblyName>Services</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,18 +23,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\RegistryManager.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.9.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.9.1\lib\net45\Autofac.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.9.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.9.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
@@ -58,26 +55,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Controller.cs" />
-    <Compile Include="Controllers\IController.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Analyses\IService.cs" />
+    <Compile Include="Analyses\Service.cs" />
+    <Compile Include="DataVendor\Html\HtmlDownloader.cs" />
+    <Compile Include="DataVendor\Html\HtmlProcessor.cs" />
+    <Compile Include="DataVendor\Html\HtmlRowProcessor.cs" />
+    <Compile Include="DataVendor\IIsinAdderService.cs" />
+    <Compile Include="DataVendor\IsinAdderService.cs" />
+    <Compile Include="DataVendor\IWebService.cs" />
+    <Compile Include="DataVendor\Models\DataVendorBasicData.cs" />
+    <Compile Include="DataVendor\Models\StockExchangesHtmls.cs" />
+    <Compile Include="DataVendor\WebService.cs" />
+    <Compile Include="Registry\IService.cs" />
+    <Compile Include="Registry\Service.cs" />
+    <Compile Include="ServiceException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\IRegistryService.cs" />
-    <Compile Include="Services\RegistryService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
-      <Project>{373D71A0-34B5-42AA-9F6D-961051ADFF5F}</Project>
+      <Project>{373d71a0-34b5-42aa-9f6d-961051adff5f}</Project>
       <Name>Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
@@ -89,5 +88,6 @@
       <Name>Peter.Repositories</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,16 +5,16 @@ using NLog;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
 
-namespace RegistryManager.Services
+namespace Services.Registry
 {
-    public class RegistryService : IRegistryService
+    public class Service : IService
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
 
-        public RegistryService(
+        public Service(
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository)
         {
