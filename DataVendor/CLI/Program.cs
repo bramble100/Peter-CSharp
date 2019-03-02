@@ -75,7 +75,6 @@ namespace CLI
                             scope
                                 .Resolve<Services.Registry.IService>()
                                 .Update();
-
                         }
                         else if (string.Equals(command, "analyse"))
                         {
