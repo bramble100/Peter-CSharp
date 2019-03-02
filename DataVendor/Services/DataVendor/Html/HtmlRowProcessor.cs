@@ -6,7 +6,6 @@ namespace Services.DataVendor.Html
 {
     internal static class HtmlRowProcessor
     {
-
         internal static string GetName(HtmlNode node) => 
             node
                 .ChildNodes[0]
