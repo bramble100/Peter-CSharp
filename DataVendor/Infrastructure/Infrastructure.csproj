@@ -56,8 +56,10 @@
     <Compile Include="ConfigReader.cs" />
     <Compile Include="FileSystemFacade.cs" />
     <Compile Include="FileSystemFacadeException.cs" />
+    <Compile Include="HttpFacade.cs" />
     <Compile Include="IConfigReader.cs" />
     <Compile Include="IFileSystemFacade.cs" />
+    <Compile Include="IHttpFacade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
