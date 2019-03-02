@@ -57,14 +57,11 @@
   <ItemGroup>
     <Compile Include="Analyses\IService.cs" />
     <Compile Include="Analyses\Service.cs" />
-    <Compile Include="DataVendor\Html\HtmlDownloader.cs" />
     <Compile Include="DataVendor\Html\HtmlProcessor.cs" />
     <Compile Include="DataVendor\Html\HtmlRowProcessor.cs" />
     <Compile Include="DataVendor\IIsinAdderService.cs" />
     <Compile Include="DataVendor\IsinAdderService.cs" />
     <Compile Include="DataVendor\IWebService.cs" />
-    <Compile Include="DataVendor\Models\DataVendorBasicData.cs" />
-    <Compile Include="DataVendor\Models\StockExchangesHtmls.cs" />
     <Compile Include="DataVendor\WebService.cs" />
     <Compile Include="Registry\IService.cs" />
     <Compile Include="Registry\Service.cs" />

@@ -24,13 +24,9 @@ namespace Services.DataVendor
             AddIsinToEntities();
 
             _marketDataCsvFileRepository.SaveChanges();
-            _logger.Info("Market data saved.");
 
-            var removeCount = RemoveDeadIsins();
-            _logger.Info($"{removeCount} ISIN(s) are removed.");
-
-            var addCount = AddNewNames();
-            _logger.Info($"{addCount} new name(s) are added.");
+            RemoveDeadIsins();            
+            AddNewNames();
 
             _isinsCsvFileRepository.SaveChanges();
             _logger.Info("ISINs saved.");
@@ -38,30 +34,47 @@ namespace Services.DataVendor
 
         private void AddIsinToEntities()
         {
+            _logger.Info("Adding ISINs to market data ...");
+
             foreach (var entity in _marketDataCsvFileRepository.Entities)
             {
                 _marketDataCsvFileRepository.UpdateEntityWithIsin(
                     entity,
                     _isinsCsvFileRepository.GetIsinByCompanyName(entity.Name));
             }
+
+            _logger.Info("ISINs added to market data.");
         }
 
-        private int RemoveDeadIsins()
+        private void RemoveDeadIsins()
         {
+            _logger.Info("Removing discontinued ISIN(s) ...");
+
             var namesInEntities = _marketDataCsvFileRepository
                 .Entities
                 .Select(e => e.Name)
                 .Distinct();
 
-            var deadNames = _isinsCsvFileRepository.GetNames().Except(namesInEntities);
+            var deadNames = _isinsCsvFileRepository.GetNames().Except(namesInEntities).ToArray();
 
-            deadNames.ToList().ForEach(name => _isinsCsvFileRepository.Remove(name));
-
-            return deadNames.Count();
+            if (deadNames.Any())
+            {
+                foreach (var name in deadNames)
+                {
+                    _isinsCsvFileRepository.Remove(name);
+                }
+                _logger.Info($"{deadNames.Count()} ISIN(s) are removed.");
+            }
+            else
+            {
+                _logger.Info($"No ISINs were removed.");
+            }
         }
 
-        private int AddNewNames()
+        private void AddNewNames()
         {
+            _logger.Info("Adding new names to ISIN list ...");
+
             var namesInEntities = _marketDataCsvFileRepository
                 .Entities
                 .Select(e => e.Name)
@@ -71,9 +84,18 @@ namespace Services.DataVendor
                 .Where(e => !_isinsCsvFileRepository.ContainsName(e))
                 .ToList();
 
-            newNames.ForEach(n => _isinsCsvFileRepository.Add(n));
-
-            return newNames.Count;
+            if (newNames.Any())
+            {
+                foreach (var name in newNames)
+                {
+                    _isinsCsvFileRepository.Add(name);
+                }
+                _logger.Info($"{newNames.Count} new name(s) are added.");
+            }
+            else
+            {
+                _logger.Info($"No names were removed.");
+            }
         }
     }
 }

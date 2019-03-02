@@ -1,5 +1,6 @@
 ﻿using Peter.Models.Interfaces;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Services.DataVendor
 {
@@ -9,7 +10,7 @@ namespace Services.DataVendor
         /// Returns all market data downloaded from datavendor.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IMarketDataEntity> GetDownloadedDataFromWeb();
+        Task<IEnumerable<IMarketDataEntity>> GetDownloadedDataFromWeb();
 
         /// <summary>
         /// Updates underlying repository with the given data.
