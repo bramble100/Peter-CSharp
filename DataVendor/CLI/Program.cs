@@ -11,7 +11,7 @@ namespace CLI
     class Program
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
-        private static readonly string helpText = "Peter - Stock Exchange Screener - v1.0.4.\n" + 
+        private static readonly string helpText = "Peter - Stock Exchange Screener - v1.0.4.\n" +
             "Usage:\n" +
             "CLI analyses: create analyses based on the available data";
 
@@ -20,8 +20,11 @@ namespace CLI
             try
             {
                 var builder = new ContainerBuilder();
+
                 builder.RegisterType<ConfigReader>().As<IConfigReader>();
+                builder.RegisterType<EnvironmentVariableReader>().As<IEnvironmentVariableReader>();
                 builder.RegisterType<FileSystemFacade>().As<IFileSystemFacade>();
+                builder.RegisterType<HttpFacade>().As<IHttpFacade>();
 
                 builder.RegisterType<Services.Analyses.Service>().As<Services.Analyses.IService>();
                 builder.RegisterType<Services.Registry.Service>().As<Services.Registry.IService>();
@@ -56,33 +59,26 @@ namespace CLI
                         {
                             _logger.Info(_configReader.Settings.FetchNewMarketData);
                             var service = scope.Resolve<Services.DataVendor.IWebService>();
-
-                            var marketData = service.GetDownloadedDataFromWeb();
+                            var marketData = service.GetDownloadedDataFromWeb().GetAwaiter().GetResult();
                             service.Update(marketData);
                         }
                         else if (string.Equals(command, _configReader.Settings.UpdateMarketDataWithISINs))
                         {
                             _logger.Info(_configReader.Settings.UpdateMarketDataWithISINs);
-
-                            scope
-                                .Resolve<Services.DataVendor.IIsinAdderService>()
-                                .AddIsinsToMarketData();
+                            var service = scope.Resolve<Services.DataVendor.IIsinAdderService>();
+                            service.AddIsinsToMarketData();
                         }
                         else if (string.Equals(command, "registry"))
                         {
                             _logger.Info("registry");
-
-                            scope
-                                .Resolve<Services.Registry.IService>()
-                                .Update();
+                            var service = scope.Resolve<Services.Registry.IService>();
+                            service.Update();
                         }
                         else if (string.Equals(command, "analyse"))
                         {
                             _logger.Info("analyse");
-
-                            scope
-                                .Resolve<Services.Analyses.IService>()
-                                .GenerateAnalyses();
+                            var service = scope.Resolve<Services.Analyses.IService>();
+                            service.GenerateAnalyses();
                         }
                         else
                         {
@@ -94,7 +90,8 @@ namespace CLI
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Error(ex.Message);
+                _logger.Debug(ex);
             }
 
             LogManager.Shutdown();

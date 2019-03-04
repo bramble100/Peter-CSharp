@@ -1,31 +1,18 @@
 ﻿using HtmlAgilityPack;
-using NLog;
 using Peter.Models.Builders;
 using Peter.Models.Interfaces;
-using Services.DataVendor.Models;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Services.DataVendor.Html
 {
     internal static class HtmlProcessor
     {
-        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(this StockExchangesHtmls stockExchangesHtmls) =>
-            new HashSet<IMarketDataEntity>(
-                stockExchangesHtmls.SelectMany(keyValuePair =>
-                    GetTable(keyValuePair.Value)
-                        .GetRows()
-                        .GetMarketDataEntities(keyValuePair.Key)));
-
-        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(
-            this IEnumerable<HtmlNode> rows,
-            string stockExchangeName)
-        {
-            IEnumerable<IMarketDataEntity> entities = new List<IMarketDataEntity>(rows.Select(row => GetMarketDataEntity(row, stockExchangeName)));
-            LogManager.GetCurrentClassLogger().Info($"Number of records added from {stockExchangeName}: {entities.Count()}");
-            return entities.ToImmutableList();
-        }
+        internal static IEnumerable<IMarketDataEntity> GetMarketDataEntities(string htmlContent, string stockExchangeName) =>
+            GetTable(htmlContent)
+                .GetRows()
+                .Select(row => GetMarketDataEntity(row, stockExchangeName))
+                .Distinct();
 
         internal static IMarketDataEntity GetMarketDataEntity(HtmlNode htmlTableRow, string stockExchange) =>
             new MarketDataEntityBuilder()

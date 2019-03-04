@@ -11,20 +11,12 @@ namespace Infrastructure
     /// </summary>
     public class FileSystemFacade : IFileSystemFacade
     {
-        private readonly Logger _logger;
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Returns the user's desktop folder.
         /// </summary>
         public string DesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public FileSystemFacade()
-        {
-            _logger = LogManager.GetCurrentClassLogger();
-        }
 
         /// <summary>
         /// Backs up a file (into another folder and/or under another name).
