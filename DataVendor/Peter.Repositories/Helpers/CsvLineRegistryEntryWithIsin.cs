@@ -1,4 +1,5 @@
-﻿using Peter.Models.Builders;
+﻿using NLog;
+using Peter.Models.Builders;
 using Peter.Models.Interfaces;
 using System;
 using System.Globalization;
@@ -7,6 +8,8 @@ namespace Peter.Repositories.Helpers
 {
     public static class CsvLineRegistryEntryWithIsin
     {
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         public static string[] Header => new string[]
         {
                 "Name",
