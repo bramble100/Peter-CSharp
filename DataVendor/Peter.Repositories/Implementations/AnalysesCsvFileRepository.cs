@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Infrastructure;
+using NLog;
+using Peter.Models.Interfaces;
+using Peter.Repositories.Exceptions;
+using Peter.Repositories.Helpers;
+using Peter.Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Infrastructure;
-using NLog;
-using Peter.Models.Interfaces;
-using Peter.Repositories.Helpers;
-using Peter.Repositories.Interfaces;
 
 namespace Peter.Repositories.Implementations
 {
@@ -18,8 +19,8 @@ namespace Peter.Repositories.Implementations
         private Dictionary<string, IAnalysis> _entities;
 
         public AnalysesCsvFileRepository(
-            IConfigReader config, 
-            IFileSystemFacade fileSystemFacade) 
+            IConfigReader config,
+            IFileSystemFacade fileSystemFacade)
             : base(config, fileSystemFacade)
         {
             WorkingDirectory = Path.Combine(
@@ -43,9 +44,27 @@ namespace Peter.Repositories.Implementations
                 throw new ArgumentNullException(nameof(analyses));
             }
 
-            analyses.ToList().ForEach(Add);
-            _fileContentSaved = false;
-            _logger.Info($"{analyses.Count()} new analyses added.");
+            if (!analyses.Any())
+            {
+                _logger.Debug("No analysis to add.");
+                return;
+            }
+
+            try
+            {
+                foreach (var analysis in analyses)
+                {
+                    Add(analysis);
+                }
+                _fileContentSaved = false;
+                _logger.Info($"{analyses.Count()} new analyses added.");
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex.Message);
+                _logger.Debug(ex);
+                throw new RepositoryException(ex.Message, ex);
+            }
         }
 
         public IAnalysis Find(string isin) => throw new System.NotImplementedException();
