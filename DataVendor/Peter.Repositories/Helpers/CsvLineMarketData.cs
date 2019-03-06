@@ -1,6 +1,5 @@
 ﻿using NLog;
 using Peter.Models.Builders;
-using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
 using System.Globalization;
@@ -9,6 +8,8 @@ namespace Peter.Repositories.Helpers
 {
     public static class CsvLineMarketData
     {
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         public static string[] Header => new string[]
         {
             "Name",
@@ -51,7 +52,7 @@ namespace Peter.Repositories.Helpers
 
             if(result is null)
             {
-                LogManager.GetCurrentClassLogger().Warn($"Line cannot be converted into market data entity ({string.Join(",", input)})");
+                _logger.Warn($"Line cannot be converted into market data entity ({string.Join(",", input)})");
             }
 
             return result != null;
