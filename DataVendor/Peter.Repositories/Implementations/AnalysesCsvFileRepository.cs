@@ -6,6 +6,7 @@ using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Peter.Repositories.Implementations
 {
     public class AnalysesCsvFileRepository : CsvFileRepository, IAnalysesRepository
     {
-        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private Dictionary<string, IAnalysis> _entities;
 
@@ -69,11 +70,11 @@ namespace Peter.Repositories.Implementations
 
         public IAnalysis Find(string isin) => throw new System.NotImplementedException();
 
-        public IDictionary<string, IAnalysis> GetAll() => _entities;
+        public IDictionary<string, IAnalysis> GetAll() => _entities.ToImmutableDictionary();
 
         public void SaveChanges()
         {
-            if (_fileContentSaved) return;
+            if (!_fileContentLoaded || _fileContentSaved) return;
 
             _fileName = _configReader.Settings.AnalysesFileName +
                 $" {DateTime.Now.ToString(_configReader.Settings.DateFormatForFileName)}." +
