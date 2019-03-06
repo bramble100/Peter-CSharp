@@ -2,12 +2,13 @@
 using Peter.Models.Implementations;
 using Peter.Models.Interfaces;
 using System;
-using System.Collections.Generic;
 
 namespace Peter.Repositories.Helpers
 {
     public static class CsvLineIsin
     {
+        private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+
         public static string[] Header => new string[]        
         {
             "Name",
@@ -23,7 +24,7 @@ namespace Peter.Repositories.Helpers
             }
             catch (Exception ex)
             {
-                LogManager.GetCurrentClassLogger().Warn(ex, $"Line cannot be converted into name-to-isin entity ({string.Join(",", input)})");
+                _logger.Warn(ex, $"Line cannot be converted into name-to-isin entity ({string.Join(",", input)})");
                 result = new NameToIsin(string.Empty, string.Empty);
                 return false;
             }
