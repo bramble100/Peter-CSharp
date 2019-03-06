@@ -76,7 +76,7 @@ namespace Peter.Repositories.Implementations
         {
             if (!_fileContentLoaded) Load();
 
-            return _entities.ToImmutableList();
+            return _entities.ToImmutableArray();
         }
 
         public void SaveChanges()
