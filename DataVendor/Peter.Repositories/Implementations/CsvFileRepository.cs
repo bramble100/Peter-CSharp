@@ -1,7 +1,6 @@
 ﻿using Infrastructure;
 using NLog;
 using Peter.Repositories.Exceptions;
-using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

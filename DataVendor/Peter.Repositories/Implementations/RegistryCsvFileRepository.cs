@@ -26,7 +26,7 @@ namespace Peter.Repositories.Implementations
             {
                 if (!_fileContentLoaded) Load();
 
-                return _entities.Select(e => e.Isin).Distinct().ToImmutableList();
+                return _entities.Select(e => e.Isin).Distinct().ToImmutableArray();
             }
         }
 
@@ -65,6 +65,7 @@ namespace Peter.Repositories.Implementations
         public IRegistryEntry GetById(string isin)
         {
             if (!_fileContentLoaded) Load();
+
             var entity = _entities.FirstOrDefault(e => string.Equals(e.Isin, isin));
             _logger.Debug($"Searching for {isin}, found: {(entity is null ? "null" : entity.ToString())}");
             return entity;
