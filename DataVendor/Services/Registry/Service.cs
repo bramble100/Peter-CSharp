@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using NLog;
+using Peter.Models.Builders;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
 
@@ -33,16 +34,16 @@ namespace Services.Registry
         private void RemoveOutDatedEntries()
         {
             _logger.Info($"Removing outdated entries ...");
-            var isins = _registryRepository.Isins.Except(_marketDataRepository.Isins).ToImmutableList();
-            if (!isins.Any())
+            var outdatedIsins = _registryRepository.Isins.Except(_marketDataRepository.Isins).ToImmutableList();
+            if (!outdatedIsins.Any())
             {
                 _logger.Info("No entry to remove.");
                 return;
             }
 
-            _logger.Info($"Removing {isins.Count} entry(s) ...");
-            _registryRepository.RemoveRange(isins);
-            _logger.Info($"{isins.Count} entry(s) removed.");
+            _logger.Info($"Removing {outdatedIsins.Count} entry(s) ...");
+            _registryRepository.RemoveRange(outdatedIsins);
+            _logger.Info($"{outdatedIsins.Count} entry(s) removed.");
         }
 
         private void AddNewEntries()
@@ -63,12 +64,26 @@ namespace Services.Registry
 
         private IEnumerable<IRegistryEntry> GetNewRegistryEntries()
         {
-            var isinsInMarketData = _marketDataRepository.Isins;
-            var newIsins = isinsInMarketData.Except(_registryRepository.Isins).ToImmutableList();
-            var newEntries = newIsins
-                .Select(isin => _registryRepository.GetById(isin))
+            string name;
+
+            var isinsAndNamesInMarketData = (from entity in _marketDataRepository.Entities
+                                             select new { entity.Isin, entity.Name })
+                                             .Distinct()
+                                             .ToImmutableArray();
+
+            var newIsins = _marketDataRepository
+                .Isins
+                .Except(_registryRepository.Isins)
                 .ToImmutableList();
-            return newEntries;
+
+            foreach (var isin in newIsins)
+            {
+                name = isinsAndNamesInMarketData.Single(d => string.Equals(isin, d.Isin)).Name;
+                yield return new RegistryEntryBuilder()
+                    .SetName(name)
+                    .SetIsin(isin)
+                    .Build();
+            }
         }
     }
 }
