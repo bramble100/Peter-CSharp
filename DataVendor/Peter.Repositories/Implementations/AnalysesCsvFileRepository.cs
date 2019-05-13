@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -48,9 +49,7 @@ namespace Peter.Repositories.Implementations
             _logger.Info($"{analyses.Count()} new analyses added.");
         }
 
-        public IAnalysis Find(string isin) => throw new System.NotImplementedException();
-
-        public IDictionary<string, IAnalysis> GetAll() => _entities;
+        public IDictionary<string, IAnalysis> GetAll() => _entities.ToImmutableDictionary();
 
         public void SaveChanges()
         {
