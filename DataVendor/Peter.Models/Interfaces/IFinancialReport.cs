@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Peter.Models.Interfaces
 {
@@ -20,7 +20,7 @@ namespace Peter.Models.Interfaces
         /// </summary>
         int MonthsInReport { get; }
         /// <summary>
-        /// The date on which the next financial report will be published.
+        /// The announced date on which the next financial report will be published. After this date the current report will be considered outdated.
         /// </summary>
         DateTime NextReportDate { get; }
     }
