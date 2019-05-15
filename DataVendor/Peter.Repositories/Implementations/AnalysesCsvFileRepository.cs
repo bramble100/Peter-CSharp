@@ -1,15 +1,15 @@
-﻿using Infrastructure;
+using Infrastructure;
 using NLog;
 using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System;
 
 namespace Peter.Repositories.Implementations
 {
@@ -67,8 +67,6 @@ namespace Peter.Repositories.Implementations
                 throw new RepositoryException(ex.Message, ex);
             }
         }
-
-        public IAnalysis Find(string isin) => throw new System.NotImplementedException();
 
         public IDictionary<string, IAnalysis> GetAll() => _entities.ToImmutableDictionary();
 

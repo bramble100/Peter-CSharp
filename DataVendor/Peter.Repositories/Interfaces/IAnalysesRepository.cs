@@ -20,12 +20,6 @@ namespace Peter.Repositories.Interfaces
         /// <param name="analysis"></param>
         void AddRange(IEnumerable<KeyValuePair<string, IAnalysis>> entities);
         /// <summary>
-        /// Finds the analysis for the stock with the given ISIN.
-        /// </summary>
-        /// <param name="isin"></param>
-        /// <returns></returns>
-        IAnalysis Find(string isin);
-        /// <summary>
         /// Returns a copy of the entities.
         /// Key: ISIN. 
         /// Value: the analysis.

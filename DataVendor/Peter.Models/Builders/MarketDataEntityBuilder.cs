@@ -84,7 +84,7 @@ namespace Peter.Models.Builders
                     Isin = _isin,
                     Name = _name,
                     PreviousDayClosingPrice = _previousDayclosingPrice,
-                    StockExchange = _stockExchange,
+                    StockExchange = _stockExchange ?? string.Empty,
                     Volumen = _volumen
                 } 
                 : null;
