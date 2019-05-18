@@ -19,7 +19,7 @@ namespace Peter.Repositories.Interfaces
         /// <param name="enumerable"></param>
         void AddRange(IEnumerable<IRegistryEntry> enumerable);
         /// <summary>
-        /// Gets one entry by ISIN.
+        /// Gets an entry by ISIN.
         /// </summary>
         /// <param name="isin"></param>
         /// <returns></returns>

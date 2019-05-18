@@ -62,13 +62,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AnalysesManager\AnalysesManager.csproj">
-      <Project>{a2535ede-cd01-4ecb-b445-4d6e9f3621e3}</Project>
-      <Name>AnalysesManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
       <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
       <Name>Peter.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Services\Services.csproj">
+      <Project>{7C414CF1-2E3A-4C30-BF20-CBEA83D7D280}</Project>
+      <Name>Services</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

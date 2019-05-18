@@ -76,10 +76,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AnalysesManager\AnalysesManager.csproj">
-      <Project>{A2535EDE-CD01-4ECB-B445-4D6E9F3621E3}</Project>
-      <Name>AnalysesManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
       <Project>{373D71A0-34B5-42AA-9F6D-961051ADFF5F}</Project>
       <Name>Infrastructure</Name>

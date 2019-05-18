@@ -1,7 +1,6 @@
 ﻿using Infrastructure;
 using NLog;
 using Peter.Repositories.Exceptions;
-using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -91,6 +90,7 @@ namespace Peter.Repositories.Implementations
 
                 _fileSystemFacade.Save(fullPath, stringContent);
                 _logger.Info($"{Path.GetFileName(fullPath)} saved.");
+                _logger.Debug($"{fullPath} saved.");
             }
             catch (Exception ex)
             {

@@ -1,7 +1,5 @@
 ﻿using NLog;
-using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace DataVendor.Services
@@ -21,34 +19,37 @@ namespace DataVendor.Services
             _marketDataCsvFileRepository = marketDataCsvFileRepository;
         }
 
-        public void AddIsinsToEntities()
+        public void AddIsinsToMarketData()
         {
-            var entities = _marketDataCsvFileRepository.GetAll();
-
-            AddIsinToEntities(entities);
+            AddIsinToEntities();
 
             _marketDataCsvFileRepository.SaveChanges();
             _logger.Info("Market data saved.");
 
-            var removeCount = RemoveIsinFromIsins(entities);
+            var removeCount = RemoveDeadIsins();
             _logger.Info($"{removeCount} ISIN(s) are removed.");
 
-            var addCount = AddNewNames(entities);
+            var addCount = AddNewNames();
             _logger.Info($"{addCount} new name(s) are added.");
 
             _isinsCsvFileRepository.SaveChanges();
             _logger.Info("ISINs saved.");
         }
 
-        private void AddIsinToEntities(IEnumerable<IMarketDataEntity> entities) =>
-            entities
-                .Where(e => _isinsCsvFileRepository.ContainsName(e.Name))
-                .ToList()
-                .ForEach(e => e.Isin = _isinsCsvFileRepository.GetIsinByCompanyName(e.Name));
-
-        private int RemoveIsinFromIsins(IEnumerable<IMarketDataEntity> entities)
+        private void AddIsinToEntities()
         {
-            var namesInEntities = entities
+            foreach (var entity in _marketDataCsvFileRepository.Entities)
+            {
+                _marketDataCsvFileRepository.UpdateEntityWithIsin(
+                    entity,
+                    _isinsCsvFileRepository.GetIsinByCompanyName(entity.Name));
+            }
+        }
+
+        private int RemoveDeadIsins()
+        {
+            var namesInEntities = _marketDataCsvFileRepository
+                .Entities
                 .Select(e => e.Name)
                 .Distinct();
 
@@ -56,12 +57,13 @@ namespace DataVendor.Services
 
             deadNames.ToList().ForEach(name => _isinsCsvFileRepository.Remove(name));
 
-            return deadNames.Count;
+            return deadNames.Count();
         }
 
-        private int AddNewNames(IEnumerable<IMarketDataEntity> entities)
+        private int AddNewNames()
         {
-            var namesInEntities = entities
+            var namesInEntities = _marketDataCsvFileRepository
+                .Entities
                 .Select(e => e.Name)
                 .Distinct();
 

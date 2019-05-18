@@ -1,25 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using Infrastructure;
 using NLog;
 using Peter.Models.Interfaces;
+using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System;
 
 namespace Peter.Repositories.Implementations
 {
     public class AnalysesCsvFileRepository : CsvFileRepository, IAnalysesRepository
     {
-        protected new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
+        private new readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private Dictionary<string, IAnalysis> _entities;
 
         public AnalysesCsvFileRepository(
-            IConfigReader config, 
-            IFileSystemFacade fileSystemFacade) 
+            IConfigReader config,
+            IFileSystemFacade fileSystemFacade)
             : base(config, fileSystemFacade)
         {
             WorkingDirectory = Path.Combine(
@@ -43,18 +45,38 @@ namespace Peter.Repositories.Implementations
                 throw new ArgumentNullException(nameof(analyses));
             }
 
-            analyses.ToList().ForEach(Add);
-            _fileContentSaved = false;
-            _logger.Info($"{analyses.Count()} new analyses added.");
+            if (!analyses.Any())
+            {
+                _logger.Debug("No analysis to add.");
+                return;
+            }
+
+            try
+            {
+                foreach (var analysis in analyses)
+                {
+                    Add(analysis);
+                }
+                _fileContentSaved = false;
+                _logger.Info($"{analyses.Count()} new analyses added.");
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex.Message);
+                _logger.Debug(ex);
+                throw new RepositoryException(ex.Message, ex);
+            }
         }
 
-        public IAnalysis Find(string isin) => throw new System.NotImplementedException();
-
-        public IDictionary<string, IAnalysis> GetAll() => _entities;
+        public IDictionary<string, IAnalysis> GetAll() => _entities.ToImmutableDictionary();
 
         public void SaveChanges()
         {
-            if (_fileContentSaved) return;
+            if (_fileContentSaved)
+            {
+                _logger.Debug("Content is already saved into file.");
+                return;
+            }
 
             _fileName = _configReader.Settings.AnalysesFileName +
                 $" {DateTime.Now.ToString(_configReader.Settings.DateFormatForFileName)}." +

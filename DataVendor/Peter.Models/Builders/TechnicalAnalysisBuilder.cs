@@ -45,9 +45,23 @@ namespace Peter.Models.Builders
             return this;
         }
 
+        public TechnicalAnalysisBuilder SetTAZ(TAZ value)
+        {
+            _taz = value;
+
+            return this;
+        }
+
         public TechnicalAnalysisBuilder SetTrend(string value)
         {
             if (Enum.TryParse<Trend>(value, true, out var result)) _trend = result;
+
+            return this;
+        }
+
+        public TechnicalAnalysisBuilder SetTrend(Trend value)
+        {
+            _trend = value;
 
             return this;
         }

@@ -1,12 +1,12 @@
-﻿using AnalysesManager.Services.Implementations;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using Peter.Models.Builders;
 using Peter.Models.Interfaces;
+using Services.Analyses;
 using System;
 using System.Collections.Generic;
 
-namespace AnalysesManager.UnitTests
+namespace Services.UnitTests
 {
     [TestFixture]
     public class ServiceTests
