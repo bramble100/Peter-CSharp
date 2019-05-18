@@ -6,6 +6,8 @@ namespace Services.DataVendor.Html
 {
     internal static class HtmlRowProcessor
     {
+        private static readonly CultureInfo huCulture = new CultureInfo("hu-HU");
+
         internal static string GetName(HtmlNode node) => 
             node
                 .ChildNodes[0]
@@ -18,7 +20,7 @@ namespace Services.DataVendor.Html
                 .ChildNodes[0]
                 .ChildNodes[0]
                 .InnerText,
-                new CultureInfo("hu-HU"));
+                huCulture);
 
         internal static DateTime GetDateTime(HtmlNode node) =>
             DateTime.ParseExact(node
@@ -42,6 +44,6 @@ namespace Services.DataVendor.Html
                 .ChildNodes[0]
                 .ChildNodes[0]
                 .InnerText,
-                new CultureInfo("hu-HU"));
+                huCulture);
     }
 }
