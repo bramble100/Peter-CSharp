@@ -60,7 +60,7 @@ namespace CLI
                             _logger.Info(_configReader.Settings.FetchNewMarketData);
                             var service = scope.Resolve<Services.DataVendor.IWebService>();
                             var marketData = service.GetDownloadedDataFromWeb().GetAwaiter().GetResult();
-                            service.Update(marketData);
+                            service.UpdateMarketData(marketData);
                         }
                         else if (string.Equals(command, _configReader.Settings.UpdateMarketDataWithISINs))
                         {

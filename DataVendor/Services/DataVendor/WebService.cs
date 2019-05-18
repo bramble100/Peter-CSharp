@@ -57,7 +57,7 @@ namespace Services.DataVendor
             return entities;
         }
 
-        public void Update(IEnumerable<IMarketDataEntity> latestData)
+        public void UpdateMarketData(IEnumerable<IMarketDataEntity> latestData)
         {
             _logger.Info("Updating and saving market data ...");
 

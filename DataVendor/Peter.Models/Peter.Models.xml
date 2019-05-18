@@ -100,7 +100,7 @@
         </member>
         <member name="P:Peter.Models.Interfaces.IFinancialReport.NextReportDate">
             <summary>
-            The date on which the next financial report will be published.
+            The announced date on which the next financial report will be published. After this date the current report will be considered outdated.
             </summary>
         </member>
         <member name="T:Peter.Models.Interfaces.IMarketDataEntity">
