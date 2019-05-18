@@ -90,6 +90,7 @@ namespace Peter.Repositories.Implementations
 
                 _fileSystemFacade.Save(fullPath, stringContent);
                 _logger.Info($"{Path.GetFileName(fullPath)} saved.");
+                _logger.Debug($"{fullPath} saved.");
             }
             catch (Exception ex)
             {
