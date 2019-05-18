@@ -72,7 +72,11 @@ namespace Peter.Repositories.Implementations
 
         public void SaveChanges()
         {
-            if (!_fileContentLoaded || _fileContentSaved) return;
+            if (_fileContentSaved)
+            {
+                _logger.Debug("Content is already saved into file.");
+                return;
+            }
 
             _fileName = _configReader.Settings.AnalysesFileName +
                 $" {DateTime.Now.ToString(_configReader.Settings.DateFormatForFileName)}." +
