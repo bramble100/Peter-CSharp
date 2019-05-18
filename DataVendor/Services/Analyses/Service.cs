@@ -90,7 +90,7 @@ namespace Services.Analyses
                 return;
             }
 
-            _logger.Info($"{analyses} analyses generated.");
+            _logger.Info($"{analyses.Count} analyses generated.");
 
             _logger.Debug("Adding analyses to repository ...");
             _analysesCsvFileRepository.AddRange(analyses);
