@@ -45,8 +45,21 @@ namespace Services.DataVendor
                 foreach (var link in Links)
                 {
                     LogManager.GetCurrentClassLogger().Info($"Downloading: {link.Key}");
+
                     htmlContent = await client.GetStringAsync(link.Value);
+                    if (string.IsNullOrWhiteSpace(htmlContent))
+                    {
+                        _logger.Warn("No html content was downloaded.");
+                        continue;
+                    }
+
                     var foundEntities = HtmlProcessor.GetMarketDataEntities(htmlContent, link.Key).ToImmutableArray();
+                    if (!foundEntities.Any())
+                    {
+                        _logger.Warn("No market data was parsed from html content.");
+                        continue;
+                    }
+
                     _logger.Info($"{link.Key}: {foundEntities.Count()}");
                     entities.AddRange(foundEntities);
                 }
@@ -59,22 +72,24 @@ namespace Services.DataVendor
 
         public void UpdateMarketData(IEnumerable<IMarketDataEntity> latestData)
         {
+            if (latestData is null)
+                throw new ArgumentNullException(nameof(latestData));
+
+            if (!latestData.Any())
+            {
+                _logger.Warn("No market data to add.");
+                return;
+            }
+
             _logger.Info("Updating and saving market data ...");
 
-            var entities = latestData.ToImmutableList();
+            var entities = latestData.ToImmutableArray();
 
-            if (entities.Any())
-            {
-                _marketDataCsvFileRepository.AddRange(entities);
-                _logger.Info("Market data updated.");
+            _marketDataCsvFileRepository.AddRange(entities);
+            _logger.Info("Market data updated.");
 
-                _marketDataCsvFileRepository.SaveChanges();
-                _logger.Info("Market data saved.");
-            }
-            else
-            {
-                _logger.Info("No market data to add.");
-            }
+            _marketDataCsvFileRepository.SaveChanges();
+            _logger.Info("Market data saved.");
         }
 
         private Dictionary<string, Uri> Links => _environmentVariableReader
@@ -87,7 +102,7 @@ namespace Services.DataVendor
         {
             var delimiterPosition = input.IndexOf('=');
             return new KeyValuePair<string, Uri>(
-                input.Substring(0, delimiterPosition), 
+                input.Substring(0, delimiterPosition),
                 new Uri(input.Substring(delimiterPosition + 1)));
         }
     }
