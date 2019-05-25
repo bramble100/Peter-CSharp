@@ -55,6 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analyses\FundamentalAnalyser.cs" />
+    <Compile Include="Analyses\IFundamentalAnalyser.cs" />
     <Compile Include="Analyses\IService.cs" />
     <Compile Include="Analyses\Service.cs" />
     <Compile Include="DataVendor\Html\HtmlProcessor.cs" />

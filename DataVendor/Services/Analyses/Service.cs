@@ -20,6 +20,8 @@ namespace Services.Analyses
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
 
+        private readonly IFundamentalAnalyser _fundamentalAnalyser;
+
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
         private readonly int _buyingPacketInEuro;
@@ -35,6 +37,9 @@ namespace Services.Analyses
                 _analysesCsvFileRepository = analysesRepository;
                 _marketDataRepository = marketDataRepository;
                 _registryRepository = registryRepository;
+
+                _fundamentalAnalyser = new FundamentalAnalyser();
+
                 _configReader = config;
 
                 _buyingPacketInEuro = _configReader.Settings.BuyingPacketInEuro;
@@ -117,27 +122,25 @@ namespace Services.Analyses
 
             try
             {
-                var marketData = marketDataInput.ToImmutableList();
-                if (!marketData.Any())
+                if (!marketDataInput.Any())
                     throw new ArgumentException("Market data set cannot be empty", nameof(marketDataInput));
 
-                var isin = marketDataInput.First().Isin;
+                var marketData = marketDataInput.ToImmutableArray();
+
+                var isin = marketData.First().Isin;
                 if (string.IsNullOrEmpty(isin))
                     throw new ServiceException("No ISIN found in market data set.");
 
-                var closingPrice = marketDataInput.FirstOrDefault().ClosingPrice;
-                var fastSMA = marketDataInput.Take(_fastMovingAverage).Average(d => d.ClosingPrice);
-                var slowSMA = marketDataInput.Take(_slowMovingAverage).Average(d => d.ClosingPrice);
+                var closingPrice = marketData.First().ClosingPrice;
+                var fastSMA = marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice);
+                var slowSMA = marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice);
 
                 var stockBaseData = _registryRepository.GetById(isin);
                 if (stockBaseData is null)
                     throw new ServiceException($"No registry entry found for {isin}");
 
-                var fundamentalAnalysis = new FundamentalAnalysisBuilder()
-                    .SetClosingPrice(closingPrice)
-                    .SetEPS(stockBaseData.FinancialReport?.EPS)
-                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
-                    .Build();
+                var fundamentalAnalysis = _fundamentalAnalyser.GetAnalysis(closingPrice, stockBaseData);
+                    
                 var technicalAnalysis = new TechnicalAnalysisBuilder()
                     .SetFastSMA(fastSMA)
                     .SetSlowSMA(slowSMA)
