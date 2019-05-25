@@ -13,7 +13,7 @@ namespace AnalysesManager.UnitTests
         [TestCase(1, -1)]
         public void ThrowsArgumentException(decimal fastSMA, decimal slowSMA)
         {
-            Assert.Throws<ArgumentException>(() => Service.GetTrend(fastSMA, slowSMA));
+            Assert.Throws<ArgumentException>(() => TechnicalAnalyser.GetTrend(fastSMA, slowSMA));
         }
 
         [TestCase(3.1, 2.1, Trend.Up)]
@@ -24,7 +24,7 @@ namespace AnalysesManager.UnitTests
             decimal slowSMA,
             Trend expectedResult)
         {
-            Assert.AreEqual(expectedResult, Service.GetTrend(fastSMA, slowSMA));
+            Assert.AreEqual(expectedResult, TechnicalAnalyser.GetTrend(fastSMA, slowSMA));
         }
     }
 }

@@ -21,6 +21,7 @@ namespace Services.Analyses
         private readonly IRegistryRepository _registryRepository;
 
         private readonly IFundamentalAnalyser _fundamentalAnalyser;
+        private readonly ITechnicalAnalyser _technicalAnalyser;
 
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
@@ -39,6 +40,7 @@ namespace Services.Analyses
                 _registryRepository = registryRepository;
 
                 _fundamentalAnalyser = new FundamentalAnalyser();
+                _technicalAnalyser = new TechnicalAnalyser();
 
                 _configReader = config;
 
@@ -108,13 +110,6 @@ namespace Services.Analyses
             _logger.Info("*** *** ***");
         }
 
-        [Obsolete]
-        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
-            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
-
-        private bool RegistryItemIsInteresting(IRegistryEntry entry) =>
-            entry.FinancialReport?.EPS >= 0 || entry.Position != Position.NoPosition;
-
         private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketDataInput)
         {
             if (marketDataInput == null)
@@ -132,21 +127,16 @@ namespace Services.Analyses
                     throw new ServiceException("No ISIN found in market data set.");
 
                 var closingPrice = marketData.First().ClosingPrice;
-                var fastSMA = marketData.Take(_fastMovingAverage).Average(d => d.ClosingPrice);
-                var slowSMA = marketData.Take(_slowMovingAverage).Average(d => d.ClosingPrice);
 
                 var stockBaseData = _registryRepository.GetById(isin);
                 if (stockBaseData is null)
                     throw new ServiceException($"No registry entry found for {isin}");
 
                 var fundamentalAnalysis = _fundamentalAnalyser.GetAnalysis(closingPrice, stockBaseData);
-                    
-                var technicalAnalysis = new TechnicalAnalysisBuilder()
-                    .SetFastSMA(fastSMA)
-                    .SetSlowSMA(slowSMA)
-                    .SetTAZ(GetTAZ(closingPrice, fastSMA, slowSMA))
-                    .SetTrend(GetTrend(fastSMA, slowSMA))
-                    .Build();
+                if (fundamentalAnalysis is null)
+                    throw new ServiceException($"No fundamental analysis can be created for {isin}");
+
+                var technicalAnalysis = _technicalAnalyser.GetAnalysis(marketData, _fastMovingAverage, _slowMovingAverage);
                 if (technicalAnalysis is null)
                     throw new ServiceException($"No technical analysis can be created for {isin}");
 
@@ -177,44 +167,5 @@ namespace Services.Analyses
             List<IMarketDataEntity> marketData,
             DateTime latestDate) =>
                 marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
-
-        private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
-        {
-            return entry.Value?.FinancialReport != null &&
-                entry.Value.FinancialReport.EPS != 0 &&
-                entry.Value.FinancialReport.MonthsInReport != 0;
-        }
-
-        internal static TAZ GetTAZ(decimal closingPrice, decimal fastSMA, decimal slowSMA)
-        {
-            if (closingPrice <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(closingPrice));
-            if (fastSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
-            if (slowSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
-
-            if (closingPrice > Math.Max(fastSMA,slowSMA))
-                return TAZ.AboveTAZ;
-            if (closingPrice < Math.Min(fastSMA,slowSMA))
-                return TAZ.BelowTAZ;
-
-            return TAZ.InTAZ;
-        }
-
-        internal static Trend GetTrend(decimal fastSMA, decimal slowSMA)
-        {
-            if (fastSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
-            if (slowSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
-
-            if (fastSMA > slowSMA)
-                return Trend.Up;
-            if (fastSMA < slowSMA)
-                return Trend.Down;
-
-            return Trend.Undefined;
-        }
     }
 }
