@@ -2,17 +2,17 @@
 
 namespace Peter.Models.Implementations
 {
-    internal class FinancialAnalysis : IFinancialAnalysis
+    internal class FundamentalAnalysis : IFundamentalAnalysis
     {
-        public FinancialAnalysis()
+        public FundamentalAnalysis()
         {
         }
 
         public decimal PE { get; set; }
 
-        public override bool Equals(object obj) => Equals(obj as FinancialAnalysis);
+        public override bool Equals(object obj) => Equals(obj as FundamentalAnalysis);
 
-        public bool Equals(IFinancialAnalysis other) => other != null && PE == other.PE;
+        public bool Equals(IFundamentalAnalysis other) => other != null && PE == other.PE;
 
         public override int GetHashCode() => 380272302 + PE.GetHashCode();
 

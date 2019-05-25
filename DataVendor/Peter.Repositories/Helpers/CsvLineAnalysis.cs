@@ -25,7 +25,7 @@ namespace Peter.Repositories.Helpers
                         e.Value.Name.WrapWithQuotes(),
                         e.Key,
                         e.Value.ClosingPrice.WrapWithQuotes(),
-                        e.Value.FinancialAnalysis?.PE.WrapWithQuotes(),
+                        e.Value.FundamentalAnalysis?.PE.WrapWithQuotes(),
                         e.Value.TechnicalAnalysis?.TAZ.ToString(),
                         e.Value.TechnicalAnalysis?.Trend.ToString(),
                         e.Value.QtyInBuyingPacket.ToString()

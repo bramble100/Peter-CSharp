@@ -13,7 +13,7 @@ namespace Peter.Models.Builders
         private string _name;
         private decimal _closingPrice;
         private int _qtyInBuyingPacket;
-        private IFinancialAnalysis _financialAnalysis;
+        private IFundamentalAnalysis _fundamentalAnalysis;
         private ITechnicalAnalysis _technicalAnalysis;
 
         public AnalysisBuilder SetName(string value)
@@ -49,11 +49,11 @@ namespace Peter.Models.Builders
             return this;
         }
 
-        public AnalysisBuilder SetFinancialAnalysis(IFinancialAnalysis value)
+        public AnalysisBuilder SetFundamentalAnalysis(IFundamentalAnalysis value)
         {
             if (value != null)
             {
-                _financialAnalysis = value;
+                _fundamentalAnalysis = value;
             }
 
             return this;
@@ -78,7 +78,7 @@ namespace Peter.Models.Builders
                     Name = _name,
                     ClosingPrice = _closingPrice,
                     QtyInBuyingPacket = _qtyInBuyingPacket,
-                    FinancialAnalysis = _financialAnalysis,
+                    FundamentalAnalysis = _fundamentalAnalysis,
                     TechnicalAnalysis = _technicalAnalysis
                 }
                 : null;

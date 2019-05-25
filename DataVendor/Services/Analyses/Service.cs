@@ -133,7 +133,7 @@ namespace Services.Analyses
                 if (stockBaseData is null)
                     throw new ServiceException($"No registry entry found for {isin}");
 
-                var financialAnalysis = new FinancialAnalysisBuilder()
+                var fundamentalAnalysis = new FundamentalAnalysisBuilder()
                     .SetClosingPrice(closingPrice)
                     .SetEPS(stockBaseData.FinancialReport?.EPS)
                     .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
@@ -151,7 +151,7 @@ namespace Services.Analyses
                     .SetClosingPrice(closingPrice)
                     .SetName(stockBaseData.Name)
                     .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / closingPrice))
-                    .SetFinancialAnalysis(financialAnalysis)
+                    .SetFundamentalAnalysis(fundamentalAnalysis)
                     .SetTechnicalAnalysis(technicalAnalysis)
                     .Build();
 

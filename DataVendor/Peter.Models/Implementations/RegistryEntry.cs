@@ -13,7 +13,7 @@ namespace Peter.Models.Implementations
         public Uri StockExchangeLink { get; set; }
         public Position Position { get; set; }
         public IFinancialReport FinancialReport { get; set; }
-        public IFinancialAnalysis FinancialAnalysis { get; set; }
+        public IFundamentalAnalysis FundamentalAnalysis { get; set; }
 
         public RegistryEntry()
         {

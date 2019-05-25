@@ -18,7 +18,7 @@ namespace Models.UnitTests.BuilderTests
             string position)
         {
             var datetime = DateTime.Now.Date;
-            var financialAnalysis = new FinancialAnalysisBuilder()
+            var fundamentalAnalysis = new FundamentalAnalysisBuilder()
                 .SetClosingPrice(1)
                 .SetEPS(2.7m)
                 .SetMonthsInReport(6)
@@ -36,7 +36,7 @@ namespace Models.UnitTests.BuilderTests
                 .SetOwnInvestorLink(ownInvestorLink)
                 .SetStockExchangeLink(stockExchangeLink)
                 .SetPosition(position)
-                .SetFinancialAnalysis(financialAnalysis)
+                .SetFundamentalAnalysis(fundamentalAnalysis)
                 .SetFinancialReport(financialReport)
                 .Build();
 
@@ -46,7 +46,7 @@ namespace Models.UnitTests.BuilderTests
             result.OwnInvestorLink.Should().Be(ownInvestorLink);
             result.StockExchangeLink.Should().Be(stockExchangeLink);
             result.Position.Should().Be(Position.NoPosition);
-            result.FinancialAnalysis.Should().Be(financialAnalysis);
+            result.FundamentalAnalysis.Should().Be(fundamentalAnalysis);
             result.FinancialReport.Should().Be(financialReport);
         }
 
