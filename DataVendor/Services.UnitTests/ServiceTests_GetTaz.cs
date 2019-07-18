@@ -15,7 +15,7 @@ namespace AnalysesManager.UnitTests
         [TestCase(1, 1, -1)]
         public void ThrowsArgumentException(decimal closingPrice, decimal fastSMA, decimal slowSMA)
         {
-            Assert.Throws<ArgumentException>(() => Service.GetTAZ(closingPrice, fastSMA, slowSMA));
+            Assert.Throws<ArgumentException>(() => TechnicalAnalyser.GetTAZ(closingPrice, fastSMA, slowSMA));
         }
 
         [TestCase(3.1, 2.1, 1.1, TAZ.AboveTAZ)]
@@ -34,7 +34,7 @@ namespace AnalysesManager.UnitTests
             decimal slowSMA,
             TAZ expectedResult)
         {
-            Assert.AreEqual(expectedResult, Service.GetTAZ(closingPrice, fastSMA, slowSMA));
+            Assert.AreEqual(expectedResult, TechnicalAnalyser.GetTAZ(closingPrice, fastSMA, slowSMA));
         }
     }
 }

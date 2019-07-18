@@ -5,7 +5,7 @@ using Peter.Models.Builders;
 namespace Models.UnitTests.BuilderTests
 {
     [TestFixture]
-    public class FinancialAnalysisBuilderTests
+    public class FundamentalAnalysisBuilderTests
     {
         [TestCase(24, 4, 3, 1.5)]
         public void ShouldReturnValidObject_WhenValidInput(
@@ -14,7 +14,7 @@ namespace Models.UnitTests.BuilderTests
             int months, 
             decimal expectedPE)
         {
-            var result = new FinancialAnalysisBuilder()
+            var result = new FundamentalAnalysisBuilder()
                 .SetClosingPrice(price)
                 .SetEPS(eps)
                 .SetMonthsInReport(months)
@@ -34,7 +34,7 @@ namespace Models.UnitTests.BuilderTests
             decimal eps,
             int months)
         {
-            var result = new Peter.Models.Builders.FinancialAnalysisBuilder()
+            var result = new Peter.Models.Builders.FundamentalAnalysisBuilder()
                 .SetClosingPrice(price)
                 .SetEPS(eps)
                 .SetMonthsInReport(months)

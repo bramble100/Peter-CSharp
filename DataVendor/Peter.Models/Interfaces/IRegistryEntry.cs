@@ -26,6 +26,6 @@ namespace Peter.Models.Interfaces
         Uri StockExchangeLink { get; set; }
         Position Position { get; set; }
         IFinancialReport FinancialReport { get; set; }
-        IFinancialAnalysis FinancialAnalysis { get; set; }
+        IFundamentalAnalysis FundamentalAnalysis { get; set; }
     }
 }

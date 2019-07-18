@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Peter.Models.Builders
 {
-    public class FinancialAnalysisBuilder : IBuilder<IFinancialAnalysis>
+    public class FundamentalAnalysisBuilder : IBuilder<IFundamentalAnalysis>
     {
         private static HashSet<int> ValidMonthsInReportValues = new HashSet<int>() { 3, 6, 9, 12 };
 
@@ -17,11 +17,11 @@ namespace Peter.Models.Builders
         private decimal _eps;
         private int _monthsInReport;
 
-        public FinancialAnalysisBuilder()
+        public FundamentalAnalysisBuilder()
         {
         }
 
-        public FinancialAnalysisBuilder SetClosingPrice(decimal value)
+        public FundamentalAnalysisBuilder SetClosingPrice(decimal value)
         {
             if(value > 0)
             {
@@ -32,7 +32,7 @@ namespace Peter.Models.Builders
             return this;
         }
 
-        public FinancialAnalysisBuilder SetEPS(decimal? value)
+        public FundamentalAnalysisBuilder SetEPS(decimal? value)
         {
             if (value.HasValue && value.Value != 0)
             {
@@ -42,7 +42,7 @@ namespace Peter.Models.Builders
             return this;
         }
 
-        public FinancialAnalysisBuilder SetMonthsInReport(int? value)
+        public FundamentalAnalysisBuilder SetMonthsInReport(int? value)
         {
             if (value.HasValue && ValidMonthsInReportValues.Contains(value.Value))
             {
@@ -52,14 +52,14 @@ namespace Peter.Models.Builders
             return this;
         }
 
-        public IFinancialAnalysis Build()
+        public IFundamentalAnalysis Build()
         {
             if (!_closingPriceSet || !_EPSset || !_monthsInReportSet)
             {
                 return null;
             }
 
-            return new FinancialAnalysis()
+            return new FundamentalAnalysis()
             {
                 PE = Math.Round(_closingPrice * _monthsInReport / _eps / 12, 2)
             };

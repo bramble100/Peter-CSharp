@@ -15,7 +15,7 @@ namespace Peter.Models.Builders
         private Uri _ownInvestorLink;
         private string _name;
         private Position _position;
-        private IFinancialAnalysis _financialAnalysis;
+        private IFundamentalAnalysis _fundamentalAnalysis;
         private IFinancialReport _financialReport;
 
         public RegistryEntryBuilder SetIsin(string value)
@@ -64,9 +64,9 @@ namespace Peter.Models.Builders
             return this;
         }
 
-        public RegistryEntryBuilder SetFinancialAnalysis(IFinancialAnalysis financialAnalysis)
+        public RegistryEntryBuilder SetFundamentalAnalysis(IFundamentalAnalysis fundamentalAnalysis)
         {
-            _financialAnalysis = financialAnalysis;
+            _fundamentalAnalysis = fundamentalAnalysis;
 
             return this;
         }
@@ -86,7 +86,7 @@ namespace Peter.Models.Builders
                     OwnInvestorLink = _ownInvestorLink,
                     StockExchangeLink = _stockExchangeLink,
                     Position = _position,
-                    FinancialAnalysis = _financialAnalysis,
+                    FundamentalAnalysis = _fundamentalAnalysis,
                     FinancialReport = _financialReport
                 }
                 : null;

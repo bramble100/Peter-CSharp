@@ -57,7 +57,7 @@
             Indicators based on technical analysis.
             </summary>
         </member>
-        <member name="P:Peter.Models.Interfaces.IAnalysis.FinancialAnalysis">
+        <member name="P:Peter.Models.Interfaces.IAnalysis.FundamentalAnalysis">
             <summary>
             Indicators based on financial analysis.
             </summary>
@@ -67,16 +67,6 @@
             Returns the constructed instance but only when every necessary property set (otherwise null).
             </summary>
             <returns>The constructed instance</returns>
-        </member>
-        <member name="T:Peter.Models.Interfaces.IFinancialAnalysis">
-            <summary>
-            Indicators calculated from the fundamental numbers and market data.
-            </summary>
-        </member>
-        <member name="P:Peter.Models.Interfaces.IFinancialAnalysis.PE">
-            <summary>
-            Price/Earning ratio (latest closing price divided by the earning per share).
-            </summary>
         </member>
         <member name="T:Peter.Models.Interfaces.IFinancialReport">
             <summary>
@@ -101,6 +91,16 @@
         <member name="P:Peter.Models.Interfaces.IFinancialReport.NextReportDate">
             <summary>
             The announced date on which the next financial report will be published. After this date the current report will be considered outdated.
+            </summary>
+        </member>
+        <member name="T:Peter.Models.Interfaces.IFundamentalAnalysis">
+            <summary>
+            Indicators calculated from the fundamental numbers and market data.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IFundamentalAnalysis.PE">
+            <summary>
+            Price/Earning ratio (latest closing price divided by the earning per share).
             </summary>
         </member>
         <member name="T:Peter.Models.Interfaces.IMarketDataEntity">

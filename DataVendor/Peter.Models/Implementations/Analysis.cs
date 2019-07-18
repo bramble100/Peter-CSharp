@@ -9,7 +9,7 @@ namespace Peter.Models.Implementations
         public decimal ClosingPrice { get; set; }
         public int QtyInBuyingPacket { get; set; }
         public ITechnicalAnalysis TechnicalAnalysis { get; set; }
-        public IFinancialAnalysis FinancialAnalysis { get; set; }
+        public IFundamentalAnalysis FundamentalAnalysis { get; set; }
 
         public override bool Equals(object obj) => Equals(obj as Analysis);
 
@@ -20,7 +20,7 @@ namespace Peter.Models.Implementations
                    ClosingPrice == other.ClosingPrice &&
                    QtyInBuyingPacket == other.QtyInBuyingPacket &&
                    EqualityComparer<ITechnicalAnalysis>.Default.Equals(TechnicalAnalysis, other.TechnicalAnalysis) &&
-                   EqualityComparer<IFinancialAnalysis>.Default.Equals(FinancialAnalysis, other.FinancialAnalysis);
+                   EqualityComparer<IFundamentalAnalysis>.Default.Equals(FundamentalAnalysis, other.FundamentalAnalysis);
         }
 
         public override int GetHashCode()
@@ -30,7 +30,7 @@ namespace Peter.Models.Implementations
             hashCode = hashCode * -1521134295 + ClosingPrice.GetHashCode();
             hashCode = hashCode * -1521134295 + QtyInBuyingPacket.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<ITechnicalAnalysis>.Default.GetHashCode(TechnicalAnalysis);
-            hashCode = hashCode * -1521134295 + EqualityComparer<IFinancialAnalysis>.Default.GetHashCode(FinancialAnalysis);
+            hashCode = hashCode * -1521134295 + EqualityComparer<IFundamentalAnalysis>.Default.GetHashCode(FundamentalAnalysis);
             return hashCode;
         }
 

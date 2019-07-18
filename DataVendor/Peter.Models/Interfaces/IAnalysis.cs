@@ -26,6 +26,6 @@ namespace Peter.Models.Interfaces
         /// <summary>
         /// Indicators based on financial analysis.
         /// </summary>
-        IFinancialAnalysis FinancialAnalysis { get; set; }
+        IFundamentalAnalysis FundamentalAnalysis { get; set; }
     }
 }

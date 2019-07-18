@@ -38,46 +38,6 @@ namespace AnalysesManager.UnitTests
         }
 
         [Test]
-        public void RemoveEntriesWithoutUptodateData_WithOutDatedData_ReturnsCorrectData()
-        {
-            var testMarketData = new List<IMarketDataEntity>
-            {
-                new MarketDataEntityBuilder()
-                    .SetName("Keep")
-                    .SetIsin("1")
-                    .SetDateTime(DateTime.Now.Date)
-                    .Build(),
-                new MarketDataEntityBuilder()
-                    .SetName("Keep")
-                    .SetIsin("1")
-                    .SetDateTime(DateTime.Now.AddDays(-1).Date)
-                    .Build(),
-                new MarketDataEntityBuilder()
-                    .SetName("Throw")
-                    .SetIsin("2")
-                    .SetDateTime(DateTime.Now.AddDays(-1).Date)
-                    .Build()
-            };
-
-            var expectedMarketData = new List<IMarketDataEntity>
-            {
-                new MarketDataEntityBuilder()
-                    .SetName("Keep")
-                    .SetIsin("1")
-                    .SetDateTime(DateTime.Now.Date)
-                    .Build(),
-                new MarketDataEntityBuilder()
-                    .SetName("Keep")
-                    .SetIsin("1")
-                    .SetDateTime(DateTime.Now.AddDays(-1).Date)
-                    .Build()
-            };
-
-            Service.RemoveEntriesWithoutUptodateData(testMarketData, DateTime.Now.Date);
-            testMarketData.Should().Equal(expectedMarketData);
-        }
-
-        [Test]
         public void GetRegistryEntriesWithoutFinancialReport_WithMixedRegistry_ReturnsCorrectData()
         {
             var testRegistry = new List<IRegistryEntry>
