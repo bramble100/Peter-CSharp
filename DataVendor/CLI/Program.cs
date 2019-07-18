@@ -11,7 +11,7 @@ namespace CLI
     class Program
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
-        private static readonly string helpText = "Peter - Stock Exchange Screener - v1.0.5.\n" +
+        private static readonly string helpText = "Peter - Stock Exchange Screener - v1.0.6.\n" +
             "Usage:\n" +
             "CLI analyses: create analyses based on the available data";
 
