@@ -115,7 +115,6 @@ namespace Services.Analyses
                 if (!marketDataInput.Any())
                     throw new ArgumentException("Market data set cannot be empty", nameof(marketDataInput));
 
-
                 var isin = marketData.First().Isin;
                 if (string.IsNullOrEmpty(isin))
                     throw new ServiceException("No ISIN found in market data set.");
