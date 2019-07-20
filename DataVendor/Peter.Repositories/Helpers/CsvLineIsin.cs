@@ -25,7 +25,7 @@ namespace Peter.Repositories.Helpers
             catch (Exception ex)
             {
                 _logger.Warn(ex, $"Line cannot be converted into name-to-isin entity ({string.Join(",", input)})");
-                result = new NameToIsin(string.Empty, string.Empty);
+                result = null;
                 return false;
             }
         }
