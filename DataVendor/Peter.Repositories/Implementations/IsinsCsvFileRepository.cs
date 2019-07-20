@@ -90,6 +90,8 @@ namespace Peter.Repositories.Implementations
 
         private void Load()
         {
+            _logger.Info("Loading new ISIN entries ...");
+
             try
             {
                 var fullPath = Path.Combine(WorkingDirectory, _fileName);
@@ -125,15 +127,22 @@ namespace Peter.Repositories.Implementations
 
         private void LoadWithParser(StreamReader reader)
         {
+            string[] fields;
             using (var parser = new TextFieldParser(reader))
             {
                 parser.SetDelimiters(_separator);
 
                 while (!parser.EndOfData)
                 {
-                    if (CsvLineIsin.TryParseFromCsv(parser.ReadFields(), out var result))
+                    fields = parser.ReadFields();
+
+                    if (CsvLineIsin.TryParseFromCsv(fields, out INameToIsin result))
                     {
                         _entities.Add(result);
+                    }
+                    else
+                    {
+                        _logger.Warn($"Fields (in a line) cannot be converted into NameToIsin", fields);
                     }
                 }
             }
