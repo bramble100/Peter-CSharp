@@ -105,8 +105,8 @@ namespace Peter.Repositories.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error($"Error when loading entities in {GetType().Name}.");
-                throw new RepositoryException($"Error when loading entities in {GetType().Name}.", ex);
+                _logger.Error(ex, "Error when loading entities in IsinsCsvFileRepository.");
+                throw new RepositoryException("Error when loading entities in IsinsCsvFileRepository.", ex);
             }
         }
 
