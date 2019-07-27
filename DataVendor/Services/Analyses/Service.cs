@@ -71,22 +71,14 @@ namespace Services.Analyses
         {
             _logger.Info("Generating analyses ...");
 
-            var marketData = _marketDataRepository.GetAll().ToList();
+            var marketData = _marketDataRepository.GetAll().ToImmutableArray();
             if (ContainsDataWithoutIsin(marketData))
             {
                 throw new ServiceException("There are marketdata without ISIN. No analysis generated.");
             }
 
-            var latestDate = marketData.Max(d => d.DateTime).Date;
-
-            var groupedMarketData = from data in marketData
-                                    group data by data.Isin into dataByIsin
-                                    where dataByIsin.Max(d => d.DateTime) < latestDate
-                                    select dataByIsin
-                                        .OrderByDescending(d => d.DateTime)
-                                        .Take(_slowMovingAverage);
-
-            var analyses = groupedMarketData.Select(GetAnalysis).ToImmutableArray();
+            IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData = GetGroupedMarketData(marketData);
+            Dictionary<string, IAnalysis> analyses = GetAnalyses(groupedMarketData);
 
             if (!analyses.Any())
             {
@@ -94,7 +86,7 @@ namespace Services.Analyses
                 return;
             }
 
-            _logger.Info($"{analyses.Length} analyses generated.");
+            _logger.Info($"{analyses.Count} analyses generated.");
 
             _logger.Debug("Adding analyses to repository ...");
             _analysesCsvFileRepository.AddRange(analyses);
@@ -105,13 +97,40 @@ namespace Services.Analyses
             _logger.Info("*** *** ***");
         }
 
-        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketDataInput)
+        private Dictionary<string, IAnalysis> GetAnalyses(IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData)
         {
-            var marketData = marketDataInput?.ToImmutableArray()
-                ?? throw new ArgumentNullException(nameof(marketDataInput));
+            Dictionary<string, IAnalysis> analyses = new Dictionary<string, IAnalysis>();
 
+            foreach (var marketDataGroup in groupedMarketData)
+            {
+                if (TryGetAnalysis(marketDataGroup, out KeyValuePair<string, IAnalysis> result))
+                {
+                    analyses[result.Key] = result.Value;
+                }
+            }
+
+            return analyses;
+        }
+
+        private IEnumerable<IEnumerable<IMarketDataEntity>> GetGroupedMarketData(ImmutableArray<IMarketDataEntity> marketData)
+        {
+            var latestDate = marketData.Max(d => d.DateTime).Date;
+
+            return from data in marketData
+                   group data by data.Isin into dataByIsin
+                   where dataByIsin.Max(d => d.DateTime).Date == latestDate
+                   select dataByIsin
+                       .OrderByDescending(d => d.DateTime)
+                       .Take(_slowMovingAverage);
+        }
+
+        private bool TryGetAnalysis(IEnumerable<IMarketDataEntity> marketDataInput, out KeyValuePair<string, IAnalysis> result)
+        {
             try
             {
+                var marketData = marketDataInput?.ToImmutableArray()
+                    ?? throw new ArgumentNullException(nameof(marketDataInput));
+
                 if (!marketDataInput.Any())
                     throw new ArgumentException("Market data set cannot be empty", nameof(marketDataInput));
 
@@ -124,8 +143,7 @@ namespace Services.Analyses
                 var stockBaseData = _registryRepository.GetById(isin)
                     ?? throw new ServiceException($"No registry entry found for {isin}");
 
-                var fundamentalAnalysis = _fundamentalAnalyser.GetAnalysis(closingPrice, stockBaseData)
-                    ?? throw new ServiceException($"No fundamental analysis can be created for {isin}");
+                var fundamentalAnalysis = _fundamentalAnalyser.GetAnalysis(closingPrice, stockBaseData);
 
                 var technicalAnalysis = _technicalAnalyser.GetAnalysis(marketData, _fastMovingAverage, _slowMovingAverage)
                     ?? throw new ServiceException($"No technical analysis can be created for {isin}");
@@ -136,14 +154,18 @@ namespace Services.Analyses
                     .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / closingPrice))
                     .SetFundamentalAnalysis(fundamentalAnalysis)
                     .SetTechnicalAnalysis(technicalAnalysis)
-                    .Build() 
+                    .Build()
                     ?? throw new ServiceException($"No analysis can be created for {isin}");
 
-                return new KeyValuePair<string, IAnalysis>(isin, analysis);
+                result = new KeyValuePair<string, IAnalysis>(isin, analysis);
+                return true;
             }
             catch (Exception ex)
             {
-                throw new ServiceException($"No analysis can be created.", ex);
+                _logger.Warn(ex.Message);
+                _logger.Warn(ex, "No analysis can be created.");
+                result = new KeyValuePair<string, IAnalysis>();
+                return false;
             }
         }
 
