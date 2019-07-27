@@ -44,6 +44,17 @@ namespace Peter.Repositories.Implementations
             _fileContentSaved = false;
         }
 
+        public void AddRange(IEnumerable<string> names)
+        {
+            if (names is null)
+                throw new ArgumentNullException(nameof(names));
+
+            foreach(var name in names)
+            {
+                Add(name);
+            }
+        }
+
         public bool ContainsName(string name)
         {
             if (!_fileContentLoaded) Load();

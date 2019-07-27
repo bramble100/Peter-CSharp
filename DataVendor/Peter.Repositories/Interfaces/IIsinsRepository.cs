@@ -13,6 +13,11 @@ namespace Peter.Repositories.Interfaces
         /// <param name="name"></param>
         void Add(string name);
         /// <summary>
+        /// Adds new names without ISIN.
+        /// </summary>
+        /// <param name="name"></param>
+        void AddRange(IEnumerable<string> names);
+        /// <summary>
         /// Returns true if collection contains company name.
         /// </summary>
         /// <param name="name"></param>
