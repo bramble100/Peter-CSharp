@@ -35,6 +35,8 @@ namespace Peter.Repositories.Implementations
             IFileSystemFacade fileSystemFacade) 
             : base(config, fileSystemFacade)
         {
+            string fullPath;
+
             WorkingDirectory = Path.Combine(
                 WorkingDirectory,
                 _configReader.Settings.WorkingDirectoryRegistry);
@@ -42,6 +44,27 @@ namespace Peter.Repositories.Implementations
 
             _fileName = _configReader.Settings.RegistryFileName;
             _logger.Debug($"Market data filename is {_fileName} from config file.");
+
+            try
+            {
+                fullPath = Path.Combine(WorkingDirectory, _fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+                throw new RepositoryException(ex.Message, ex);
+            }
+
+            if (!File.Exists(fullPath))
+            {
+                var message = new FileNotFoundException().Message;
+                var ex = new FileNotFoundException(message, fullPath);
+                _logger.Error(ex, message);
+                throw new RepositoryException(
+                    message,
+                    new FileNotFoundException(message, fullPath));
+            }
+                
 
             _entities = new HashSet<IRegistryEntry>();
         }
