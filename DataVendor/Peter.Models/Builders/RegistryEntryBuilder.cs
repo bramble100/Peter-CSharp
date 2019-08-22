@@ -14,7 +14,6 @@ namespace Peter.Models.Builders
         private Uri _stockExchangeLink;
         private Uri _ownInvestorLink;
         private string _name;
-        private Position _position;
         private IFundamentalAnalysis _fundamentalAnalysis;
         private IFinancialReport _financialReport;
 
@@ -56,14 +55,6 @@ namespace Peter.Models.Builders
             return this;
         }
 
-        public RegistryEntryBuilder SetPosition(string value)
-        {
-            if (Enum.TryParse<Position>(value, true, out var result))
-                _position = result;
-
-            return this;
-        }
-
         public RegistryEntryBuilder SetFundamentalAnalysis(IFundamentalAnalysis fundamentalAnalysis)
         {
             _fundamentalAnalysis = fundamentalAnalysis;
@@ -85,7 +76,6 @@ namespace Peter.Models.Builders
                     Name = _name,
                     OwnInvestorLink = _ownInvestorLink,
                     StockExchangeLink = _stockExchangeLink,
-                    Position = _position,
                     FundamentalAnalysis = _fundamentalAnalysis,
                     FinancialReport = _financialReport
                 }

@@ -35,7 +35,6 @@ namespace Models.UnitTests.BuilderTests
                 .SetName(name)
                 .SetOwnInvestorLink(ownInvestorLink)
                 .SetStockExchangeLink(stockExchangeLink)
-                .SetPosition(position)
                 .SetFundamentalAnalysis(fundamentalAnalysis)
                 .SetFinancialReport(financialReport)
                 .Build();
@@ -45,7 +44,6 @@ namespace Models.UnitTests.BuilderTests
             result.Name.Should().Be(name);
             result.OwnInvestorLink.Should().Be(ownInvestorLink);
             result.StockExchangeLink.Should().Be(stockExchangeLink);
-            result.Position.Should().Be(Position.NoPosition);
             result.FundamentalAnalysis.Should().Be(fundamentalAnalysis);
             result.FinancialReport.Should().Be(financialReport);
         }

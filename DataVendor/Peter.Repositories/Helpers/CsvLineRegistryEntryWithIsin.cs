@@ -18,8 +18,7 @@ namespace Peter.Repositories.Helpers
                 "Own Investor Link",
                 "EPS",
                 "Months in Report",
-                "Next Report Date",
-                "Position"
+                "Next Report Date"
         };
 
         public static bool TryParseFromCsv(
@@ -31,7 +30,7 @@ namespace Peter.Repositories.Helpers
 
             try
             {
-                if (input.Length != 8
+                if (input.Length != 7
                     || string.IsNullOrWhiteSpace(input[0])
                     || string.IsNullOrWhiteSpace(input[1]))
                     return false;
@@ -73,7 +72,6 @@ namespace Peter.Repositories.Helpers
                 entry.FinancialReport?.EPS.ToString(cultureInfo).WrapWithQuotes(),
                 entry.FinancialReport?.MonthsInReport.ToString(),
                 entry.FinancialReport?.NextReportDate.ToString(cultureInfo),
-                entry.Position.ToString()
             });
         }
     }

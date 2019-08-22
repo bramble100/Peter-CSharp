@@ -24,8 +24,13 @@ namespace Peter.Models.Interfaces
         /// Link to the investor info on the site of the registering stock exchange.
         /// </summary>
         Uri StockExchangeLink { get; set; }
-        Position Position { get; set; }
+        /// <summary>
+        /// Financial report. It is based on the report issued quarterly by the company.
+        /// </summary>
         IFinancialReport FinancialReport { get; set; }
+        /// <summary>
+        /// Fundamental Analysis. It is based on the numbers in the quarterly financial report.
+        /// </summary>
         IFundamentalAnalysis FundamentalAnalysis { get; set; }
     }
 }

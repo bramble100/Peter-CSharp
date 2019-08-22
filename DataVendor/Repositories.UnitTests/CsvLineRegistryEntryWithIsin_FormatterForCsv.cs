@@ -24,7 +24,6 @@ namespace Repositories.UnitTests
                 .SetName("Aareal Bank AG")
                 .SetOwnInvestorLink("http://www.aareal-bank.com/investor-relations/")
                 .SetStockExchangeLink("http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116")
-                .SetPosition(Position.NoPosition.ToString())
                 .SetFinancialReport(new FinancialReportBuilder()
                     .SetEPS(2.08m)
                     .SetMonthsInReport(6)
@@ -39,8 +38,7 @@ namespace Repositories.UnitTests
                 $@";http://www.aareal-bank.com/investor-relations/" +
                 $";\"{2.08m.ToString(_cultureInfo)}\"" +
                 ";6" +
-                $";{DateTime.Now.AddDays(1).Date.ToString(_cultureInfo)}" +
-                $";NoPosition";
+                $";{DateTime.Now.AddDays(1).Date.ToString(_cultureInfo)}";
         }
 
         [Test]

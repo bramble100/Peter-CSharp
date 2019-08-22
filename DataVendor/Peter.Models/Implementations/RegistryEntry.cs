@@ -11,7 +11,6 @@ namespace Peter.Models.Implementations
         public string Name { get; set; }
         public Uri OwnInvestorLink { get; set; }
         public Uri StockExchangeLink { get; set; }
-        public Position Position { get; set; }
         public IFinancialReport FinancialReport { get; set; }
         public IFundamentalAnalysis FundamentalAnalysis { get; set; }
 
@@ -28,7 +27,7 @@ namespace Peter.Models.Implementations
 
         public override bool Equals(object obj) => Equals(obj as IRegistryEntry);
 
-        public override string ToString() => $"{Name}: {Position}";
+        public override string ToString() => $"{Name} ({Isin})";
 
         public bool Equals(RegistryEntry other) => Equals(other as IRegistryEntry);
 

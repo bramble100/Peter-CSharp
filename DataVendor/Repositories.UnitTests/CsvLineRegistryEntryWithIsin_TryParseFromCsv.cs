@@ -21,8 +21,7 @@ namespace Repositories.UnitTests
                 "http://www.aareal-bank.com/investor-relations/",
                 "2,08",
                 "6",
-                DateTime.Now.AddDays(1).Date.ToString(),
-                string.Empty
+                DateTime.Now.AddDays(1).Date.ToString()
             };
 
         [TestCaseSource(nameof(TestCaseSource))]
@@ -38,7 +37,6 @@ namespace Repositories.UnitTests
                 .SetName("Aareal Bank AG")
                 .SetOwnInvestorLink("http://www.aareal-bank.com/investor-relations/")
                 .SetStockExchangeLink("http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116")
-                .SetPosition(Position.NoPosition.ToString())
                 .SetFinancialReport(new FinancialReportBuilder()
                     .SetEPS(2.08m)
                     .SetMonthsInReport(6)
@@ -63,7 +61,6 @@ namespace Repositories.UnitTests
                 string.Empty,
                 string.Empty,
                 string.Empty,
-                string.Empty,
                 string.Empty
             };
             yield return new string[] // too long
@@ -76,11 +73,9 @@ namespace Repositories.UnitTests
                 string.Empty,
                 string.Empty,
                 string.Empty,
-                string.Empty
             };
             yield return new string[] // no content at all
             {
-                string.Empty,
                 string.Empty,
                 string.Empty,
                 string.Empty,
