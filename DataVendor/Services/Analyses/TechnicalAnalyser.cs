@@ -19,7 +19,7 @@ namespace Services.Analyses
         /// <returns></returns>
         public ITechnicalAnalysis NewAnalysis(IEnumerable<IMarketDataEntity> marketData, int fastMovingAverageDayCount, int slowMovingAverageDayCount)
         {
-            var marketDataArray = marketData.ToImmutableArray();
+            var marketDataArray = marketData.OrderByDescending(item => item.DateTime).ToImmutableArray();
             var fastSMA = marketDataArray.Take(fastMovingAverageDayCount).Average(d => d.ClosingPrice);
             var slowSMA = marketDataArray.Take(slowMovingAverageDayCount).Average(d => d.ClosingPrice);
 
