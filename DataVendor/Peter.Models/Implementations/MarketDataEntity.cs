@@ -45,7 +45,7 @@ namespace Peter.Models.Implementations
 
         public override string ToString() => 
             $"{Name}, " +
-            $"{(string.IsNullOrEmpty(Isin) ? string.Empty : $"ISIN: {Isin}, ")}" +
+            $"{(string.IsNullOrEmpty(Isin) ? string.Empty : $"({Isin}), ")}" +
             $"Closing Price: {ClosingPrice}, " +
             $"DateTime: {DateTime}, " +
             $"Volumen: {Volumen}, " +
