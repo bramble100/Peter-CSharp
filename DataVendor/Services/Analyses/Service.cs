@@ -143,9 +143,9 @@ namespace Services.Analyses
                 var stockBaseData = _registryRepository.GetById(isin)
                     ?? throw new ServiceException($"No registry entry found for {isin}");
 
-                var fundamentalAnalysis = _fundamentalAnalyser.GetAnalysis(closingPrice, stockBaseData);
+                var fundamentalAnalysis = _fundamentalAnalyser.NewAnalysis(closingPrice, stockBaseData);
 
-                var technicalAnalysis = _technicalAnalyser.GetAnalysis(marketData, _fastMovingAverage, _slowMovingAverage)
+                var technicalAnalysis = _technicalAnalyser.NewAnalysis(marketData, _fastMovingAverage, _slowMovingAverage)
                     ?? throw new ServiceException($"No technical analysis can be created for {isin}");
 
                 var analysis = new AnalysisBuilder()

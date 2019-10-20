@@ -178,6 +178,16 @@
             Link to the investor info on the site of the registering stock exchange.
             </summary>
         </member>
+        <member name="P:Peter.Models.Interfaces.IRegistryEntry.FinancialReport">
+            <summary>
+            Financial report. It is based on the report issued quarterly by the company.
+            </summary>
+        </member>
+        <member name="P:Peter.Models.Interfaces.IRegistryEntry.FundamentalAnalysis">
+            <summary>
+            Fundamental Analysis. It is based on the numbers in the quarterly financial report.
+            </summary>
+        </member>
         <member name="T:Peter.Models.Interfaces.ITechnicalAnalysis">
             <summary>
             Indicators calculated from the market data.
