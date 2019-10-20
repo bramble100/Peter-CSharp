@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Peter.Repositories.Interfaces
+namespace Repositories.Interfaces
 {
     /// <summary>
     /// Repository with Name-ISIN key-value pairs.

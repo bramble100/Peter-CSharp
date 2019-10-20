@@ -1,8 +1,5 @@
 using Infrastructure;
 using NLog;
-using Peter.Repositories.Exceptions;
-using Peter.Repositories.Helpers;
-using Peter.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -10,8 +7,11 @@ using System.IO;
 using System.Linq;
 using System;
 using Models.Interfaces;
+using Repositories.Interfaces;
+using Repositories.Exceptions;
+using Repositories.Helpers;
 
-namespace Peter.Repositories.Implementations
+namespace Repositories.Implementations
 {
     public class AnalysesCsvFileRepository : CsvFileRepository, IAnalysesRepository
     {

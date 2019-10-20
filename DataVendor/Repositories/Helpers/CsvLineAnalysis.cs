@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace Peter.Repositories.Helpers
+namespace Repositories.Helpers
 {
     public static class CsvLineAnalysis
     {

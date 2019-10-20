@@ -1,5 +1,5 @@
 ﻿using NLog;
-using Peter.Repositories.Interfaces;
+using Repositories.Interfaces;
 using System.Linq;
 
 namespace Services.DataVendor

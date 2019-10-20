@@ -2,7 +2,7 @@
 using Models.Builders;
 using Models.Interfaces;
 using NLog;
-using Peter.Repositories.Interfaces;
+using Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

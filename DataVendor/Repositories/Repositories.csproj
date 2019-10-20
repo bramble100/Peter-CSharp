@@ -7,8 +7,8 @@
     <ProjectGuid>{A72490E7-1652-4E9C-BBBF-61A7705C00C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Peter.Repositories</RootNamespace>
-    <AssemblyName>Peter.Repositories</AssemblyName>
+    <RootNamespace>Repositories</RootNamespace>
+    <AssemblyName>Repositories</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Peter.Repositories.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Repositories.xml</DocumentationFile>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>

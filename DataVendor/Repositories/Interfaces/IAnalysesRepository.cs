@@ -1,7 +1,7 @@
 ﻿using Models.Interfaces;
 using System.Collections.Generic;
 
-namespace Peter.Repositories.Interfaces
+namespace Repositories.Interfaces
 {
     /// <summary>
     /// Repository with analyses.

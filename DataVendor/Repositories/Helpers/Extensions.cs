@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Peter.Repositories.Helpers
+namespace Repositories.Helpers
 {
     public static class Extensions
     {

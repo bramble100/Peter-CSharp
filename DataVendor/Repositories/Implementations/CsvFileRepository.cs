@@ -1,12 +1,12 @@
 ﻿using Infrastructure;
 using NLog;
-using Peter.Repositories.Exceptions;
+using Repositories.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-namespace Peter.Repositories.Implementations
+namespace Repositories.Implementations
 {
     public abstract class CsvFileRepository
     {

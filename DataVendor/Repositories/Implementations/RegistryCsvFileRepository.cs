@@ -2,9 +2,9 @@
 using Microsoft.VisualBasic.FileIO;
 using Models.Interfaces;
 using NLog;
-using Peter.Repositories.Exceptions;
-using Peter.Repositories.Helpers;
-using Peter.Repositories.Interfaces;
+using Repositories.Exceptions;
+using Repositories.Helpers;
+using Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,7 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace Peter.Repositories.Implementations
+namespace Repositories.Implementations
 {
     public class RegistryCsvFileRepository : CsvFileRepository, IRegistryRepository
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Peter.Repositories.Exceptions
+namespace Repositories.Exceptions
 {
     [Serializable]
     internal class RepositoryException : Exception

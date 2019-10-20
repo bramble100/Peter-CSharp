@@ -2,6 +2,7 @@
 using Models.Builders;
 using Models.Interfaces;
 using NUnit.Framework;
+using Repositories.Helpers;
 using System;
 using System.Globalization;
 
@@ -43,30 +44,18 @@ namespace Repositories.UnitTests
         [Test]
         public void WithInvalidInput_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => Peter
-                .Repositories
-                .Helpers
-                .CsvLineRegistryEntryWithIsin
+            Assert.Throws<ArgumentNullException>(() => CsvLineRegistryEntryWithIsin
                 .FormatForCSV(null, ";", _cultureInfo));
-            Assert.Throws<ArgumentNullException>(() => Peter
-                .Repositories
-                .Helpers
-                .CsvLineRegistryEntryWithIsin
+            Assert.Throws<ArgumentNullException>(() => CsvLineRegistryEntryWithIsin
                 .FormatForCSV(_validregistryEntry, null, _cultureInfo));
-            Assert.Throws<ArgumentNullException>(() => Peter
-                .Repositories
-                .Helpers
-                .CsvLineRegistryEntryWithIsin
+            Assert.Throws<ArgumentNullException>(() => CsvLineRegistryEntryWithIsin
                 .FormatForCSV(_validregistryEntry, ";", null));
         }
 
         [Test]
         public void WithValidInput_ReturnsTrueAndValidResult()
         {
-            var result = Peter
-                .Repositories
-                .Helpers
-                .CsvLineRegistryEntryWithIsin
+            var result = CsvLineRegistryEntryWithIsin
                 .FormatForCSV(
                     _validregistryEntry,
                     ";",

@@ -74,9 +74,9 @@
       <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
       <Name>Models</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Peter.Repositories\Peter.Repositories.csproj">
+    <ProjectReference Include="..\Repositories\Repositories.csproj">
       <Project>{A72490E7-1652-4E9C-BBBF-61A7705C00C3}</Project>
-      <Name>Peter.Repositories</Name>
+      <Name>Repositories</Name>
     </ProjectReference>
     <ProjectReference Include="..\Services\Services.csproj">
       <Project>{7c414cf1-2e3a-4c30-bf20-cbea83d7d280}</Project>

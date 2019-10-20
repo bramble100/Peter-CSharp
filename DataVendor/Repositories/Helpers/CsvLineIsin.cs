@@ -3,7 +3,7 @@ using Models.Interfaces;
 using NLog;
 using System;
 
-namespace Peter.Repositories.Helpers
+namespace Repositories.Helpers
 {
     public static class CsvLineIsin
     {

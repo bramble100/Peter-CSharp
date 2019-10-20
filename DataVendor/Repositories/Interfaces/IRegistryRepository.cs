@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Models.Interfaces;
 
-namespace Peter.Repositories.Interfaces
+namespace Repositories.Interfaces
 {
     /// <summary>
     /// Repository with registry entries.

@@ -1,8 +1,8 @@
 ﻿using Autofac;
 using Infrastructure;
 using NLog;
-using Peter.Repositories.Implementations;
-using Peter.Repositories.Interfaces;
+using Repositories.Implementations;
+using Repositories.Interfaces;
 using System;
 using System.Linq;
 
