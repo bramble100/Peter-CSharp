@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
+using Models.Builders;
 using NUnit.Framework;
-using Peter.Models.Builders;
-using Peter.Models.Enums;
 using System;
 
 namespace Models.UnitTests.BuilderTests
@@ -56,7 +55,7 @@ namespace Models.UnitTests.BuilderTests
         {
             DateTime dateTime = new DateTime(2999, 12, 31);
 
-            var result = new Peter.Models.Builders.MarketDataEntityBuilder()
+            var result = new MarketDataEntityBuilder()
                 .SetClosingPrice(closingPrice)
                 .SetDateTime(dateTime)
                 .SetName(name)
@@ -68,7 +67,7 @@ namespace Models.UnitTests.BuilderTests
         [Test]
         public void ShouldReturnNull_WhenInvalidInputDate()
         {
-            var result = new Peter.Models.Builders.MarketDataEntityBuilder()
+            var result = new MarketDataEntityBuilder()
                 .SetClosingPrice(1.7m)
                 .SetName("Ok")
                 .Build();

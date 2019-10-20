@@ -1,6 +1,6 @@
-﻿using Peter.Models.Builders;
-using Peter.Models.Enums;
-using Peter.Models.Interfaces;
+﻿using Models.Builders;
+using Models.Enums;
+using Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

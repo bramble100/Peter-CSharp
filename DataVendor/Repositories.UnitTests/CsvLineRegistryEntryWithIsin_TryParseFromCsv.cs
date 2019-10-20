@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
+using Models.Builders;
 using NUnit.Framework;
-using Peter.Models.Builders;
-using Peter.Models.Enums;
-using Peter.Models.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

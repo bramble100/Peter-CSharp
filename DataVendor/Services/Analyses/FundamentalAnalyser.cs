@@ -1,5 +1,5 @@
-﻿using Peter.Models.Builders;
-using Peter.Models.Interfaces;
+﻿using Models.Builders;
+using Models.Interfaces;
 
 namespace Services.Analyses
 {

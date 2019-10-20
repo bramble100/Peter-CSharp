@@ -1,6 +1,6 @@
-﻿using NLog;
-using Peter.Models.Implementations;
-using Peter.Models.Interfaces;
+﻿using Models.Implementations;
+using Models.Interfaces;
+using NLog;
 using System;
 
 namespace Peter.Repositories.Helpers

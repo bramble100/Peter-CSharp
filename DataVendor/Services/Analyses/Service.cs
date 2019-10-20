@@ -1,7 +1,7 @@
 ﻿using Infrastructure;
+using Models.Builders;
+using Models.Interfaces;
 using NLog;
-using Peter.Models.Builders;
-using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;

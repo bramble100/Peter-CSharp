@@ -1,7 +1,7 @@
 ﻿using Infrastructure;
 using Microsoft.VisualBasic.FileIO;
+using Models.Interfaces;
 using NLog;
-using Peter.Models.Interfaces;
 using Peter.Repositories.Exceptions;
 using Peter.Repositories.Helpers;
 using Peter.Repositories.Interfaces;

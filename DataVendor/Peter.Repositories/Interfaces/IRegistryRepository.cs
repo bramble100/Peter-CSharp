@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Peter.Models.Interfaces;
+using Models.Interfaces;
 
 namespace Peter.Repositories.Interfaces
 {

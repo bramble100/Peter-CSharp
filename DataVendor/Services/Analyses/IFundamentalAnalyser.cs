@@ -1,4 +1,4 @@
-﻿using Peter.Models.Interfaces;
+﻿using Models.Interfaces;
 
 namespace Services.Analyses
 {

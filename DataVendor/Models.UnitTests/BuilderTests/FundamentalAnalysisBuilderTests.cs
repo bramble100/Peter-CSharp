@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
+using Models.Builders;
 using NUnit.Framework;
-using Peter.Models.Builders;
 
 namespace Models.UnitTests.BuilderTests
 {
@@ -34,7 +34,7 @@ namespace Models.UnitTests.BuilderTests
             decimal eps,
             int months)
         {
-            var result = new Peter.Models.Builders.FundamentalAnalysisBuilder()
+            var result = new FundamentalAnalysisBuilder()
                 .SetClosingPrice(price)
                 .SetEPS(eps)
                 .SetMonthsInReport(months)

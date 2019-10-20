@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Models.Builders;
+using Models.Interfaces;
+using NLog;
+using Peter.Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using NLog;
-using Peter.Models.Builders;
-using Peter.Models.Interfaces;
-using Peter.Repositories.Interfaces;
 
 namespace Services.Registry
 {

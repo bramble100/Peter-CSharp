@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
+using Models.Builders;
 using NUnit.Framework;
-using Peter.Models.Builders;
 using System;
 
 namespace Models.UnitTests.BuilderTests

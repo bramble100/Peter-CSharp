@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
+using Models.Enums;
 using NUnit.Framework;
-using Peter.Models.Enums;
 using Services.Analyses;
 using System;
 

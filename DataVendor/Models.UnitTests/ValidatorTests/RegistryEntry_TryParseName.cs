@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
+using Models.Validators;
 using NUnit.Framework;
-using Peter.Models.Validators;
 
 namespace Models.UnitTests.ValidatorTests
 {

@@ -1,6 +1,6 @@
 ﻿using Infrastructure;
+using Models.Interfaces;
 using NLog;
-using Peter.Models.Interfaces;
 using Peter.Repositories.Interfaces;
 using Services.DataVendor.Html;
 using System;

@@ -61,17 +61,17 @@
     <Compile Include="Analyses\TechnicalAnalyser_GetTrend.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
-      <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
-      <Name>Peter.Models</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Services\Services.csproj">
-      <Project>{7c414cf1-2e3a-4c30-bf20-cbea83d7d280}</Project>
-      <Name>Services</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Models\Models.csproj">
+      <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
+      <Name>Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Services\Services.csproj">
+      <Project>{7C414CF1-2E3A-4C30-BF20-CBEA83D7D280}</Project>
+      <Name>Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -82,9 +82,9 @@
       <Project>{373d71a0-34b5-42aa-9f6d-961051adff5f}</Project>
       <Name>Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
+    <ProjectReference Include="..\Models\Models.csproj">
       <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
-      <Name>Peter.Models</Name>
+      <Name>Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\Peter.Repositories\Peter.Repositories.csproj">
       <Project>{a72490e7-1652-4e9c-bbbf-61a7705c00c3}</Project>

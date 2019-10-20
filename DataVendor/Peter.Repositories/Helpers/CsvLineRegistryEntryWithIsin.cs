@@ -1,6 +1,6 @@
-﻿using NLog;
-using Peter.Models.Builders;
-using Peter.Models.Interfaces;
+﻿using Models.Builders;
+using Models.Interfaces;
+using NLog;
 using System;
 using System.Globalization;
 

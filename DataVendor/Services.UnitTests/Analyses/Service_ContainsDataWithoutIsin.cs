@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
+using Models.Builders;
+using Models.Interfaces;
 using NUnit.Framework;
-using Peter.Models.Builders;
-using Peter.Models.Interfaces;
 using Services.Analyses;
 using System;
 using System.Collections.Generic;
