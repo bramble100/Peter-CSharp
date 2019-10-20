@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using Peter.Models.Builders;
 using Peter.Models.Enums;
 using Peter.Models.Interfaces;
@@ -63,7 +64,7 @@ namespace AnalysesManager.UnitTests.Analyses
 
             var result = new TechnicalAnalyser().NewAnalysis(marketData, 3, 5);
 
-            Assert.AreEqual(expectedResult, result);
+            result.Should().Be(expectedResult);
         }
     }
 }

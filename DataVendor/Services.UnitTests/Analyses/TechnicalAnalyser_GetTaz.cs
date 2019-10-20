@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using Peter.Models.Enums;
 using Services.Analyses;
 using System;
@@ -44,7 +45,7 @@ namespace AnalysesManager.UnitTests.Analyses
             decimal slowSMA,
             TAZ expectedResult)
         {
-            Assert.AreEqual(expectedResult, TechnicalAnalyser.GetTAZ(closingPrice, fastSMA, slowSMA));
+            TechnicalAnalyser.GetTAZ(closingPrice, fastSMA, slowSMA).Should().Be(expectedResult);
         }
     }
 }

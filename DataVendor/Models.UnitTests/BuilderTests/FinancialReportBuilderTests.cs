@@ -40,7 +40,7 @@ namespace Models.UnitTests.BuilderTests
             string months,
             string date)
         {
-            var result = new Peter.Models.Builders.FinancialReportBuilder()
+            var result = new FinancialReportBuilder()
                 .SetEPS(eps)
                 .SetMonthsInReport(months)
                 .SetNextReportDate(date)

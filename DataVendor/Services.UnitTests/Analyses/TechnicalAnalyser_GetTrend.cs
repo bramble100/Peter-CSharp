@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using Peter.Models.Enums;
 using Services.Analyses;
 using System;
@@ -24,7 +25,7 @@ namespace AnalysesManager.UnitTests.Analyses
             decimal slowSMA,
             Trend expectedResult)
         {
-            Assert.AreEqual(expectedResult, TechnicalAnalyser.GetTrend(fastSMA, slowSMA));
+            TechnicalAnalyser.GetTrend(fastSMA, slowSMA).Should().Be(expectedResult);
         }
     }
 }
