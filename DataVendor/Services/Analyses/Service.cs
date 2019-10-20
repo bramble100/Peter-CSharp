@@ -78,7 +78,7 @@ namespace Services.Analyses
             }
 
             IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData = GetGroupedMarketData(marketData);
-            Dictionary<string, IAnalysis> analyses = GetAnalyses(groupedMarketData);
+            Dictionary<string, IAnalysis> analyses = NewAnalyses(groupedMarketData);
 
             if (!analyses.Any())
             {
@@ -97,13 +97,13 @@ namespace Services.Analyses
             _logger.Info("*** *** ***");
         }
 
-        private Dictionary<string, IAnalysis> GetAnalyses(IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData)
+        private Dictionary<string, IAnalysis> NewAnalyses(IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData)
         {
             Dictionary<string, IAnalysis> analyses = new Dictionary<string, IAnalysis>();
 
             foreach (var marketDataGroup in groupedMarketData)
             {
-                if (TryGetAnalysis(marketDataGroup, out KeyValuePair<string, IAnalysis> result))
+                if (TryNewAnalysis(marketDataGroup, out KeyValuePair<string, IAnalysis> result))
                 {
                     analyses[result.Key] = result.Value;
                 }
@@ -124,7 +124,7 @@ namespace Services.Analyses
                        .Take(_slowMovingAverage);
         }
 
-        private bool TryGetAnalysis(IEnumerable<IMarketDataEntity> marketDataInput, out KeyValuePair<string, IAnalysis> result)
+        private bool TryNewAnalysis(IEnumerable<IMarketDataEntity> marketDataInput, out KeyValuePair<string, IAnalysis> result)
         {
             try
             {

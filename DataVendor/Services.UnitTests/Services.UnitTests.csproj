@@ -55,9 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceTests.cs" />
-    <Compile Include="ServiceTests_GetTaz.cs" />
-    <Compile Include="ServiceTests_GetTrend.cs" />
+    <Compile Include="Analyses\Service_ContainsDataWithoutIsin.cs" />
+    <Compile Include="Analyses\Service_GetTaz.cs" />
+    <Compile Include="Analyses\Service_GetTrend.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">

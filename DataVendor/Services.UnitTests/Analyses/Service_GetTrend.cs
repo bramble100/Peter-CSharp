@@ -3,14 +3,14 @@ using Peter.Models.Enums;
 using Services.Analyses;
 using System;
 
-namespace AnalysesManager.UnitTests
+namespace AnalysesManager.UnitTests.Analyses
 {
-    public class ServiceTests_GetTrend
+    public class Service_GetTrend
     {
-        [TestCase(0, 1)]
-        [TestCase(-1, 1)]
-        [TestCase(1, 0)]
-        [TestCase(1, -1)]
+        [TestCase(0, 1.8)]
+        [TestCase(-1.2, 1)]
+        [TestCase(1.9, 0)]
+        [TestCase(1.1, -1.2)]
         public void ThrowsArgumentException(decimal fastSMA, decimal slowSMA)
         {
             Assert.Throws<ArgumentException>(() => TechnicalAnalyser.GetTrend(fastSMA, slowSMA));
