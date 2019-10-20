@@ -59,7 +59,7 @@
     <Compile Include="BuilderTests\RegistryEntryBuilderTests.cs" />
     <Compile Include="BuilderTests\MarketDataEntityBuilderTests.cs" />
     <Compile Include="BuilderTests\FinancialReportBuilderTests.cs" />
-    <Compile Include="BuilderTests\FinancialAnalysisBuilderTests.cs" />
+    <Compile Include="BuilderTests\FundamentalAnalysisBuilderTests.cs" />
     <Compile Include="ValidatorTests\RegistryEntry_TryParseName.cs" />
     <Compile Include="ValidatorTests\NameToIsin_TryParse.cs" />
     <Compile Include="ValidatorTests\MarketDataEntity_TryParseClosingPrice.cs" />
