@@ -5,6 +5,6 @@
         /// <summary>
         /// Generates analyses.
         /// </summary>
-        void GenerateAnalyses();
+        void NewAnalyses();
     }
 }

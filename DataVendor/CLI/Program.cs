@@ -78,7 +78,7 @@ namespace CLI
                         {
                             _logger.Info("analyse");
                             var service = scope.Resolve<Services.Analyses.IService>();
-                            service.GenerateAnalyses();
+                            service.NewAnalyses();
                         }
                         else
                         {

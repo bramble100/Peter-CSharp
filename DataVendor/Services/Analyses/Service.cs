@@ -30,7 +30,7 @@ namespace Services.Analyses
             IAnalysesRepository analysesRepository,
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository,
-            IConfigReader config)
+            IConfigReader configReader)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace Services.Analyses
                 _fundamentalAnalyser = new FundamentalAnalyser();
                 _technicalAnalyser = new TechnicalAnalyser();
 
-                _configReader = config;
+                _configReader = configReader;
 
                 _buyingPacketInEuro = _configReader.Settings.BuyingPacketInEuro;
                 _fastMovingAverage = _configReader.Settings.FastMovingAverage;
@@ -62,12 +62,12 @@ namespace Services.Analyses
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Error(ex.Message);
                 throw new ServiceException($"Error when initializing {GetType().Name}.", ex);
             }
         }
 
-        public void GenerateAnalyses()
+        public void NewAnalyses()
         {
             _logger.Info("Generating analyses ...");
 
