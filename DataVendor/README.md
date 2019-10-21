@@ -11,3 +11,7 @@ Main functions:
   * latest market data info
   * registry entries
   * screening options
+  
+
+Coding guidelines:
+* [Approved Verbs for PowerShell Commands | Microsoft Docs](https://docs.microsoft.com/en-us/powershell/scripting/developer/cmdlet/approved-verbs-for-windows-powershell-commands)
