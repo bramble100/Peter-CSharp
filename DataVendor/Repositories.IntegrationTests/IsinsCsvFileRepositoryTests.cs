@@ -3,8 +3,8 @@ using FluentAssertions;
 using Infrastructure;
 using Moq;
 using NUnit.Framework;
-using Peter.Repositories.Implementations;
-using Peter.Repositories.Interfaces;
+using Repositories.Implementations;
+using Repositories.Interfaces;
 using System.Text;
 
 namespace Repositories.IntegrationTests

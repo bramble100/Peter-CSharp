@@ -70,13 +70,13 @@
       <Project>{373D71A0-34B5-42AA-9F6D-961051ADFF5F}</Project>
       <Name>Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
+    <ProjectReference Include="..\Models\Models.csproj">
       <Project>{B7E7989E-1619-4713-AF8A-CAD6B802D2A6}</Project>
-      <Name>Peter.Models</Name>
+      <Name>Models</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Peter.Repositories\Peter.Repositories.csproj">
+    <ProjectReference Include="..\Repositories\Repositories.csproj">
       <Project>{A72490E7-1652-4E9C-BBBF-61A7705C00C3}</Project>
-      <Name>Peter.Repositories</Name>
+      <Name>Repositories</Name>
     </ProjectReference>
     <ProjectReference Include="..\Services\Services.csproj">
       <Project>{7c414cf1-2e3a-4c30-bf20-cbea83d7d280}</Project>

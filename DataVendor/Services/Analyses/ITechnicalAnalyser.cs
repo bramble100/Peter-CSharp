@@ -1,13 +1,20 @@
-﻿using Peter.Models.Interfaces;
-using System.Collections.Immutable;
+﻿using Models.Interfaces;
+using System.Collections.Generic;
 
 namespace Services.Analyses
 {
     internal interface ITechnicalAnalyser
     {
-        ITechnicalAnalysis GetAnalysis(
-            ImmutableArray<IMarketDataEntity> marketData, 
-            int fastMovingAverage, 
-            int slowMovingAverage);
+        /// <summary>
+        /// Creates a new technical analysis, based on closing price and base data.
+        /// </summary>
+        /// <param name="marketData"></param>
+        /// <param name="fastMovingAverage"></param>
+        /// <param name="slowMovingAverage"></param>
+        /// <returns></returns>
+        ITechnicalAnalysis NewAnalysis(
+            IEnumerable<IMarketDataEntity> marketData, 
+            int fastMovingAverageDayCount, 
+            int slowMovingAverageDayCount);
     }
 }

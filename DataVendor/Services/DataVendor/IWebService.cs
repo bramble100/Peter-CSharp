@@ -1,4 +1,4 @@
-﻿using Peter.Models.Interfaces;
+﻿using Models.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

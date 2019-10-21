@@ -1,12 +1,15 @@
-﻿using Peter.Models.Interfaces;
-using System.Collections.Immutable;
+﻿using Models.Interfaces;
 
 namespace Services.Analyses
 {
     internal interface IFundamentalAnalyser
     {
-        IFundamentalAnalysis GetAnalysis(
-            decimal closingPrice, 
-            IRegistryEntry stockBaseData);
+        /// <summary>
+        /// Creates a new fundamental analysis, based on closing price and base data.
+        /// </summary>
+        /// <param name="closingPrice"></param>
+        /// <param name="stockBaseData"></param>
+        /// <returns></returns>
+        IFundamentalAnalysis NewAnalysis(decimal closingPrice, IRegistryEntry stockBaseData);
     }
 }

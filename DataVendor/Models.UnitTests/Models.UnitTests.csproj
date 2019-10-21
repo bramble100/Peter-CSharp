@@ -59,7 +59,7 @@
     <Compile Include="BuilderTests\RegistryEntryBuilderTests.cs" />
     <Compile Include="BuilderTests\MarketDataEntityBuilderTests.cs" />
     <Compile Include="BuilderTests\FinancialReportBuilderTests.cs" />
-    <Compile Include="BuilderTests\FinancialAnalysisBuilderTests.cs" />
+    <Compile Include="BuilderTests\FundamentalAnalysisBuilderTests.cs" />
     <Compile Include="ValidatorTests\RegistryEntry_TryParseName.cs" />
     <Compile Include="ValidatorTests\NameToIsin_TryParse.cs" />
     <Compile Include="ValidatorTests\MarketDataEntity_TryParseClosingPrice.cs" />
@@ -76,9 +76,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
+    <ProjectReference Include="..\Models\Models.csproj">
       <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
-      <Name>Peter.Models</Name>
+      <Name>Models</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

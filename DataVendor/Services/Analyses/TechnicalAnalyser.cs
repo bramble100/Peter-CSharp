@@ -1,7 +1,8 @@
-﻿using Peter.Models.Builders;
-using Peter.Models.Enums;
-using Peter.Models.Interfaces;
+﻿using Models.Builders;
+using Models.Enums;
+using Models.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -9,12 +10,20 @@ namespace Services.Analyses
 {
     internal class TechnicalAnalyser : ITechnicalAnalyser
     {
-        public ITechnicalAnalysis GetAnalysis(ImmutableArray<IMarketDataEntity> marketData, int fastMovingAverage, int slowMovingAverage)
+        /// <summary>
+        /// Creates a new technical analysis, based on market data.
+        /// </summary>
+        /// <param name="marketData"></param>
+        /// <param name="fastMovingAverageDayCount"></param>
+        /// <param name="slowMovingAverageDayCount"></param>
+        /// <returns></returns>
+        public ITechnicalAnalysis NewAnalysis(IEnumerable<IMarketDataEntity> marketData, int fastMovingAverageDayCount, int slowMovingAverageDayCount)
         {
-            var fastSMA = marketData.Take(fastMovingAverage).Average(d => d.ClosingPrice);
-            var slowSMA = marketData.Take(slowMovingAverage).Average(d => d.ClosingPrice);
+            var marketDataArray = marketData.OrderByDescending(item => item.DateTime).ToImmutableArray();
+            var fastSMA = marketDataArray.Take(fastMovingAverageDayCount).Average(d => d.ClosingPrice);
+            var slowSMA = marketDataArray.Take(slowMovingAverageDayCount).Average(d => d.ClosingPrice);
 
-            var closingPrice = marketData.First().ClosingPrice;
+            var closingPrice = marketDataArray.First().ClosingPrice;
 
             return new TechnicalAnalysisBuilder()
                 .SetFastSMA(fastSMA)

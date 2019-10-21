@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
+using Models.Builders;
 using NUnit.Framework;
-using Peter.Models.Builders;
-using Peter.Models.Enums;
-using Peter.Models.Implementations;
+using Repositories.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,7 +25,7 @@ namespace Repositories.UnitTests
 
         [TestCaseSource(nameof(TestCaseSource))]
         public void WithInvalidArray_ReturnsFalse(string[] inputStrings) =>
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(inputStrings, _cultureInfo, out _)
+            CsvLineRegistryEntryWithIsin.TryParseFromCsv(inputStrings, _cultureInfo, out _)
             .Should().BeFalse();
 
         [Test]
@@ -44,7 +43,7 @@ namespace Repositories.UnitTests
                     .Build())
                 .Build();
 
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(_validLine, _cultureInfo, out var result)
+            CsvLineRegistryEntryWithIsin.TryParseFromCsv(_validLine, _cultureInfo, out var result)
                 .Should().BeTrue();
             result.Should().Be(validResult);
         }

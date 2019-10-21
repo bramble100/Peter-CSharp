@@ -1,8 +1,8 @@
 ﻿using Infrastructure;
+using Models.Builders;
+using Models.Interfaces;
 using NLog;
-using Peter.Models.Builders;
-using Peter.Models.Interfaces;
-using Peter.Repositories.Interfaces;
+using Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -30,7 +30,7 @@ namespace Services.Analyses
             IAnalysesRepository analysesRepository,
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository,
-            IConfigReader config)
+            IConfigReader configReader)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace Services.Analyses
                 _fundamentalAnalyser = new FundamentalAnalyser();
                 _technicalAnalyser = new TechnicalAnalyser();
 
-                _configReader = config;
+                _configReader = configReader;
 
                 _buyingPacketInEuro = _configReader.Settings.BuyingPacketInEuro;
                 _fastMovingAverage = _configReader.Settings.FastMovingAverage;
@@ -62,12 +62,12 @@ namespace Services.Analyses
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Error(ex.Message);
                 throw new ServiceException($"Error when initializing {GetType().Name}.", ex);
             }
         }
 
-        public void GenerateAnalyses()
+        public void NewAnalyses()
         {
             _logger.Info("Generating analyses ...");
 
@@ -78,7 +78,7 @@ namespace Services.Analyses
             }
 
             IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData = GetGroupedMarketData(marketData);
-            Dictionary<string, IAnalysis> analyses = GetAnalyses(groupedMarketData);
+            Dictionary<string, IAnalysis> analyses = NewAnalyses(groupedMarketData);
 
             if (!analyses.Any())
             {
@@ -97,13 +97,13 @@ namespace Services.Analyses
             _logger.Info("*** *** ***");
         }
 
-        private Dictionary<string, IAnalysis> GetAnalyses(IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData)
+        private Dictionary<string, IAnalysis> NewAnalyses(IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData)
         {
             Dictionary<string, IAnalysis> analyses = new Dictionary<string, IAnalysis>();
 
             foreach (var marketDataGroup in groupedMarketData)
             {
-                if (TryGetAnalysis(marketDataGroup, out KeyValuePair<string, IAnalysis> result))
+                if (TryNewAnalysis(marketDataGroup, out KeyValuePair<string, IAnalysis> result))
                 {
                     analyses[result.Key] = result.Value;
                 }
@@ -124,7 +124,7 @@ namespace Services.Analyses
                        .Take(_slowMovingAverage);
         }
 
-        private bool TryGetAnalysis(IEnumerable<IMarketDataEntity> marketDataInput, out KeyValuePair<string, IAnalysis> result)
+        private bool TryNewAnalysis(IEnumerable<IMarketDataEntity> marketDataInput, out KeyValuePair<string, IAnalysis> result)
         {
             try
             {
@@ -143,9 +143,9 @@ namespace Services.Analyses
                 var stockBaseData = _registryRepository.GetById(isin)
                     ?? throw new ServiceException($"No registry entry found for {isin}");
 
-                var fundamentalAnalysis = _fundamentalAnalyser.GetAnalysis(closingPrice, stockBaseData);
+                var fundamentalAnalysis = _fundamentalAnalyser.NewAnalysis(closingPrice, stockBaseData);
 
-                var technicalAnalysis = _technicalAnalyser.GetAnalysis(marketData, _fastMovingAverage, _slowMovingAverage)
+                var technicalAnalysis = _technicalAnalyser.NewAnalysis(marketData, _fastMovingAverage, _slowMovingAverage)
                     ?? throw new ServiceException($"No technical analysis can be created for {isin}");
 
                 var analysis = new AnalysisBuilder()

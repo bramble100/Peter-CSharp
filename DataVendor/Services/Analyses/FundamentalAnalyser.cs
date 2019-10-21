@@ -1,15 +1,21 @@
-﻿using Peter.Models.Builders;
-using Peter.Models.Interfaces;
+﻿using Models.Builders;
+using Models.Interfaces;
 
 namespace Services.Analyses
 {
     internal class FundamentalAnalyser : IFundamentalAnalyser
     {
-        public IFundamentalAnalysis GetAnalysis(decimal closingPrice, IRegistryEntry stockBaseData) => 
+        /// <summary>
+        /// Creates a new fundamental analysis, based on closing price and base data.
+        /// </summary>
+        /// <param name="closingPrice"></param>
+        /// <param name="stockBaseData"></param>
+        /// <returns></returns>
+        public IFundamentalAnalysis NewAnalysis(decimal closingPrice, IRegistryEntry stockBaseData) => 
             new FundamentalAnalysisBuilder()
                 .SetClosingPrice(closingPrice)
-                .SetEPS(stockBaseData.FinancialReport?.EPS)
-                .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
+                .SetEPS(stockBaseData?.FinancialReport?.EPS)
+                .SetMonthsInReport(stockBaseData?.FinancialReport?.MonthsInReport)
                 .Build();
     }
 }
