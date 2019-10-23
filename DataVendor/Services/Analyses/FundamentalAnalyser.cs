@@ -3,7 +3,7 @@ using Models.Interfaces;
 
 namespace Services.Analyses
 {
-    internal class FundamentalAnalyser : IFundamentalAnalyser
+    public class FundamentalAnalyser : IFundamentalAnalyser
     {
         /// <summary>
         /// Creates a new fundamental analysis, based on closing price and base data.

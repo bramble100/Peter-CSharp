@@ -2,7 +2,7 @@
 
 namespace Services.Analyses
 {
-    internal interface IFundamentalAnalyser
+    public interface IFundamentalAnalyser
     {
         /// <summary>
         /// Creates a new fundamental analysis, based on closing price and base data.
