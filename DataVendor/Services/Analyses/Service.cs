@@ -136,12 +136,12 @@ namespace Services.Analyses
                     throw new ArgumentException("Market data set cannot be empty", nameof(marketDataInput));
 
                 var isin = marketData.First().Isin;
-                if (string.IsNullOrEmpty(isin))
+                if (string.IsNullOrWhiteSpace(isin))
                     throw new ServiceException("No ISIN found in market data set.");
 
                 var closingPrice = marketData.First().ClosingPrice;
 
-                var stockBaseData = _registryRepository.GetById(isin)
+                var stockBaseData = _registryRepository.GetByIsin(isin)
                     ?? throw new ServiceException($"No registry entry found for {isin}");
 
                 var fundamentalAnalysis = _fundamentalAnalyser.NewAnalysis(closingPrice, stockBaseData);

@@ -85,7 +85,7 @@ namespace Repositories.Implementations
             _fileContentSaved = false;
         }
 
-        public IRegistryEntry GetById(string isin)
+        public IRegistryEntry GetByIsin(string isin)
         {
             if (!_fileContentLoaded) Load();
 
