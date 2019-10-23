@@ -50,27 +50,22 @@ namespace CLI
                         if (string.Equals(command, _configReader.Settings.FetchNewMarketData))
                         {
                             _logger.Info(_configReader.Settings.FetchNewMarketData);
-                            var service = scope.Resolve<Services.DataVendor.IWebService>();
-                            var marketData = service.GetDownloadedDataFromWeb().GetAwaiter().GetResult();
-                            service.UpdateMarketData(marketData);
+                            scope.Resolve<Services.DataVendor.IWebService>().UpdateMarketData().GetAwaiter();
                         }
                         else if (string.Equals(command, _configReader.Settings.UpdateMarketDataWithISINs))
                         {
                             _logger.Info(_configReader.Settings.UpdateMarketDataWithISINs);
-                            var service = scope.Resolve<Services.DataVendor.IIsinAdderService>();
-                            service.AddIsinsToMarketData();
+                            scope.Resolve<Services.DataVendor.IIsinAdderService>().AddIsinsToMarketData();
                         }
                         else if (string.Equals(command, "registry"))
                         {
                             _logger.Info("registry");
-                            var service = scope.Resolve<Services.Registry.IService>();
-                            service.Update();
+                            scope.Resolve<Services.Registry.IService>().Update();
                         }
                         else if (string.Equals(command, "analyse"))
                         {
                             _logger.Info("analyse");
-                            var service = scope.Resolve<Services.Analyses.IService>();
-                            service.NewAnalyses();
+                            scope.Resolve<Services.Analyses.IService>().NewAnalyses();
                         }
                         else
                         {
