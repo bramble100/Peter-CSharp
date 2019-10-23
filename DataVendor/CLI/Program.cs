@@ -19,32 +19,24 @@ namespace CLI
         {
             try
             {
-                var builder = new ContainerBuilder();
-
-                builder.RegisterType<ConfigReader>().As<IConfigReader>();
-                builder.RegisterType<EnvironmentVariableReader>().As<IEnvironmentVariableReader>();
-                builder.RegisterType<FileSystemFacade>().As<IFileSystemFacade>();
-                builder.RegisterType<HttpFacade>().As<IHttpFacade>();
-
-                builder.RegisterType<Services.Analyses.Service>().As<Services.Analyses.IService>();
-                builder.RegisterType<Services.Registry.Service>().As<Services.Registry.IService>();
-                builder.RegisterType<Services.DataVendor.WebService>().As<Services.DataVendor.IWebService>();
-                builder.RegisterType<Services.DataVendor.IsinAdderService>().As<Services.DataVendor.IIsinAdderService>();
-
-                builder.RegisterType<AnalysesCsvFileRepository>().As<IAnalysesRepository>();
-                builder.RegisterType<IsinsCsvFileRepository>().As<IIsinsRepository>();
-                builder.RegisterType<MarketDataCsvFileRepository>().As<IMarketDataRepository>();
-                builder.RegisterType<RegistryCsvFileRepository>().As<IRegistryRepository>();
-
-                var container = builder.Build();
-                using (var scope = container.BeginLifetimeScope())
+                using (var scope = NewDIContainer().BeginLifetimeScope())
                 {
                     var _configReader = scope.Resolve<IConfigReader>();
                     Console.WriteLine(helpText);
 
                     if (!args.Any())
                     {
-                        _logger.Fatal("No parameter given.");
+                        _logger.Info("Test mode (without external dependencies).");
+
+                        TestAnalyser(scope);
+                        _logger.Info("Analyser OK.");
+                        TestDatavendor(scope);
+                        _logger.Info("Datavendor OK.");
+                        TestRegistry(scope);
+                        _logger.Info("Registry OK .");
+
+                        Console.WriteLine("Press any key ...");
+                        Console.ReadKey();
                     }
                     else if (args.Count() > 1)
                     {
@@ -95,6 +87,38 @@ namespace CLI
             }
 
             LogManager.Shutdown();
+        }
+
+        private static void TestAnalyser(ILifetimeScope scope) => scope.Resolve<Services.Analyses.IService>();
+
+        private static void TestDatavendor(ILifetimeScope scope) => scope.Resolve<Services.DataVendor.IWebService>();
+
+        private static void TestRegistry(ILifetimeScope scope) => scope.Resolve<Services.Registry.IService>();
+
+        private static IContainer NewDIContainer()
+        {
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<ConfigReader>().As<IConfigReader>();
+            builder.RegisterType<EnvironmentVariableReader>().As<IEnvironmentVariableReader>();
+            builder.RegisterType<FileSystemFacade>().As<IFileSystemFacade>();
+            builder.RegisterType<HttpFacade>().As<IHttpFacade>();
+
+            builder.RegisterType<Services.Analyses.Service>().As<Services.Analyses.IService>();
+            builder.RegisterType<Services.Registry.Service>().As<Services.Registry.IService>();
+            builder.RegisterType<Services.DataVendor.WebService>().As<Services.DataVendor.IWebService>();
+            builder.RegisterType<Services.DataVendor.IsinAdderService>().As<Services.DataVendor.IIsinAdderService>();
+
+            builder.RegisterType<Services.Analyses.FundamentalAnalyser>().As<Services.Analyses.IFundamentalAnalyser>();
+            builder.RegisterType<Services.Analyses.TechnicalAnalyser>().As<Services.Analyses.ITechnicalAnalyser>();
+
+            builder.RegisterType<AnalysesCsvFileRepository>().As<IAnalysesRepository>();
+            builder.RegisterType<IsinsCsvFileRepository>().As<IIsinsRepository>();
+            builder.RegisterType<MarketDataCsvFileRepository>().As<IMarketDataRepository>();
+            builder.RegisterType<RegistryCsvFileRepository>().As<IRegistryRepository>();
+
+            var container = builder.Build();
+            return container;
         }
     }
 }

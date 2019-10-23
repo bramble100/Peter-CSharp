@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Services.Analyses
 {
-    internal class TechnicalAnalyser : ITechnicalAnalyser
+    public class TechnicalAnalyser : ITechnicalAnalyser
     {
         /// <summary>
         /// Creates a new technical analysis, based on market data.

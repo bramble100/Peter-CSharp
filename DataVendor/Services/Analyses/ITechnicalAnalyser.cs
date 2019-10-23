@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Services.Analyses
 {
-    internal interface ITechnicalAnalyser
+    public interface ITechnicalAnalyser
     {
         /// <summary>
         /// Creates a new technical analysis, based on closing price and base data.
