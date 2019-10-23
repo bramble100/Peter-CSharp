@@ -18,7 +18,6 @@ namespace Services.Analyses
         private readonly IAnalysesRepository _analysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
-
         private readonly IFundamentalAnalyser _fundamentalAnalyser;
         private readonly ITechnicalAnalyser _technicalAnalyser;
 
@@ -27,6 +26,8 @@ namespace Services.Analyses
         private readonly int _buyingPacketInEuro;
 
         public Service(
+            IFundamentalAnalyser fundamentalAnalyser,
+            ITechnicalAnalyser technicalAnalyser,
             IAnalysesRepository analysesRepository,
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository,
@@ -34,12 +35,12 @@ namespace Services.Analyses
         {
             try
             {
+                _fundamentalAnalyser = fundamentalAnalyser;
+                _technicalAnalyser = technicalAnalyser;
+
                 _analysesCsvFileRepository = analysesRepository;
                 _marketDataRepository = marketDataRepository;
                 _registryRepository = registryRepository;
-
-                _fundamentalAnalyser = new FundamentalAnalyser();
-                _technicalAnalyser = new TechnicalAnalyser();
 
                 _configReader = configReader;
 
