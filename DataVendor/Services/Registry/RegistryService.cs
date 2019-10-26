@@ -9,14 +9,14 @@ using System.Linq;
 
 namespace Services.Registry
 {
-    public class Service : IService
+    public class RegistryService : IRegistryService
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
 
-        public Service(
+        public RegistryService(
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository)
         {

@@ -1,7 +1,7 @@
 ﻿using Models.Interfaces;
 using System.Collections.Generic;
 
-namespace Services.Analyses
+namespace Services.Analysis
 {
     public interface ITechnicalAnalyser
     {

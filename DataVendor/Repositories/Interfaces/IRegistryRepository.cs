@@ -23,7 +23,7 @@ namespace Repositories.Interfaces
         /// </summary>
         /// <param name="isin"></param>
         /// <returns></returns>
-        IRegistryEntry GetByIsin(string isin);
+        IRegistryEntry FindByIsin(string isin);
         /// <summary>
         /// Remove many registry entries.
         /// </summary>

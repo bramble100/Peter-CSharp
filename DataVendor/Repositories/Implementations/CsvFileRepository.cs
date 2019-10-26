@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using Infrastructure.Config;
 using NLog;
 using Repositories.Exceptions;
 using System;

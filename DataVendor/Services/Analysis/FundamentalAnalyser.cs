@@ -1,7 +1,7 @@
 ﻿using Models.Builders;
 using Models.Interfaces;
 
-namespace Services.Analyses
+namespace Services.Analysis
 {
     public class FundamentalAnalyser : IFundamentalAnalyser
     {

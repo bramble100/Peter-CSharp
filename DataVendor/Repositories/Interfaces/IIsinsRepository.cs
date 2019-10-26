@@ -30,15 +30,26 @@ namespace Repositories.Interfaces
         /// <returns></returns>
         string GetIsinByCompanyName(string name);
         /// <summary>
-        /// Gets an immutable set of company names.
+        /// Gets a collection of the company names.
         /// </summary>
         /// <returns></returns>
         IEnumerable<string> GetNames();
+        /// <summary>
+        /// Gets a collection of the company ISINs.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> GetIsins();
         /// <summary>
         /// Removes company name from collection.
         /// </summary>
         /// <param name="name"></param>
         void Remove(string name);
+        /// <summary>
+        /// Removes company names from collection.
+        /// </summary>
+        /// <param name="name"></param>
+        void RemoveRange(IEnumerable<string> names);
+        IEnumerable<string> FindNamesByIsin(string isin);
         /// <summary>
         /// Saves the content of the repository.
         /// </summary>

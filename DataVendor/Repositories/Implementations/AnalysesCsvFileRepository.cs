@@ -10,6 +10,7 @@ using Models.Interfaces;
 using Repositories.Interfaces;
 using Repositories.Exceptions;
 using Repositories.Helpers;
+using Infrastructure.Config;
 
 namespace Repositories.Implementations
 {

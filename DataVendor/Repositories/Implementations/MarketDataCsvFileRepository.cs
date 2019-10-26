@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using Infrastructure.Config;
 using Microsoft.VisualBasic.FileIO;
 using Models.Interfaces;
 using NLog;
@@ -175,5 +176,18 @@ namespace Repositories.Implementations
                 }
             }
         }
+
+        public IEnumerable<string> GetNames() => _entities
+            .Where(e => !string.IsNullOrWhiteSpace(e.Name))
+            .Select(e => e.Name)
+            .Distinct()
+            .ToArray();
+
+        public IEnumerable<IMarketDataEntity> FindByNames(IEnumerable<string> names) => names is null
+                ? throw new ArgumentNullException(nameof(names))
+                : _entities
+                    .Where(e => names.Contains(e.Name))
+                    .Distinct()
+                    .ToArray();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Models.Interfaces;
 
-namespace Services.Analyses
+namespace Services.Analysis
 {
     public interface IFundamentalAnalyser
     {

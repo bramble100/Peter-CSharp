@@ -3,19 +3,19 @@ using Models.Builders;
 using Models.Enums;
 using Models.Interfaces;
 using NUnit.Framework;
-using Services.Analyses;
+using Services.Analysis;
 using System;
 using System.Linq;
 
-namespace AnalysesManager.UnitTests.Analyses
+namespace AnalysisManager.UnitTests.Analysis
 {
     [TestFixture]
-    public class Service_NewAnalysis
+    public class TechnicalAnalyser_NewAnalysis
     {
         private static readonly Random _random = new Random();
 
         [Test]
-        public void WithValidDataSeries_ShouldReturnCorrectResult()
+        public void WithValidDataSeries_ReturnCorrectResult()
         {
             var isin = "Isin1";
             var name = "Company";

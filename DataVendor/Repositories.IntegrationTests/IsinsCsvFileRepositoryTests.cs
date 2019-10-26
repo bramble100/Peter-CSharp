@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using FluentAssertions;
 using Infrastructure;
+using Infrastructure.Config;
 using Moq;
 using NUnit.Framework;
 using Repositories.Implementations;

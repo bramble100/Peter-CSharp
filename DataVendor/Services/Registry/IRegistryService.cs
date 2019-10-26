@@ -1,6 +1,6 @@
 ﻿namespace Services.Registry
 {
-    public interface IService
+    public interface IRegistryService
     {
         /// <summary>
         /// Updates the registry (removes the unused, and enters the new ones based on the market data).

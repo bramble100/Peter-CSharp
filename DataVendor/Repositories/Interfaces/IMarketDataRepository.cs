@@ -32,5 +32,11 @@ namespace Repositories.Interfaces
         /// </summary>
         void SaveChanges();
         void UpdateEntityWithIsin(IMarketDataEntity entity, string v);
+        /// <summary>
+        /// Returns all the company names.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> GetNames();
+        IEnumerable<IMarketDataEntity> FindByNames(IEnumerable<string> names);
     }
 }

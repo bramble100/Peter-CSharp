@@ -1,4 +1,4 @@
-﻿namespace Infrastructure
+﻿namespace Infrastructure.Config
 {
     /// <summary>
     /// Provides access to configuration settings from config file.
@@ -8,6 +8,6 @@
         /// <summary>
         /// Provides configuration settings.
         /// </summary>
-        ConfigReader.ConfigSettings Settings { get; }
+        ConfigReader.IConfigSettings Settings { get; }
     }
 }

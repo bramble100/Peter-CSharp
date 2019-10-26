@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using Infrastructure.Config;
 using Microsoft.VisualBasic.FileIO;
 using Models.Implementations;
 using Models.Interfaces;
@@ -62,6 +63,15 @@ namespace Repositories.Implementations
             return _entities.Any(entity => string.Equals(entity.Name, name));
         }
 
+        public IEnumerable<string> FindNamesByIsin(string isin) =>
+            string.IsNullOrWhiteSpace(isin)
+                ? Enumerable.Empty<string>()
+                : _entities
+                    .Where(e => string.Equals(e.Isin, isin))
+                    .Select(e => e.Name)
+                    .Distinct()
+                    .ToArray();
+
         public string GetIsinByCompanyName(string name)
         {
             if (!_fileContentLoaded) Load();
@@ -69,11 +79,17 @@ namespace Repositories.Implementations
             return _entities.SingleOrDefault(entity => string.Equals(entity.Name, name))?.Isin;
         }
 
+        public IEnumerable<string> GetIsins() => _entities
+            .Where(e => !string.IsNullOrWhiteSpace(e.Isin))
+            .Select(e => e.Isin)
+            .Distinct()
+            .ToArray();
+
         public IEnumerable<string> GetNames()
         {
             if (!_fileContentLoaded) Load();
 
-            return _entities.Select(entity => entity.Name).ToImmutableArray();
+            return _entities.Select(entity => entity.Name).ToArray();
         }
 
         public void Remove(string name)
@@ -83,6 +99,9 @@ namespace Repositories.Implementations
             _entities.RemoveWhere(entity => string.Equals(entity.Name, name));
             _fileContentSaved = false;
         }
+
+        public void RemoveRange(IEnumerable<string> names) => _entities
+            .RemoveWhere(e => names.Contains(e.Name));
 
         public void SaveChanges()
         {

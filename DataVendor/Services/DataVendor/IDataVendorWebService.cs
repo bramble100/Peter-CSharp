@@ -2,7 +2,10 @@
 
 namespace Services.DataVendor
 {
-    public interface IWebService
+    /// <summary>
+    /// Manages all market data that comes from the web, without ISINs.
+    /// </summary>
+    public interface IDataVendorWebService
     {
         /// <summary>
         /// Updates underlying repository with all market data downloaded from datavendor.

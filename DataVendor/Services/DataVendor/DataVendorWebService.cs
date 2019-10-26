@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace Services.DataVendor
 {
-    public class WebService : IWebService
+    /// <summary>
+    /// Manages all market data that comes from the web, without ISINs.
+    /// </summary>
+    public class DataVendorWebService : IDataVendorWebService
     {
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
@@ -19,7 +22,7 @@ namespace Services.DataVendor
         private readonly IHttpFacade _httpFacade;
         private readonly IMarketDataRepository _marketDataCsvFileRepository;
 
-        public WebService(
+        public DataVendorWebService(
             IEnvironmentVariableReader environmentVariableReader,
             IHttpFacade httpFacade,
             IMarketDataRepository marketDataRepository)

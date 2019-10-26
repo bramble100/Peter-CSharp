@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Services.Analyses
+namespace Services.Analysis
 {
     public class TechnicalAnalyser : ITechnicalAnalyser
     {

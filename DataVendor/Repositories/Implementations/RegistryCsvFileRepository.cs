@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using Infrastructure.Config;
 using Microsoft.VisualBasic.FileIO;
 using Models.Interfaces;
 using NLog;
@@ -85,7 +86,7 @@ namespace Repositories.Implementations
             _fileContentSaved = false;
         }
 
-        public IRegistryEntry GetByIsin(string isin)
+        public IRegistryEntry FindByIsin(string isin)
         {
             if (!_fileContentLoaded) Load();
 

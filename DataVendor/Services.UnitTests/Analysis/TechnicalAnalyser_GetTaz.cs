@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using Models.Enums;
 using NUnit.Framework;
-using Services.Analyses;
+using Services.Analysis;
 using System;
 
-namespace AnalysesManager.UnitTests.Analyses
+namespace AnalysisManager.UnitTests.Analysis
 {
     public class Service_GetTaz
     {

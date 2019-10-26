@@ -2,7 +2,7 @@
 using NLog;
 using System;
 
-namespace Infrastructure
+namespace Infrastructure.Config
 {
     /// <summary>
     /// Provides configuration settings.
@@ -14,7 +14,7 @@ namespace Infrastructure
         /// <summary>
         /// Stores all the configuration settings.
         /// </summary>
-        public ConfigSettings Settings { get; private set; }
+        public IConfigSettings Settings { get; private set; }
 
         /// <summary>
         /// Constructor.
@@ -41,7 +41,90 @@ namespace Infrastructure
         /// <summary>
         /// Class to store all the configuration settings.
         /// </summary>
-        public class ConfigSettings
+        public interface IConfigSettings
+        {
+            /// <summary>
+            /// File name for analyses.
+            /// </summary>
+            string AnalysesFileName { get; set; }
+            /// <summary>
+            /// Folder for backups.
+            /// </summary>
+            string BackupDirectory { get; set; }
+            /// <summary>
+            /// The sum for which shares to can be bought.
+            /// </summary>
+            int BuyingPacketInEuro { get; set; }
+            /// <summary>
+            /// Extension for CSV file name.
+            /// </summary>
+            string CsvFileNameExtension { get; set; }
+            /// <summary>
+            /// The separator character for saving CSV file.
+            /// </summary>
+            string CsvSeparator { get; set; }
+            /// <summary>
+            /// The culture info for saving CSV file.
+            /// </summary>
+            string CultureInfo { get; set; }
+            /// <summary>
+            /// DateFormat string for file name.
+            /// </summary>
+            string DateFormatForFileName { get; set; }
+            /// <summary>
+            /// The number of days for calculating fast moving average.
+            /// </summary>
+            int FastMovingAverage { get; set; }
+            /// <summary>
+            /// Command line parameter string for fetching new market data.
+            /// </summary>
+            string FetchNewMarketData { get; set; }
+            /// <summary>
+            /// File name for ISIN directory.
+            /// </summary>
+            string IsinFileName { get; set; }
+            /// <summary>
+            /// File name for market data.
+            /// </summary>
+            string MarketDataFileName { get; set; }
+            /// <summary>
+            /// File name for registry.
+            /// </summary>
+            string RegistryFileName { get; set; }
+            /// <summary>
+            /// The number of days for calculating slow moving average.
+            /// </summary>
+            int SlowMovingAverage { get; set; }
+            /// <summary>
+            /// Command line parameter string for adding ISINs to market data.
+            /// </summary>
+            string UpdateMarketDataWithISINs { get; set; }
+            /// <summary>
+            /// Working directory.
+            /// </summary>
+            string WorkingDirectory { get; set; }
+            /// <summary>
+            /// Folder for analyses.
+            /// </summary>
+            string WorkingDirectoryAnalyses { get; set; }
+            /// <summary>
+            /// Working directory base.
+            /// </summary>
+            string WorkingDirectoryBase { get; set; }
+            /// <summary>
+            /// Folder for raw market data.
+            /// </summary>
+            string WorkingDirectoryRawDownloads { get; set; }
+            /// <summary>
+            /// Folder for registry.
+            /// </summary>
+            string WorkingDirectoryRegistry { get; set; }
+        }
+
+        /// <summary>
+        /// Class to store all the configuration settings.
+        /// </summary>
+        public class ConfigSettings : IConfigSettings
         {
             /// <summary>
             /// File name for analyses.
