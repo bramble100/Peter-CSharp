@@ -13,6 +13,14 @@ namespace Services.UnitTests
     {
         static readonly Random _random = new Random();
 
+        internal static IEnumerable<KeyValuePair<string, IAnalysis>> NewAnalysesWithIsins(IEnumerable<string> isins)
+        {
+            foreach (var isin in isins)
+            {
+                yield return new KeyValuePair<string, IAnalysis>(isin, NewAnalysis());
+            }
+        }
+
         internal static IEnumerable<string> NewIsins(int count)
         {
             for (int i = 0; i < count; i++)
@@ -68,6 +76,15 @@ namespace Services.UnitTests
             }
         }
 
+        private static IAnalysis NewAnalysis() =>
+            new AnalysisBuilder()
+                .SetClosingPrice(NewClosingPrice())
+                .SetFundamentalAnalysis(NewFundamentalAnalysis())
+                .SetName(NewCompanyNames(1).First())
+                .SetQtyInBuyingPacket(NewQtyInBuyingPacket())
+                .SetTechnicalAnalysis(NewTechnicalAnalysis())
+                .Build();
+
         private static decimal NewClosingPrice() => (decimal)Math.Round(_random.NextDouble() * 1000 + 1, 2);
 
         private static decimal NewEPS() => (decimal)Math.Round(_random.NextDouble() * 1000 - 500, 2);
@@ -84,6 +101,14 @@ namespace Services.UnitTests
                 .SetClosingPrice(NewClosingPrice())
                 .SetEPS(NewEPS())
                 .SetMonthsInReport(3)
+                .Build();
+
+        private static int NewQtyInBuyingPacket() => (int)Math.Round(_random.NextDouble() * 1000 + 1);
+
+        private static ITechnicalAnalysis NewTechnicalAnalysis() =>
+            new TechnicalAnalysisBuilder()
+                .SetFastSMA(NewClosingPrice())
+                .SetSlowSMA(NewClosingPrice())
                 .Build();
     }
 }
