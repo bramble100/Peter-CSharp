@@ -19,7 +19,7 @@ namespace Services.Analysis
         private readonly static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IConfigReader _configReader;
-        private readonly IAnalysesRepository _analysesCsvFileRepository;
+        private readonly IAnalysesRepository _analysesRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
         private readonly IFundamentalAnalyser _fundamentalAnalyser;
@@ -46,7 +46,7 @@ namespace Services.Analysis
 
                 _datavendorService = datavendorService;
 
-                _analysesCsvFileRepository = analysesRepository;
+                _analysesRepository = analysesRepository;
                 _marketDataRepository = marketDataRepository;
                 _registryRepository = registryRepository;
 
@@ -76,6 +76,9 @@ namespace Services.Analysis
             }
         }
 
+        /// <summary>
+        /// Creates and returns analyses.
+        /// </summary>
         public IEnumerable<KeyValuePair<string, IAnalysis>> NewAnalyses()
         {
             _logger.Info("Generating analyses ...");
@@ -93,11 +96,25 @@ namespace Services.Analysis
             _logger.Info("Analyses generated.");
         }
 
-        public void SaveAnalyses(IEnumerable<IAnalysis> items)
+        /// <summary>
+        /// Saves analyses.
+        /// </summary>
+        public void SaveAnalyses(IEnumerable<KeyValuePair<string, IAnalysis>> items)
         {
-            throw new NotImplementedException();
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            _analysesRepository.AddRange(items);
         }
 
+        /// <summary>
+        /// Returns true if analysis can be made, and returns the analysis itself.
+        /// </summary>
+        /// <param name="isin"></param>
+        /// <param name="analysis"></param>
+        /// <returns></returns>
         internal bool TryNewAnalysis(string isin, out IAnalysis analysis)
         {
             analysis = null;

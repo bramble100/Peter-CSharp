@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\AnalysisService_SaveAnalyses.cs" />
     <Compile Include="Analysis\AnalysisService_NewAnalysis.cs" />
     <Compile Include="Analysis\AnalysisService_TryNewAnalysis.cs" />
     <Compile Include="Analysis\AnalysisService_NewAnalyses.cs" />

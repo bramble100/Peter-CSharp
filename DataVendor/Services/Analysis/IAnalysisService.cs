@@ -15,6 +15,6 @@ namespace Services.Analysis
         /// <summary>
         /// Saves analyses.
         /// </summary>
-        void SaveAnalyses(IEnumerable<IAnalysis> items);
+        void SaveAnalyses(IEnumerable<KeyValuePair<string, IAnalysis>> items);
     }
 }
