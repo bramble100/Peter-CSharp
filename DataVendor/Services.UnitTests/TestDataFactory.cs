@@ -55,6 +55,27 @@ namespace Services.UnitTests
             }
         }
 
+        internal static IEnumerable<IMarketDataEntity> NewMarketData(IEnumerable<string> isins, IEnumerable<string> companies, int daysCounter)
+        {
+            var now = DateTime.Now;
+            var isinsArray = isins.ToArray();
+            var namesArray = companies.ToArray();
+
+            for (int i = 0; i < Math.Min(isinsArray.Length, namesArray.Length); i++)
+            {
+                for (int j = 0; j < daysCounter; j++)
+                {
+                    yield return new MarketDataEntityBuilder()
+                        .SetClosingPrice(NewClosingPrice())
+                        .SetDateTime(now.AddDays(j * -1))
+                        .SetIsin(isinsArray[i])
+                        .SetName(namesArray[i])
+                        .SetPreviousDayClosingPrice(NewClosingPrice())
+                        .Build();
+                }
+            }
+        }
+
         internal static IEnumerable<IRegistryEntry> NewRegistryEntries(IEnumerable<string> isins, IEnumerable<string> names)
         {
             var isinsArray = isins.ToArray();
@@ -62,17 +83,15 @@ namespace Services.UnitTests
 
             for (int i = 0; i < Math.Min(isinsArray.Length, namesArray.Length); i++)
             {
-                if (string.IsNullOrWhiteSpace(isinsArray[i]) || string.IsNullOrWhiteSpace(namesArray[i]))
+                if (!string.IsNullOrWhiteSpace(isinsArray[i]) && !string.IsNullOrWhiteSpace(namesArray[i]))
                 {
-                    continue;
+                    yield return new RegistryEntryBuilder()
+                        .SetFinancialReport(NewFinancialReport())
+                        .SetFundamentalAnalysis(NewFundamentalAnalysis())
+                        .SetIsin(isinsArray[i])
+                        .SetName(namesArray[i])
+                        .Build();
                 }
-
-                yield return new RegistryEntryBuilder()
-                    .SetFinancialReport(NewFinancialReport())
-                    .SetFundamentalAnalysis(NewFundamentalAnalysis())
-                    .SetIsin(isinsArray[i])
-                    .SetName(namesArray[i])
-                    .Build();
             }
         }
 
