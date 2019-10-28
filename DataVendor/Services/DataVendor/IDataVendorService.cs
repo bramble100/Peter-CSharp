@@ -9,10 +9,9 @@ namespace Services.DataVendor
     public interface IDataVendorService
     {
         /// <summary>
-        /// Gets the market data entries grouped by ISIN.
+        /// Finds the market data items that have data with the latest day and returns their ISIN.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<string, IEnumerable<IMarketDataEntity>>> GetMarketDataGroupedByIsin();
         IEnumerable<string> FindIsinsWithLatestMarketData();
         /// <summary>
         /// Finds the market data entries by ISIN.

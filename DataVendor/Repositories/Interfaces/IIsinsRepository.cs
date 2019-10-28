@@ -28,7 +28,7 @@ namespace Repositories.Interfaces
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        string GetIsinByCompanyName(string name);
+        string FindIsinByName(string name);
         /// <summary>
         /// Gets a collection of the company names.
         /// </summary>

@@ -72,7 +72,7 @@ namespace Repositories.Implementations
                     .Distinct()
                     .ToArray();
 
-        public string GetIsinByCompanyName(string name)
+        public string FindIsinByName(string name)
         {
             if (!_fileContentLoaded) Load();
 

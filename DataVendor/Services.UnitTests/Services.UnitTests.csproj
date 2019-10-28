@@ -72,6 +72,8 @@
     <Compile Include="Analysis\AnalysisService_NewAnalyses.cs" />
     <Compile Include="Analysis\TechnicalAnalyser_NewAnalysis.cs" />
     <Compile Include="DataVendor\DataVendorIsinAwareService_AddNewNames_Should.cs" />
+    <Compile Include="DataVendor\DataVendorService_FindIsinsWithLatestMarketData.cs" />
+    <Compile Include="DataVendor\DataVendorService_FindMarketDataByIsin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Analysis\TechnicalAnalyser_GetTaz.cs" />
     <Compile Include="Analysis\TechnicalAnalyser_GetTrend.cs" />

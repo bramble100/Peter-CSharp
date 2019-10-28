@@ -35,16 +35,18 @@ namespace Services.Registry
         private void RemoveOutDatedEntries()
         {
             _logger.Info($"Removing outdated entries ...");
-            var outdatedIsins = _registryRepository.Isins.Except(_marketDataRepository.Isins).ToImmutableList();
-            if (!outdatedIsins.Any())
+            var outdatedIsins = _registryRepository.Isins.Except(_marketDataRepository.Isins).ToImmutableArray();
+
+            if (outdatedIsins.Any())
+            {
+                _logger.Info($"Removing {outdatedIsins.Length} entry(s) ...");
+                _registryRepository.RemoveRange(outdatedIsins);
+                _logger.Info($"{outdatedIsins.Length} entry(s) removed.");
+            }
+            else
             {
                 _logger.Info("No entry to remove.");
-                return;
             }
-
-            _logger.Info($"Removing {outdatedIsins.Count} entry(s) ...");
-            _registryRepository.RemoveRange(outdatedIsins);
-            _logger.Info($"{outdatedIsins.Count} entry(s) removed.");
         }
 
         private void AddNewEntries()
@@ -52,15 +54,16 @@ namespace Services.Registry
             _logger.Info($"Adding new entries ...");
             var newEntries = GetNewRegistryEntries().ToImmutableList();
 
-            if (!newEntries.Any())
+            if (newEntries.Any())
+            {
+                _logger.Info($"Adding {newEntries.Count} entry(s) ...");
+                _registryRepository.AddRange(newEntries);
+                _logger.Info($"{newEntries.Count} entry(s) added.");
+            }
+            else
             {
                 _logger.Info("No entry to add.");
-                return;
             }
-
-            _logger.Info($"Adding {newEntries.Count} entry(s) ...");
-            _registryRepository.AddRange(newEntries);
-            _logger.Info($"{newEntries.Count} entry(s) added.");
         }
 
         private IEnumerable<IRegistryEntry> GetNewRegistryEntries()

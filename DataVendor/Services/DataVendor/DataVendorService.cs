@@ -22,25 +22,27 @@ namespace Services.DataVendor
         {
             _isinRepository = isinsRepository;
             _marketDataRepository = marketDataCsvFileRepository;
-
-            RepairIsinRepository();
         }
 
         public IEnumerable<string> FindIsinsWithLatestMarketData()
         {
-            throw new System.NotImplementedException();
-        }
+            var data = _marketDataRepository.GetAll().ToArray();
 
-        public  IEnumerable<IMarketDataEntity> FindMarketDataByIsin(string isin) 
-            => _marketDataRepository.FindByNames(_isinRepository.FindNamesByIsin(isin));
-
-        public IEnumerable<KeyValuePair<string, IEnumerable<IMarketDataEntity>>> GetMarketDataGroupedByIsin()
-        {
-            foreach (var isin in _isinRepository.GetIsins())
+            if (!data.Any())
             {
-                yield return new KeyValuePair<string, IEnumerable<IMarketDataEntity>>(isin, FindMarketDataByIsin(isin));
+                return Enumerable.Empty<string>();
             }
+
+            return data
+                .Where(d => d.DateTime.Date == data.Max(d2 => d2.DateTime).Date)
+                .Select(d => d.Name)
+                .Distinct()
+                .Select(n => _isinRepository.FindIsinByName(n))
+                .ToArray();
         }
+
+        public IEnumerable<IMarketDataEntity> FindMarketDataByIsin(string isin)
+            => _marketDataRepository.FindByNames(_isinRepository.FindNamesByIsin(isin));
 
         internal void AddNewNames()
         {

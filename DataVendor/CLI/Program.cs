@@ -61,7 +61,9 @@ namespace CLI
                         else if (string.Equals(command, "analyse"))
                         {
                             _logger.Info("analyse");
-                            scope.Resolve<Services.Analysis.IAnalysisService>().NewAnalyses();
+                            var service = scope.Resolve<Services.Analysis.IAnalysisService>();
+                            var analyses = service.NewAnalyses().ToArray();
+                            service.SaveAnalyses(analyses);
                         }
                         else
                         {
