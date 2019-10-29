@@ -75,8 +75,18 @@ namespace Repositories.Implementations
         public string FindIsinByName(string name)
         {
             if (!_fileContentLoaded) Load();
-
-            return _entities.SingleOrDefault(entity => string.Equals(entity.Name, name))?.Isin;
+            try
+            {
+                return _entities
+                    .Single(entity => string.Equals(entity.Name, name))?
+                    .Isin;
+            }
+            catch (Exception)
+            {
+                var message = $"{name} not found in repository.";
+                _logger.Warn(message);
+                throw new RepositoryException(message);
+            }
         }
 
         public IEnumerable<string> GetIsins() => _entities
