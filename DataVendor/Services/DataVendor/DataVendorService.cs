@@ -1,5 +1,6 @@
 ﻿using Models.Interfaces;
 using NLog;
+using Repositories.Exceptions;
 using Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,15 +31,28 @@ namespace Services.DataVendor
 
             if (!data.Any())
             {
-                return Enumerable.Empty<string>();
+                yield break;
             }
 
-            return data
+            var names = data
                 .Where(d => d.DateTime.Date == data.Max(d2 => d2.DateTime).Date)
                 .Select(d => d.Name)
                 .Distinct()
-                .Select(n => _isinRepository.FindIsinByName(n))
                 .ToArray();
+
+            foreach (var name in names)
+            {
+                if (_isinRepository.ContainsName(name))
+                {
+                    yield return _isinRepository.FindIsinByName(name);
+                }
+                else
+                {
+                    _isinRepository.Add(name);
+                }
+            }
+
+            _isinRepository.SaveChanges();
         }
 
         public IEnumerable<IMarketDataEntity> FindMarketDataByIsin(string isin)
