@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Repositories.Exceptions
 {
     [Serializable]
-    internal class RepositoryException : Exception
+    public class RepositoryException : Exception
     {
         public RepositoryException()
         {
