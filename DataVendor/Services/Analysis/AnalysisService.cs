@@ -83,6 +83,12 @@ namespace Services.Analysis
         {
             _logger.Info("Generating analyses ...");
 
+            if (!_datavendorService.HaveAllMarketDataNamesIsins)
+            {
+                _logger.Fatal("Inconsistent data. Market data contains names that have no ISINs.");
+                yield break;
+            }
+
             var isins = _datavendorService.FindIsinsWithLatestMarketData().ToArray();
 
             foreach (var isin in isins)
@@ -126,7 +132,6 @@ namespace Services.Analysis
 
             try
             {
-
                 var marketData = _datavendorService.FindMarketDataByIsin(isin)?.ToImmutableArray()
                     ?? throw new ServiceException($"No market data found for {isin}");
 
@@ -145,7 +150,7 @@ namespace Services.Analysis
             catch (Exception ex)
             {
                 _logger.Warn(ex.Message);
-                _logger.Warn(ex, "No analysis can be created.");
+                _logger.Debug(ex, "No analysis can be created.");
                 return false;
             }
         }

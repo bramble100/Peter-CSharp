@@ -1,6 +1,5 @@
 ﻿using Models.Interfaces;
 using NLog;
-using Repositories.Exceptions;
 using Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +22,14 @@ namespace Services.DataVendor
         {
             _isinRepository = isinsRepository;
             _marketDataRepository = marketDataCsvFileRepository;
+        }
+
+        public bool HaveAllMarketDataNamesIsins
+        {
+            get
+            {
+                return false;
+            }
         }
 
         public IEnumerable<string> FindIsinsWithLatestMarketData()

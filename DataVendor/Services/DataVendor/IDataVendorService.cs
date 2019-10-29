@@ -8,6 +8,8 @@ namespace Services.DataVendor
     /// </summary>
     public interface IDataVendorService
     {
+        bool HaveAllMarketDataNamesIsins { get; }
+
         /// <summary>
         /// Finds the market data items that have data with the latest day and returns their ISIN.
         /// </summary>

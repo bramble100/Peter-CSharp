@@ -58,8 +58,12 @@ namespace Services.UnitTests.Analyses
             _mockConfigReader.Setup(m => m.Settings.FastMovingAverage).Returns(fastMovingAverageDayCount);
             _mockConfigReader.Setup(m => m.Settings.SlowMovingAverage).Returns(slowMovingAverageDayCount);
 
-            _mockDatavendorService.Setup(m => m.FindIsinsWithLatestMarketData()).Returns(isins);
-
+            _mockDatavendorService
+                .Setup(m => m.FindIsinsWithLatestMarketData())
+                .Returns(isins);
+            _mockDatavendorService
+                .Setup(m => m.HaveAllMarketDataNamesIsins)
+                .Returns(true);
             service = new AnalysisService(
                 _mockFundamentalAnalyser.Object,
                 _mockTechnicalAnalyser.Object,
@@ -100,9 +104,18 @@ namespace Services.UnitTests.Analyses
             _mockTechnicalAnalyser
                 .Setup(m => m.NewAnalysis(marketData, fastMovingAverageDayCount, slowMovingAverageDayCount))
                 .Returns(new TechnicalAnalyser().NewAnalysis(marketData, fastMovingAverageDayCount, slowMovingAverageDayCount));
-            _mockDatavendorService.Setup(m => m.FindIsinsWithLatestMarketData()).Returns(isins);
-            _mockDatavendorService.Setup(m => m.FindMarketDataByIsin(isins[0])).Returns(marketData);
-            _mockRegistryRepository.Setup(m => m.FindByIsin(isins[0])).Returns(registryEntry);
+            _mockDatavendorService
+                .Setup(m => m.FindIsinsWithLatestMarketData())
+                .Returns(isins);
+            _mockDatavendorService
+                .Setup(m => m.FindMarketDataByIsin(isins[0]))
+                .Returns(marketData);
+            _mockRegistryRepository
+                .Setup(m => m.FindByIsin(isins[0]))
+                .Returns(registryEntry);
+            _mockDatavendorService
+                .Setup(m => m.HaveAllMarketDataNamesIsins)
+                .Returns(true);
 
             service = new AnalysisService(
                 _mockFundamentalAnalyser.Object,
