@@ -44,32 +44,6 @@ namespace Services.UnitTests.DataVendor
         }
 
         [Test]
-        public void WithOneItem_ReturnOneItem()
-        {
-            // Arrange
-            var isins = TestDataFactory.NewIsins(1).ToArray();
-            var names = TestDataFactory.NewCompanyNames(1).ToArray();
-            var marketData = TestDataFactory.NewMarketData(names, 1).ToArray();
-
-            _mockMarketDataRepository
-                .Setup(m => m.GetAll())
-                .Returns(marketData);
-            _mockIsinRepository
-                .Setup(m => m.FindIsinByName(names[0]))
-                .Returns(isins[0]);
-
-            service = new DataVendorService(
-                _mockIsinRepository.Object,
-                _mockMarketDataRepository.Object);
-
-            // Act
-            var result = service.FindIsinsWithLatestMarketData();
-
-            // Assert
-            result.Should().BeEquivalentTo(isins);
-        }
-
-        [Test]
         public void WithManyItem_ReturnManyItem()
         {
             // Arrange
@@ -86,6 +60,9 @@ namespace Services.UnitTests.DataVendor
                 _mockIsinRepository
                     .Setup(m => m.FindIsinByName(names[i]))
                     .Returns(isins[i]);
+                _mockIsinRepository
+                    .Setup(m => m.ContainsName(names[i]))
+                    .Returns(true);
             }
 
             service = new DataVendorService(
@@ -103,11 +80,11 @@ namespace Services.UnitTests.DataVendor
         public void WithManyMixedItem_ReturnOnlyValidItems()
         {
             // Arrange
-            var isinsInitial = TestDataFactory.NewIsins(9).ToArray();
+            var isins = TestDataFactory.NewIsins(9).ToArray();
             var names = TestDataFactory.NewCompanyNames(9).ToArray();
-            var marketData = TestDataFactory.NewMarketData(names, 21).ToArray();
+            var marketData = TestDataFactory.NewMarketData(names, 11).ToArray();
 
-            foreach (var data in marketData.Where(d=>d.Name == names.Last()))
+            foreach (var data in marketData.Where(d => d.Name == names[0]))
             {
                 data.DateTime = data.DateTime.AddDays(-1);
             }
@@ -119,11 +96,14 @@ namespace Services.UnitTests.DataVendor
             for (int i = 0; i < names.Length; i++)
             {
                 _mockIsinRepository
+                    .Setup(m => m.ContainsName(names[i]))
+                    .Returns(true);
+                _mockIsinRepository
                     .Setup(m => m.FindIsinByName(names[i]))
-                    .Returns(isinsInitial[i]);
+                    .Returns(isins[i]);
             }
 
-            var expectedIsins = isinsInitial.Take(isinsInitial.Length - 1).ToArray();
+            var expectedIsins = isins.Skip(1).ToArray();
 
             service = new DataVendorService(
                 _mockIsinRepository.Object,
@@ -134,6 +114,62 @@ namespace Services.UnitTests.DataVendor
 
             // Assert
             result.Should().BeEquivalentTo(expectedIsins);
+        }
+
+        [Test]
+        public void WithOneItem_ReturnOneItem()
+        {
+            // Arrange
+            var isins = TestDataFactory.NewIsins(1).ToArray();
+            var names = TestDataFactory.NewCompanyNames(1).ToArray();
+            var marketData = TestDataFactory.NewMarketData(names, 1).ToArray();
+
+            _mockMarketDataRepository
+                .Setup(m => m.GetAll())
+                .Returns(marketData);
+            _mockIsinRepository
+                .Setup(m => m.FindIsinByName(names[0]))
+                .Returns(isins[0]);
+            _mockIsinRepository
+                .Setup(m => m.ContainsName(names[0]))
+                .Returns(true);
+
+            service = new DataVendorService(
+                _mockIsinRepository.Object,
+                _mockMarketDataRepository.Object);
+
+            // Act
+            var result = service.FindIsinsWithLatestMarketData();
+
+            // Assert
+            result.Should().BeEquivalentTo(isins);
+        }
+
+        [Test]
+        public void WithOneMissingName_AddsMissingName()
+        {
+            // Arrange
+            var isins = TestDataFactory.NewIsins(1).ToArray();
+            var names = TestDataFactory.NewCompanyNames(1).ToArray();
+            var marketData = TestDataFactory.NewMarketData(names, 9).ToArray();
+
+            _mockMarketDataRepository
+                .Setup(m => m.GetAll())
+                .Returns(marketData);
+            _mockIsinRepository
+                .Setup(m => m.ContainsName(names[0]))
+                .Returns(false);
+
+            service = new DataVendorService(
+                _mockIsinRepository.Object,
+                _mockMarketDataRepository.Object);
+
+            // Act
+            var result = service.FindIsinsWithLatestMarketData();
+
+            // Assert
+            result.Should().BeEmpty();
+            _mockIsinRepository.Verify(m => m.Add(names[0]));
         }
     }
 }
