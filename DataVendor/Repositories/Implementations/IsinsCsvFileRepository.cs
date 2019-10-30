@@ -75,17 +75,28 @@ namespace Repositories.Implementations
         public string FindIsinByName(string name)
         {
             if (!_fileContentLoaded) Load();
+
             try
             {
-                return _entities
-                    .Single(entity => string.Equals(entity.Name, name))?
-                    .Isin;
+                var entity = _entities.Single(e => string.Equals(e.Name, name));
+                return entity.Isin;
             }
-            catch (Exception)
+            catch (InvalidOperationException ex)
+            {
+                var message = $"{name} found with more than one ISIN in repository.";
+                _logger.Error(message);
+                throw new RepositoryException(message, ex);
+            }
+            catch(NullReferenceException ex)
             {
                 var message = $"{name} not found in repository.";
-                _logger.Warn(message);
-                throw new RepositoryException(message);
+                _logger.Error(message);
+                throw new RepositoryException(message, ex);
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex.Message);
+                throw new RepositoryException(ex.Message, ex);
             }
         }
 

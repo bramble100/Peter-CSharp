@@ -1,5 +1,6 @@
 ﻿using Models.Interfaces;
 using NLog;
+using Repositories.Exceptions;
 using Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,31 @@ namespace Services.DataVendor
         {
             get
             {
-                return false;
+                var names = _marketDataRepository.GetNames();
+                if (names.Any() && !_isinRepository.GetIsins().Any())
+                {
+                    return false;
+                }
+
+                bool result = true;
+
+                foreach (var name in names)
+                {
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(_isinRepository.FindIsinByName(name)))
+                        {
+                            result = false;
+                        }
+                    }
+                    catch (RepositoryException ex)
+                    {
+                        result = false;
+                        _logger.Error(ex.Message);
+                    }
+                }
+
+                return result;
             }
         }
 

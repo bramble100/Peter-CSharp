@@ -8,8 +8,10 @@ namespace Services.DataVendor
     /// </summary>
     public interface IDataVendorService
     {
+        /// <summary>
+        /// Returns true if all company names have a corresponding ISIN and the relation is unambiguous.
+        /// </summary>
         bool HaveAllMarketDataNamesIsins { get; }
-
         /// <summary>
         /// Finds the market data items that have data with the latest day and returns their ISIN.
         /// </summary>

@@ -85,7 +85,7 @@ namespace Services.Analysis
 
             if (!_datavendorService.HaveAllMarketDataNamesIsins)
             {
-                _logger.Fatal("Inconsistent data. Market data contains names that have no ISINs.");
+                _logger.Fatal("Inconsistent data. Market data contains names that either have no ISINs or more than one.");
                 yield break;
             }
 
