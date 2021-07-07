@@ -1,7 +1,7 @@
 ﻿using Infrastructure;
+using Models.Interfaces;
 using NLog;
-using Peter.Models.Interfaces;
-using Peter.Repositories.Interfaces;
+using Repositories.Interfaces;
 using Services.DataVendor.Html;
 using System;
 using System.Collections.Generic;
@@ -32,21 +32,40 @@ namespace Services.DataVendor
                 ?? throw new ArgumentNullException(nameof(marketDataRepository));
         }
 
-        public async Task<IEnumerable<IMarketDataEntity>> GetDownloadedDataFromWeb()
+        public async Task UpdateMarketData()
+        {
+            var latestData = await GetDownloadedDataFromWeb() ?? throw new ServiceException("No market data to add.");
+
+            if (!latestData.Any())
+            {
+                _logger.Warn("No market data to add.");
+                return;
+            }
+
+            _logger.Info("Updating and saving market data ...");
+
+            var entities = latestData.ToImmutableArray();
+
+            _marketDataCsvFileRepository.AddRange(entities);
+            _logger.Info("Market data updated.");
+
+            _marketDataCsvFileRepository.SaveChanges();
+            _logger.Info("Market data saved.");
+        }
+
+        private async Task<IEnumerable<IMarketDataEntity>> GetDownloadedDataFromWeb()
         {
             _logger.Info("Downloading market data ...");
 
-            var htmlStrings = new Dictionary<string, string>();
-            string htmlContent;
             var entities = new List<IMarketDataEntity>();
 
             using (var client = _httpFacade.GetHttpClient())
             {
                 foreach (var link in Links)
                 {
-                    LogManager.GetCurrentClassLogger().Info($"Downloading: {link.Key}");
+                    _logger.Info($"Downloading: {link.Key}");
 
-                    htmlContent = await client.GetStringAsync(link.Value);
+                    string htmlContent = await client.GetStringAsync(link.Value);
                     if (string.IsNullOrWhiteSpace(htmlContent))
                     {
                         _logger.Warn("No html content was downloaded.");
@@ -68,28 +87,6 @@ namespace Services.DataVendor
             _logger.Info($"{(entities.Any() ? entities.Count.ToString() : "No")} market data entity downloaded.");
 
             return entities;
-        }
-
-        public void UpdateMarketData(IEnumerable<IMarketDataEntity> latestData)
-        {
-            if (latestData is null)
-                throw new ArgumentNullException(nameof(latestData));
-
-            if (!latestData.Any())
-            {
-                _logger.Warn("No market data to add.");
-                return;
-            }
-
-            _logger.Info("Updating and saving market data ...");
-
-            var entities = latestData.ToImmutableArray();
-
-            _marketDataCsvFileRepository.AddRange(entities);
-            _logger.Info("Market data updated.");
-
-            _marketDataCsvFileRepository.SaveChanges();
-            _logger.Info("Market data saved.");
         }
 
         private Dictionary<string, Uri> Links => _environmentVariableReader

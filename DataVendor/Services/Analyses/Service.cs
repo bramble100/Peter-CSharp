@@ -1,9 +1,8 @@
 ﻿using Infrastructure;
+using Models.Builders;
+using Models.Interfaces;
 using NLog;
-using Peter.Models.Builders;
-using Peter.Models.Enums;
-using Peter.Models.Interfaces;
-using Peter.Repositories.Interfaces;
+using Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -19,23 +18,31 @@ namespace Services.Analyses
         private readonly IAnalysesRepository _analysesCsvFileRepository;
         private readonly IMarketDataRepository _marketDataRepository;
         private readonly IRegistryRepository _registryRepository;
+        private readonly IFundamentalAnalyser _fundamentalAnalyser;
+        private readonly ITechnicalAnalyser _technicalAnalyser;
 
         private readonly int _fastMovingAverage;
         private readonly int _slowMovingAverage;
         private readonly int _buyingPacketInEuro;
 
         public Service(
+            IFundamentalAnalyser fundamentalAnalyser,
+            ITechnicalAnalyser technicalAnalyser,
             IAnalysesRepository analysesRepository,
             IMarketDataRepository marketDataRepository,
             IRegistryRepository registryRepository,
-            IConfigReader config)
+            IConfigReader configReader)
         {
             try
             {
+                _fundamentalAnalyser = fundamentalAnalyser;
+                _technicalAnalyser = technicalAnalyser;
+
                 _analysesCsvFileRepository = analysesRepository;
                 _marketDataRepository = marketDataRepository;
                 _registryRepository = registryRepository;
-                _configReader = config;
+
+                _configReader = configReader;
 
                 _buyingPacketInEuro = _configReader.Settings.BuyingPacketInEuro;
                 _fastMovingAverage = _configReader.Settings.FastMovingAverage;
@@ -56,37 +63,27 @@ namespace Services.Analyses
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Error(ex.Message);
                 throw new ServiceException($"Error when initializing {GetType().Name}.", ex);
             }
         }
 
-        public void GenerateAnalyses()
+        public void NewAnalyses()
         {
             _logger.Info("Generating analyses ...");
 
-            var marketData = _marketDataRepository.GetAll().ToList();
+            var marketData = _marketDataRepository.GetAll().ToImmutableArray();
             if (ContainsDataWithoutIsin(marketData))
             {
                 throw new ServiceException("There are marketdata without ISIN. No analysis generated.");
             }
 
-            _logger.Info("Removing discontinued market data rows.");
-            var latestDate = marketData.Max(d => d.DateTime).Date;
-            RemoveEntriesWithoutUptodateData(marketData, latestDate);
-            _logger.Info($"Having discontinued market data rows removed {marketData.Count} data entries remained.");
-
-            var groupedMarketData = from data in marketData
-                                    group data by data.Isin into dataByIsin
-                                    select dataByIsin
-                                        .OrderByDescending(d => d.DateTime)
-                                        .Take(_slowMovingAverage);
-
-            var analyses = groupedMarketData.Select(GetAnalysis).ToImmutableList();
+            IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData = GetGroupedMarketData(marketData);
+            Dictionary<string, IAnalysis> analyses = NewAnalyses(groupedMarketData);
 
             if (!analyses.Any())
             {
-                _logger.Info("No analyses generated.");
+                _logger.Warn("No analyses generated.");
                 return;
             }
 
@@ -96,122 +93,84 @@ namespace Services.Analyses
             _analysesCsvFileRepository.AddRange(analyses);
             _logger.Debug("Analyses added.");
 
-            _logger.Debug("Saving analyses to repository ...");
             _analysesCsvFileRepository.SaveChanges();
-            _logger.Debug("Analyses saved.");
 
             _logger.Info("*** *** ***");
         }
 
-        [Obsolete]
-        private bool RegistryItemIsInteresting(KeyValuePair<string, IRegistryEntry> keyValuePair) =>
-            keyValuePair.Value?.FinancialReport?.EPS >= 0 || keyValuePair.Value?.Position != Position.NoPosition;
-
-        private bool RegistryItemIsInteresting(IRegistryEntry entry) =>
-            entry.FinancialReport?.EPS >= 0 || entry.Position != Position.NoPosition;
-
-        private KeyValuePair<string, IAnalysis> GetAnalysis(IEnumerable<IMarketDataEntity> marketDataInput)
+        private Dictionary<string, IAnalysis> NewAnalyses(IEnumerable<IEnumerable<IMarketDataEntity>> groupedMarketData)
         {
-            if (marketDataInput == null)
-                throw new ArgumentNullException(nameof(marketDataInput));
+            Dictionary<string, IAnalysis> analyses = new Dictionary<string, IAnalysis>();
 
+            foreach (var marketDataGroup in groupedMarketData)
+            {
+                if (TryNewAnalysis(marketDataGroup, out KeyValuePair<string, IAnalysis> result))
+                {
+                    analyses[result.Key] = result.Value;
+                }
+            }
+
+            return analyses;
+        }
+
+        private IEnumerable<IEnumerable<IMarketDataEntity>> GetGroupedMarketData(ImmutableArray<IMarketDataEntity> marketData)
+        {
+            var latestDate = marketData.Max(d => d.DateTime).Date;
+
+            return from data in marketData
+                   group data by data.Isin into dataByIsin
+                   where dataByIsin.Max(d => d.DateTime).Date == latestDate
+                   select dataByIsin
+                       .OrderByDescending(d => d.DateTime)
+                       .Take(_slowMovingAverage);
+        }
+
+        private bool TryNewAnalysis(IEnumerable<IMarketDataEntity> marketDataInput, out KeyValuePair<string, IAnalysis> result)
+        {
             try
             {
-                var marketData = marketDataInput.ToImmutableList();
-                if (!marketData.Any())
+                var marketData = marketDataInput?.ToImmutableArray()
+                    ?? throw new ArgumentNullException(nameof(marketDataInput));
+
+                if (!marketDataInput.Any())
                     throw new ArgumentException("Market data set cannot be empty", nameof(marketDataInput));
 
-                var isin = marketDataInput.First().Isin;
-                if (string.IsNullOrEmpty(isin))
+                var isin = marketData.First().Isin;
+                if (string.IsNullOrWhiteSpace(isin))
                     throw new ServiceException("No ISIN found in market data set.");
 
-                var closingPrice = marketDataInput.FirstOrDefault().ClosingPrice;
-                var fastSMA = marketDataInput.Take(_fastMovingAverage).Average(d => d.ClosingPrice);
-                var slowSMA = marketDataInput.Take(_slowMovingAverage).Average(d => d.ClosingPrice);
+                var closingPrice = marketData.First().ClosingPrice;
 
-                var stockBaseData = _registryRepository.GetById(isin);
-                if (stockBaseData is null)
-                    throw new ServiceException($"No registry entry found for {isin}");
+                var stockBaseData = _registryRepository.GetByIsin(isin)
+                    ?? throw new ServiceException($"No registry entry found for {isin}");
 
-                var financialAnalysis = new FinancialAnalysisBuilder()
-                    .SetClosingPrice(closingPrice)
-                    .SetEPS(stockBaseData.FinancialReport?.EPS)
-                    .SetMonthsInReport(stockBaseData.FinancialReport?.MonthsInReport)
-                    .Build();
-                var technicalAnalysis = new TechnicalAnalysisBuilder()
-                    .SetFastSMA(fastSMA)
-                    .SetSlowSMA(slowSMA)
-                    .SetTAZ(GetTAZ(closingPrice, fastSMA, slowSMA))
-                    .SetTrend(GetTrend(fastSMA, slowSMA))
-                    .Build();
-                if (technicalAnalysis is null)
-                    throw new ServiceException($"No technical analysis can be created for {isin}");
+                var fundamentalAnalysis = _fundamentalAnalyser.NewAnalysis(closingPrice, stockBaseData);
+
+                var technicalAnalysis = _technicalAnalyser.NewAnalysis(marketData, _fastMovingAverage, _slowMovingAverage)
+                    ?? throw new ServiceException($"No technical analysis can be created for {isin}");
 
                 var analysis = new AnalysisBuilder()
                     .SetClosingPrice(closingPrice)
                     .SetName(stockBaseData.Name)
                     .SetQtyInBuyingPacket((int)Math.Floor(_buyingPacketInEuro / closingPrice))
-                    .SetFinancialAnalysis(financialAnalysis)
+                    .SetFundamentalAnalysis(fundamentalAnalysis)
                     .SetTechnicalAnalysis(technicalAnalysis)
-                    .Build();
+                    .Build()
+                    ?? throw new ServiceException($"No analysis can be created for {isin}");
 
-                if (analysis is null)
-                    throw new ServiceException($"No analysis can be created for {isin}");
-
-                return new KeyValuePair<string, IAnalysis>(isin, analysis);
+                result = new KeyValuePair<string, IAnalysis>(isin, analysis);
+                return true;
             }
             catch (Exception ex)
             {
-                throw new ServiceException($"No analysis can be created.", ex);
+                _logger.Warn(ex.Message);
+                _logger.Warn(ex, "No analysis can be created.");
+                result = new KeyValuePair<string, IAnalysis>();
+                return false;
             }
         }
 
-        internal static bool ContainsDataWithoutIsin(List<IMarketDataEntity> marketData) =>
+        internal static bool ContainsDataWithoutIsin(IEnumerable<IMarketDataEntity> marketData) =>
             marketData.Any(d => string.IsNullOrWhiteSpace(d.Isin));
-
-        // TODO investigate
-        internal static void RemoveEntriesWithoutUptodateData(
-            List<IMarketDataEntity> marketData,
-            DateTime latestDate) =>
-                marketData.RemoveAll(d => marketData.Where(d2 => string.Equals(d.Isin, d2.Isin)).Max(d3 => d3.DateTime).Date < latestDate);
-
-        private static bool HasValidFinancialReport(KeyValuePair<string, IRegistryEntry> entry)
-        {
-            return entry.Value?.FinancialReport != null &&
-                entry.Value.FinancialReport.EPS != 0 &&
-                entry.Value.FinancialReport.MonthsInReport != 0;
-        }
-
-        internal static TAZ GetTAZ(decimal closingPrice, decimal fastSMA, decimal slowSMA)
-        {
-            if (closingPrice <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(closingPrice));
-            if (fastSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
-            if (slowSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
-
-            if (closingPrice > Math.Max(fastSMA,slowSMA))
-                return TAZ.AboveTAZ;
-            if (closingPrice < Math.Min(fastSMA,slowSMA))
-                return TAZ.BelowTAZ;
-
-            return TAZ.InTAZ;
-        }
-
-        internal static Trend GetTrend(decimal fastSMA, decimal slowSMA)
-        {
-            if (fastSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(fastSMA));
-            if (slowSMA <= 0)
-                throw new ArgumentException("Must be greater than 0", nameof(slowSMA));
-
-            if (fastSMA > slowSMA)
-                return Trend.Up;
-            if (fastSMA < slowSMA)
-                return Trend.Down;
-
-            return Trend.Undefined;
-        }
     }
 }

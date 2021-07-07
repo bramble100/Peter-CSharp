@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Models.Builders;
+using Models.Interfaces;
+using NLog;
+using Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using NLog;
-using Peter.Models.Builders;
-using Peter.Models.Interfaces;
-using Peter.Repositories.Interfaces;
 
 namespace Services.Registry
 {
@@ -78,11 +79,24 @@ namespace Services.Registry
 
             foreach (var isin in newIsins)
             {
-                name = isinsAndNamesInMarketData.Single(d => string.Equals(isin, d.Isin)).Name;
-                yield return new RegistryEntryBuilder()
-                    .SetName(name)
-                    .SetIsin(isin)
-                    .Build();
+                name = string.Empty;
+
+                try
+                {
+                    name = isinsAndNamesInMarketData.Single(d => string.Equals(isin, d.Isin)).Name;
+                }
+                catch (InvalidOperationException ex)
+                {               
+                    _logger.Warn(ex, $"ISIN can be found more than once: {isin}.");
+                }
+
+                if(!string.IsNullOrWhiteSpace(name))
+                {
+                    yield return new RegistryEntryBuilder()
+                        .SetName(name)
+                        .SetIsin(isin)
+                        .Build();
+                }
             }
         }
     }

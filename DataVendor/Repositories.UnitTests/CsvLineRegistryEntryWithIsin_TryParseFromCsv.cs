@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
+using Models.Builders;
 using NUnit.Framework;
-using Peter.Models.Builders;
-using Peter.Models.Enums;
-using Peter.Models.Implementations;
+using Repositories.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,13 +20,12 @@ namespace Repositories.UnitTests
                 "http://www.aareal-bank.com/investor-relations/",
                 "2,08",
                 "6",
-                DateTime.Now.AddDays(1).Date.ToString(),
-                string.Empty
+                DateTime.Now.AddDays(1).Date.ToString()
             };
 
         [TestCaseSource(nameof(TestCaseSource))]
         public void WithInvalidArray_ReturnsFalse(string[] inputStrings) =>
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(inputStrings, _cultureInfo, out _)
+            CsvLineRegistryEntryWithIsin.TryParseFromCsv(inputStrings, _cultureInfo, out _)
             .Should().BeFalse();
 
         [Test]
@@ -38,7 +36,6 @@ namespace Repositories.UnitTests
                 .SetName("Aareal Bank AG")
                 .SetOwnInvestorLink("http://www.aareal-bank.com/investor-relations/")
                 .SetStockExchangeLink("http://www.boerse-frankfurt.de/de/aktien/aareal+bank+ag+ag+DE0005408116")
-                .SetPosition(Position.NoPosition.ToString())
                 .SetFinancialReport(new FinancialReportBuilder()
                     .SetEPS(2.08m)
                     .SetMonthsInReport(6)
@@ -46,7 +43,7 @@ namespace Repositories.UnitTests
                     .Build())
                 .Build();
 
-            Peter.Repositories.Helpers.CsvLineRegistryEntryWithIsin.TryParseFromCsv(_validLine, _cultureInfo, out var result)
+            CsvLineRegistryEntryWithIsin.TryParseFromCsv(_validLine, _cultureInfo, out var result)
                 .Should().BeTrue();
             result.Should().Be(validResult);
         }
@@ -58,7 +55,6 @@ namespace Repositories.UnitTests
             yield return new string[] { }; // empty
             yield return new string[] // too short
             {
-                string.Empty,
                 string.Empty,
                 string.Empty,
                 string.Empty,
@@ -76,11 +72,9 @@ namespace Repositories.UnitTests
                 string.Empty,
                 string.Empty,
                 string.Empty,
-                string.Empty
             };
             yield return new string[] // no content at all
             {
-                string.Empty,
                 string.Empty,
                 string.Empty,
                 string.Empty,

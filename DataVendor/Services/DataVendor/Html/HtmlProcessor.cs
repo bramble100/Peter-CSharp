@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
-using Peter.Models.Builders;
-using Peter.Models.Interfaces;
+using Models.Builders;
+using Models.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 

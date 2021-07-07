@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,13 +30,14 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.11.4.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.4\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.11.12.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.12\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.6.3\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.6.6\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -55,8 +57,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analyses\FundamentalAnalyser.cs" />
+    <Compile Include="Analyses\IFundamentalAnalyser.cs" />
     <Compile Include="Analyses\IService.cs" />
+    <Compile Include="Analyses\ITechnicalAnalyser.cs" />
     <Compile Include="Analyses\Service.cs" />
+    <Compile Include="Analyses\TechnicalAnalyser.cs" />
     <Compile Include="DataVendor\Html\HtmlProcessor.cs" />
     <Compile Include="DataVendor\Html\HtmlRowProcessor.cs" />
     <Compile Include="DataVendor\IIsinAdderService.cs" />
@@ -76,13 +82,13 @@
       <Project>{373d71a0-34b5-42aa-9f6d-961051adff5f}</Project>
       <Name>Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Peter.Models\Peter.Models.csproj">
+    <ProjectReference Include="..\Models\Models.csproj">
       <Project>{b7e7989e-1619-4713-af8a-cad6b802d2a6}</Project>
-      <Name>Peter.Models</Name>
+      <Name>Models</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Peter.Repositories\Peter.Repositories.csproj">
+    <ProjectReference Include="..\Repositories\Repositories.csproj">
       <Project>{a72490e7-1652-4e9c-bbbf-61a7705c00c3}</Project>
-      <Name>Peter.Repositories</Name>
+      <Name>Repositories</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

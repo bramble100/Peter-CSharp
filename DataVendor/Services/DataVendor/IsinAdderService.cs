@@ -1,5 +1,5 @@
 ﻿using NLog;
-using Peter.Repositories.Interfaces;
+using Repositories.Interfaces;
 using System.Linq;
 
 namespace Services.DataVendor
@@ -82,19 +82,16 @@ namespace Services.DataVendor
 
             var newNames = namesInEntities
                 .Where(e => !_isinsCsvFileRepository.ContainsName(e))
-                .ToList();
+                .ToArray();
 
             if (newNames.Any())
             {
-                foreach (var name in newNames)
-                {
-                    _isinsCsvFileRepository.Add(name);
-                }
-                _logger.Info($"{newNames.Count} new name(s) are added.");
+                _isinsCsvFileRepository.AddRange(newNames);
+                _logger.Info($"{newNames.Length} new name(s) are added.");
             }
             else
             {
-                _logger.Info($"No names were removed.");
+                _logger.Info($"No names were added.");
             }
         }
     }
